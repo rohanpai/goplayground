@@ -1,39 +1,39 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;strconv&#34;
+	"fmt"
+	"strconv"
 )
 
 func main() {
-	fmt.Println(&#34;Float32ToString:&#34;, Float32ToString(float32(55.55)))
-	fmt.Println(&#34;Float64ToString:&#34;, Float64ToString(float64(55.55)))
+	fmt.Println("Float32ToString:", Float32ToString(float32(55.55)))
+	fmt.Println("Float64ToString:", Float64ToString(float64(55.55)))
 
-	fmt.Println(&#34;Int32ToString:&#34;, Int32ToString(int32(-44)))
-	fmt.Println(&#34;Int64ToString:&#34;, Int64ToString(int64(-44)))
+	fmt.Println("Int32ToString:", Int32ToString(int32(-44)))
+	fmt.Println("Int64ToString:", Int64ToString(int64(-44)))
 
-	fmt.Println(&#34;Uint32ToString:&#34;, Uint32ToString(uint32(44)))
-	fmt.Println(&#34;Uint64ToString:&#34;, Uint64ToString(uint64(44)))
+	fmt.Println("Uint32ToString:", Uint32ToString(uint32(44)))
+	fmt.Println("Uint64ToString:", Uint64ToString(uint64(44)))
 
-	string1, _ := strconv.Atoi(&#34;66&#34;)
-	fmt.Println(&#34;StringToInt with strconv.Atoi:&#34;, string1)
-	fmt.Println(&#34;IntToString with strconv.Itoa (Actually it is int64):&#34;, strconv.Itoa(11))
-	fmt.Println(&#34;BoolToString:&#34;, BoolToString(true))
+	string1, _ := strconv.Atoi("66")
+	fmt.Println("StringToInt with strconv.Atoi:", string1)
+	fmt.Println("IntToString with strconv.Itoa (Actually it is int64):", strconv.Itoa(11))
+	fmt.Println("BoolToString:", BoolToString(true))
 
-	float1, _ := StringToFloat32(&#34;22.22&#34;)
-	float2, _ := StringToFloat64(&#34;22.22&#34;)
-	fmt.Println(&#34;StringToFloat32:&#34;, float1)
-	fmt.Println(&#34;StringToFloat64:&#34;, float2)
+	float1, _ := StringToFloat32("22.22")
+	float2, _ := StringToFloat64("22.22")
+	fmt.Println("StringToFloat32:", float1)
+	fmt.Println("StringToFloat64:", float2)
 
-	int1, _ := StringToInt32(&#34;-33&#34;)
-	int2, _ := StringToInt64(&#34;-33&#34;)
-	fmt.Println(&#34;StringToInt32:&#34;, int1)
-	fmt.Println(&#34;StringToInt64:&#34;, int2)
+	int1, _ := StringToInt32("-33")
+	int2, _ := StringToInt64("-33")
+	fmt.Println("StringToInt32:", int1)
+	fmt.Println("StringToInt64:", int2)
 
-	uint1, _ := StringToUint32(&#34;33&#34;)
-	uint2, _ := StringToUint64(&#34;33&#34;)
-	fmt.Println(&#34;StringToUint32:&#34;, uint1)
-	fmt.Println(&#34;StringToUint64:&#34;, uint2)
+	uint1, _ := StringToUint32("33")
+	uint2, _ := StringToUint64("33")
+	fmt.Println("StringToUint32:", uint1)
+	fmt.Println("StringToUint64:", uint2)
 }
 
 func Float32ToString(value float32) string {
@@ -41,7 +41,7 @@ func Float32ToString(value float32) string {
 }
 
 func Float64ToString(value float64) string {
-	return strconv.FormatFloat(value, &#39;f&#39;, -1, 64)
+	return strconv.FormatFloat(value, 'f', -1, 64)
 }
 
 func Int32ToString(value int32) string {

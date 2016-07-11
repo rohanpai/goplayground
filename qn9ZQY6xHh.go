@@ -1,18 +1,18 @@
 package main
 
 import (
-	&#34;log&#34;
-	&#34;net/http&#34;
-	&#34;net/http/httptest&#34;
-	&#34;strings&#34;
+	"log"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 
-	&#34;github.com/gorilla/handlers&#34;
-	&#34;github.com/gorilla/websocket&#34;
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/websocket"
 )
 
 func main() {
 	mux := http.NewServeMux()
-	mux.Handle(&#34;/&#34;, handlers.CompressHandler(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+	mux.Handle("/", handlers.CompressHandler(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		upgrader := websocket.Upgrader{}
 		conn, err := upgrader.Upgrade(w, req, nil)
 		if err != nil {
@@ -31,8 +31,8 @@ func main() {
 		WriteBufferSize: 1024,
 	}
 
-	url := strings.Replace(server.URL, &#34;http://&#34;, &#34;ws://&#34;, 1)
-	header := http.Header{&#34;Accept-Encoding&#34;: []string{&#34;gzip&#34;}}
+	url := strings.Replace(server.URL, "http://", "ws://", 1)
+	header := http.Header{"Accept-Encoding": []string{"gzip"}}
 
 	conn, _, err := dialer.Dial(url, header)
 	if err != nil {

@@ -1,14 +1,14 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;labix.org/v2/mgo&#34;
-	&#34;labix.org/v2/mgo/bson&#34;
-	&#34;strconv&#34;
+	"fmt"
+	"labix.org/v2/mgo"
+	"labix.org/v2/mgo/bson"
+	"strconv"
 )
 
 const (
-	defHost   = &#34;127.0.0.1&#34;
+	defHost   = "127.0.0.1"
 	defPort   = 27017
 )
 
@@ -35,7 +35,7 @@ func (s StrategyA) Print() string {
 }
 
 func (s StrategyA) IsValid() bool {
-	return s.Name != &#34;&#34;
+	return s.Name != ""
 }
 
 type StrategyB struct {
@@ -48,7 +48,7 @@ func (s StrategyB) Print() string {
 }
 
 func (s StrategyB) IsValid() bool {
-	return s.Hello != &#34;&#34;
+	return s.Hello != ""
 }
 
 type Printer struct {
@@ -64,7 +64,7 @@ func (s StrategyX) GetBSON() (interface{}, error) {
 }
 
 func (s *StrategyX) SetBSON(raw bson.Raw) error {
-	for _, impl := range []interface{}{&amp;StrategyA{}, &amp;StrategyB{}} {
+	for _, impl := range []interface{}{&StrategyA{}, &StrategyB{}} {
 		err := raw.Unmarshal(impl)
 		if err != nil {
 			return err
@@ -79,33 +79,33 @@ func (s *StrategyX) SetBSON(raw bson.Raw) error {
 	if err != nil {
 		return err
 	}
-	return fmt.Errorf(&#34;no suitable strategy type for %#v&#34;, m)
+	return fmt.Errorf("no suitable strategy type for %#v", m)
 }
 
 func main() {
-	session, err := mgo.Dial(getHost() &#43; &#34;:&#34; &#43; strconv.Itoa(getPort()))
+	session, err := mgo.Dial(getHost() + ":" + strconv.Itoa(getPort()))
 	if err != nil {
 		panic(err)
 	}
 	defer session.Close()
 	session.SetMode(mgo.Monotonic, true)
 
-	c := session.DB(&#34;test&#34;).C(&#34;printer&#34;)
+	c := session.DB("test").C("printer")
 	err = c.DropCollection()
 	if err != nil {
 		panic(err)
 	}
-	str := []StrategyX{{StrategyA{&#34;Ale&#34;, &#34;&#43;55 53 8116 9639&#34;}}, {StrategyB{&#34;Cla&#34;, &#34;&#43;55 53 8402 8510&#34;}}}
-	err = c.Insert(&amp;Printer{str})
+	str := []StrategyX{{StrategyA{"Ale", "+55 53 8116 9639"}}, {StrategyB{"Cla", "+55 53 8402 8510"}}}
+	err = c.Insert(&Printer{str})
 	if err != nil {
 		panic(err)
 	}
 
 	var result Printer
-	err = c.Find(nil).One(&amp;result)
+	err = c.Find(nil).One(&result)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf(&#34;%v&#34;, result)
+	fmt.Printf("%v", result)
 }

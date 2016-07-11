@@ -1,13 +1,13 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;github.com/Kaey/framebuffer&#34;
-	&#34;log&#34;
+	"fmt"
+	"github.com/Kaey/framebuffer"
+	"log"
 )
 
 func main() {
-	fb, err := framebuffer.Init(&#34;/dev/fb0&#34;)
+	fb, err := framebuffer.Init("/dev/fb0")
 	if err != nil {
 		log.Fatalln(err)
 	}

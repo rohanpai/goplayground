@@ -1,16 +1,16 @@
 package main
 
 import (
-	&#34;io/ioutil&#34;
-	&#34;log&#34;
-	&#34;os&#34;
-	&#34;runtime&#34;
-	&#34;testing&#34;
+	"io/ioutil"
+	"log"
+	"os"
+	"runtime"
+	"testing"
 )
 
 import (
-	nsq &#34;github.com/bitly/go-nsq&#34;
-	&#34;github.com/bitly/nsq/nsqd&#34;
+	nsq "github.com/bitly/go-nsq"
+	"github.com/bitly/nsq/nsqd"
 )
 
 type nopLogger struct{}
@@ -23,12 +23,12 @@ func newDaemon() *nsqd.NSQD {
 	opts := nsqd.NewNSQDOptions()
 
 	// Disable http/https
-	opts.HTTPAddress = &#34;&#34;
-	opts.HTTPSAddress = &#34;&#34;
+	opts.HTTPAddress = ""
+	opts.HTTPSAddress = ""
 	// Disable logging
-	opts.Logger = &amp;nopLogger{}
+	opts.Logger = &nopLogger{}
 	// Do not create on disc queue
-	opts.DataPath = &#34;/dev/null&#34;
+	opts.DataPath = "/dev/null"
 
 	nsqd := nsqd.NewNSQD(opts)
 	nsqd.Main()
@@ -39,7 +39,7 @@ type consumer struct{ *nsq.Consumer }
 
 func (c *consumer) Stop() {
 	c.Consumer.Stop()
-	&lt;-c.Consumer.StopChan
+	<-c.Consumer.StopChan
 }
 
 func newConsumer(t testing.TB, tcpAddr, topicName, channelName string, hdlr nsq.HandlerFunc) *consumer {
@@ -54,7 +54,7 @@ func newConsumer(t testing.TB, tcpAddr, topicName, channelName string, hdlr nsq.
 	}
 
 	// Disable logging
-	r.SetLogger(&amp;nopLogger{}, 0)
+	r.SetLogger(&nopLogger{}, 0)
 
 	// Set the handler
 	r.AddHandler(hdlr)
@@ -64,7 +64,7 @@ func newConsumer(t testing.TB, tcpAddr, topicName, channelName string, hdlr nsq.
 		t.Fatal(err)
 	}
 
-	return &amp;consumer{Consumer: r}
+	return &consumer{Consumer: r}
 }
 
 func newProducer(t testing.TB, tcpAddr string) *nsq.Producer {
@@ -79,7 +79,7 @@ func newProducer(t testing.TB, tcpAddr string) *nsq.Producer {
 	}
 
 	// Disable logging
-	p.SetLogger(&amp;nopLogger{}, 0)
+	p.SetLogger(&nopLogger{}, 0)
 
 	return p
 }
@@ -95,31 +95,31 @@ func BenchmarkPubSub(b *testing.B) {
 
 	// Create the consumer and send every message to the chan
 	msgs := make(chan []byte)
-	hdlr := func(msg *nsq.Message) error { msgs &lt;- msg.Body; return nil }
-	consumer := newConsumer(b, &#34;localhost:4150&#34;, &#34;mytopic&#34;, &#34;mychan1&#34;, hdlr)
+	hdlr := func(msg *nsq.Message) error { msgs <- msg.Body; return nil }
+	consumer := newConsumer(b, "localhost:4150", "mytopic", "mychan1", hdlr)
 	defer consumer.Stop()
 
 	// Create producer
-	producer := newProducer(b, &#34;localhost:4150&#34;)
+	producer := newProducer(b, "localhost:4150")
 	defer producer.Stop()
 
 	// Tell Go to use as many cores as available
 	b.SetParallelism(runtime.NumCPU())
 
-	// reset Go&#39;s timer.
+	// reset Go's timer.
 	b.ResetTimer()
 
 	// Run in Parallel
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			// Send &#34;hello world&#34; to NSQ and wait for it to arrive.
-			if err := producer.Publish(&#34;mytopic&#34;, []byte(&#34;hello world&#34;)); err != nil {
+			// Send "hello world" to NSQ and wait for it to arrive.
+			if err := producer.Publish("mytopic", []byte("hello world")); err != nil {
 				b.Fatal(err)
 			}
-			if msg, ok := &lt;-msgs; !ok {
-				b.Fatal(&#34;Message chan closed.&#34;)
-			} else if expect, got := &#34;hello world&#34;, string(msg); expect != got {
-				b.Fatalf(&#34;Unexpected message. Expected: %s, Got: %s&#34;, expect, got)
+			if msg, ok := <-msgs; !ok {
+				b.Fatal("Message chan closed.")
+			} else if expect, got := "hello world", string(msg); expect != got {
+				b.Fatalf("Unexpected message. Expected: %s, Got: %s", expect, got)
 			}
 		}
 	})

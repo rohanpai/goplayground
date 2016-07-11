@@ -1,31 +1,31 @@
 package main
 
 import (
-	&#34;net&#34;
-	&#34;errors&#34;
-	&#34;strings&#34;
-  &#34;io/ioutil&#34;
-	&#34;encoding/pem&#34;
-	&#34;crypto&#34;
-	&#34;crypto/tls&#34;
-	&#34;crypto/x509&#34;
-	&#34;crypto/rsa&#34;
-	&#34;crypto/ecdsa&#34;
-	&#34;flag&#34;
-	&#34;log&#34;
-	&#34;net/http&#34;
-	&#34;fmt&#34;
+	"net"
+	"errors"
+	"strings"
+  "io/ioutil"
+	"encoding/pem"
+	"crypto"
+	"crypto/tls"
+	"crypto/x509"
+	"crypto/rsa"
+	"crypto/ecdsa"
+	"flag"
+	"log"
+	"net/http"
+	"fmt"
 )
 
-var url = flag.String(&#34;url&#34;, &#34;https://127.0.0.1:8443&#34;, &#34;the url to get&#34;)
-var certFile = flag.String(&#34;certFile&#34;, &#34;cert.pem&#34;, &#34;the cert for client auth&#34;)
-var keyFile = flag.String(&#34;keyFile&#34;, &#34;key.pem&#34;, &#34;the key for client auth&#34;)
+var url = flag.String("url", "https://127.0.0.1:8443", "the url to get")
+var certFile = flag.String("certFile", "cert.pem", "the cert for client auth")
+var keyFile = flag.String("keyFile", "key.pem", "the key for client auth")
 
 func handler(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set(&#34;Content-Type&#34;, &#34;text/plain&#34;)
+	w.Header().Set("Content-Type", "text/plain")
 
-	fmt.Fprintln(w, &#34;Your conn state is: &#34;, req.TLS);
-	fmt.Fprintln(w, &#34;Your client cert is: &#34;, req.TLS.PeerCertificates);
+	fmt.Fprintln(w, "Your conn state is: ", req.TLS);
+	fmt.Fprintln(w, "Your client cert is: ", req.TLS.PeerCertificates);
 }
 
 func loadX509KeyPair(certFile, keyFile string) (cert tls.Certificate, err error) {
@@ -37,7 +37,7 @@ func loadX509KeyPair(certFile, keyFile string) (cert tls.Certificate, err error)
   if err != nil {
     return
   }
-  return X509KeyPair(certPEMBlock, keyPEMBlock, []byte(&#34;password&#34;))
+  return X509KeyPair(certPEMBlock, keyPEMBlock, []byte("password"))
 }
 
 func X509KeyPair(certPEMBlock, keyPEMBlock, pw []byte) (cert tls.Certificate, err error) {
@@ -47,20 +47,20 @@ func X509KeyPair(certPEMBlock, keyPEMBlock, pw []byte) (cert tls.Certificate, er
     if certDERBlock == nil {
       break
     }
-    if certDERBlock.Type == &#34;CERTIFICATE&#34; {
+    if certDERBlock.Type == "CERTIFICATE" {
       cert.Certificate = append(cert.Certificate, certDERBlock.Bytes)
     }
   }
 
   if len(cert.Certificate) == 0 {
-    err = errors.New(&#34;crypto/tls: failed to parse certificate PEM data&#34;)
+    err = errors.New("crypto/tls: failed to parse certificate PEM data")
     return
   }
   var keyDERBlock *pem.Block
   for {
     keyDERBlock, keyPEMBlock = pem.Decode(keyPEMBlock)
     if keyDERBlock == nil {
-      err = errors.New(&#34;crypto/tls: failed to parse key PEM data&#34;)
+      err = errors.New("crypto/tls: failed to parse key PEM data")
       return
     }
 		if x509.IsEncryptedPEMBlock(keyDERBlock) {
@@ -72,7 +72,7 @@ func X509KeyPair(certPEMBlock, keyPEMBlock, pw []byte) (cert tls.Certificate, er
       keyDERBlock.Bytes = out
       break
     }
-    if keyDERBlock.Type == &#34;PRIVATE KEY&#34; || strings.HasSuffix(keyDERBlock.Type, &#34; PRIVATE KEY&#34;) {
+    if keyDERBlock.Type == "PRIVATE KEY" || strings.HasSuffix(keyDERBlock.Type, " PRIVATE KEY") {
       break
     }
   }
@@ -81,7 +81,7 @@ func X509KeyPair(certPEMBlock, keyPEMBlock, pw []byte) (cert tls.Certificate, er
   if err != nil {
     return
   }
-  // We don&#39;t need to parse the public key for TLS, but we so do anyway
+  // We don't need to parse the public key for TLS, but we so do anyway
   // to check that it looks sane and matches the private key.
   x509Cert, err := x509.ParseCertificate(cert.Certificate[0])
   if err != nil {
@@ -92,26 +92,26 @@ func X509KeyPair(certPEMBlock, keyPEMBlock, pw []byte) (cert tls.Certificate, er
   case *rsa.PublicKey:
     priv, ok := cert.PrivateKey.(*rsa.PrivateKey)
     if !ok {
-      err = errors.New(&#34;crypto/tls: private key type does not match public key type&#34;)
+      err = errors.New("crypto/tls: private key type does not match public key type")
       return
     }
     if pub.N.Cmp(priv.N) != 0 {
-      err = errors.New(&#34;crypto/tls: private key does not match public key&#34;)
+      err = errors.New("crypto/tls: private key does not match public key")
       return
     }
   case *ecdsa.PublicKey:
     priv, ok := cert.PrivateKey.(*ecdsa.PrivateKey)
     if !ok {
-      err = errors.New(&#34;crypto/tls: private key type does not match public key type&#34;)
+      err = errors.New("crypto/tls: private key type does not match public key type")
       return
 
     }
     if pub.X.Cmp(priv.X) != 0 || pub.Y.Cmp(priv.Y) != 0 {
-      err = errors.New(&#34;crypto/tls: private key does not match public key&#34;)
+      err = errors.New("crypto/tls: private key does not match public key")
       return
     }
   default:
-    err = errors.New(&#34;crypto/tls: unknown public key algorithm&#34;)
+    err = errors.New("crypto/tls: unknown public key algorithm")
     return
   }
 return
@@ -129,14 +129,14 @@ func parsePrivateKey(der []byte) (crypto.PrivateKey, error) {
     case *rsa.PrivateKey, *ecdsa.PrivateKey:
       return key, nil
     default:
-      return nil, errors.New(&#34;crypto/tls: found unknown private key type in PKCS#8 wrapping&#34;)
+      return nil, errors.New("crypto/tls: found unknown private key type in PKCS#8 wrapping")
     }
   }
   if key, err := x509.ParseECPrivateKey(der); err == nil {
     return key, nil
   }
 
-  return nil, errors.New(&#34;crypto/tls: failed to parse private key&#34;)
+  return nil, errors.New("crypto/tls: failed to parse private key")
 }
 
 func main() {
@@ -147,17 +147,17 @@ func main() {
 		log.Fatal(err)
 	}
 
-	tlscfg := &amp;tls.Config{
+	tlscfg := &tls.Config{
 		Certificates: []tls.Certificate{cert},
 	}
-	srv := &amp;http.Server{Addr: &#34;:8443&#34;, Handler: nil}
+	srv := &http.Server{Addr: ":8443", Handler: nil}
 
-	l, err := net.Listen(&#34;tcp&#34;, srv.Addr)
+	l, err := net.Listen("tcp", srv.Addr)
 	if err != nil {
 		log.Fatal(err)
 	}
 	tl := tls.NewListener(l, tlscfg)
 
-	http.HandleFunc(&#34;/&#34;, handler)
+	http.HandleFunc("/", handler)
 	srv.Serve(tl)
 }

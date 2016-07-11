@@ -1,13 +1,13 @@
 package main
 
-import &#34;fmt&#34;
+import "fmt"
 
 type EventType uint8
 
 var nextEventId EventType
 
 func NextEventId() EventType {
-	defer func() { nextEventId&#43;&#43; }()
+	defer func() { nextEventId++ }()
 	return nextEventId
 }
 
@@ -26,10 +26,10 @@ type EventManager struct {
 
 // AddHandler adds an event handler for a particular event type
 func (e *EventManager) AddHandler(eventType EventType, handler EventHandler) {
-	if int(eventType) &gt;= len(e.rCounts) { // Check if we have enough room
+	if int(eventType) >= len(e.rCounts) { // Check if we have enough room
 		// Resize the handler tables accordingly
-		newRCounts := make([]int, eventType&#43;1) // Counts
-		newRChans := make([]chan Event, eventType&#43;1) // Channels
+		newRCounts := make([]int, eventType+1) // Counts
+		newRChans := make([]chan Event, eventType+1) // Channels
 		copy(newRCounts, e.rCounts)
 		copy(newRChans, e.channels)
 		e.rCounts = newRCounts
@@ -39,7 +39,7 @@ func (e *EventManager) AddHandler(eventType EventType, handler EventHandler) {
 		e.rCounts[eventType] = 1
 		e.channels[eventType] = make(chan Event, 1)
 	} else {
-		e.rCounts[eventType]&#43;&#43;
+		e.rCounts[eventType]++
 		e.channels[eventType] = make(chan Event, e.rCounts[eventType])
 	}
 
@@ -49,12 +49,12 @@ func (e *EventManager) AddHandler(eventType EventType, handler EventHandler) {
 // FireEvent fires an event to all receivers receiving
 func (e *EventManager) FireEvent(event Event) {
 	// No handlers for this event type
-	if len(e.rCounts) &lt;= int(event.Type()) {
+	if len(e.rCounts) <= int(event.Type()) {
 		return
 	}
 
-	for i := 0; i &lt; e.rCounts[event.Type()]; i&#43;&#43; {
-		e.channels[event.Type()] &lt;- event
+	for i := 0; i < e.rCounts[event.Type()]; i++ {
+		e.channels[event.Type()] <- event
 	}
 }
 
@@ -74,10 +74,10 @@ type TestEventHandler struct {
 
 func (t *TestEventHandler) EventLoop(ch chan Event) {
 	for event := range ch {
-		if test, ok := event.(*TestEvent); ok &amp;&amp; test.myNum == 42 {
-		event.(*TestEvent).ch &lt;- true
+		if test, ok := event.(*TestEvent); ok && test.myNum == 42 {
+		event.(*TestEvent).ch <- true
 		} else {
-			event.(*TestEvent).ch &lt;- false
+			event.(*TestEvent).ch <- false
 		}
 	}
 }
@@ -86,13 +86,13 @@ func (t *TestEventHandler) EventLoop(ch chan Event) {
 
 func main() {
 	ch := make(chan bool)
-	eventManager := &amp;EventManager{}
-	testHandler := &amp;TestEventHandler{}
+	eventManager := &EventManager{}
+	testHandler := &TestEventHandler{}
 	eventManager.AddHandler(0, testHandler)
-	go eventManager.FireEvent(&amp;TestEvent{42, ch})
-	if !&lt;-ch {
-		fmt.Println(&#34;Fail.&#34;)
+	go eventManager.FireEvent(&TestEvent{42, ch})
+	if !<-ch {
+		fmt.Println("Fail.")
 	} else {
-		fmt.Println(&#34;Success!&#34;)
+		fmt.Println("Success!")
 	}
 }

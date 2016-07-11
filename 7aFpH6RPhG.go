@@ -1,12 +1,12 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;go/ast&#34;
-	&#34;go/parser&#34;
-	&#34;go/token&#34;
+	"fmt"
+	"go/ast"
+	"go/parser"
+	"go/token"
 
-	&#34;github.com/elazarl/gosloppy/scopes&#34;
+	"github.com/elazarl/gosloppy/scopes"
 )
 
 type WarnShadow struct {
@@ -24,7 +24,7 @@ func (w WarnShadow) VisitStmt(scope *ast.Scope, stmt ast.Stmt) scopes.Visitor {
 				if spec, ok := spec.(*ast.ValueSpec); ok {
 					for _, name := range spec.Names {
 						if scopes.Lookup(scope.Outer, name.Name) != nil {
-							fmt.Print(w.Position(name.Pos()).Line, &#34;: Warning, shadowed &#34;, name, &#34;\n&#34;)
+							fmt.Print(w.Position(name.Pos()).Line, ": Warning, shadowed ", name, "\n")
 						}
 					}
 				}
@@ -55,9 +55,9 @@ func main() {
 
 func parse(code string) (*ast.File, *token.FileSet) {
 	fset := token.NewFileSet()
-	file, err := parser.ParseFile(fset, &#34;&#34;, code, parser.DeclarationErrors)
+	file, err := parser.ParseFile(fset, "", code, parser.DeclarationErrors)
 	if err != nil {
-		panic(&#34;Cannot parse code:&#34; &#43; err.Error())
+		panic("Cannot parse code:" + err.Error())
 	}
 	return file, fset
 }

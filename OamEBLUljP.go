@@ -1,19 +1,19 @@
 package main
 
 import (
-        &#34;fmt&#34;
-        &#34;regexp&#34;
+        "fmt"
+        "regexp"
 )
 
 func main() {
-        src := []byte(&#34;eo eo eo eo&#34;)
-        search := regexp.MustCompile(&#34;e&#34;)
-        repl := []byte(&#34;AEI&#34;)
+        src := []byte("eo eo eo eo")
+        search := regexp.MustCompile("e")
+        repl := []byte("AEI")
 
         i := 0
 	src = search.ReplaceAllFunc(src, func(s []byte) []byte {
-		if i &lt; 2 {
-			i &#43;= 1
+		if i < 2 {
+			i += 1
 			return repl
 		}
 		return s

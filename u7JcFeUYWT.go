@@ -1,11 +1,11 @@
 package main
 
 import (
-	&#34;encoding/json&#34;
-	&#34;fmt&#34;
-	&#34;io&#34;
-	&#34;net/http&#34;
-	&#34;os&#34;
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"os"
 )
 
 //Coordinates is a set of coordinate
@@ -16,37 +16,37 @@ type Coordinate [2]float64
 
 // Point rapresent a geojson point geometry object
 type Point struct {
-	Type       string `json:&#34;type&#34;`
-	Coordinate `json:&#34;coordinates&#34;`
+	Type       string `json:"type"`
+	Coordinate `json:"coordinates"`
 }
 
 func (p *Point) parseJSON(r io.Reader) (err error) {
 	decoder := json.NewDecoder(r)
-	err = decoder.Decode(&amp;p)
+	err = decoder.Decode(&p)
 	return err
 }
 
 // Polygon rapresent a geojson polygon geometry object
 type Polygon struct {
-	Type        string `json:&#34;type&#34;`
-	Coordinates `json:&#34;coordinates&#34;`
+	Type        string `json:"type"`
+	Coordinates `json:"coordinates"`
 }
 
 func (p *Polygon) parseJSON(r io.Reader) (err error) {
 	decoder := json.NewDecoder(r)
-	err = decoder.Decode(&amp;p)
+	err = decoder.Decode(&p)
 	return err
 }
 
 // MultiPolygon rapresent a geojson mulitpolygon  geometry object
 type MultiPolygon struct {
-	Type        string        `json:&#34;type&#34;`
-	Coordinates []Coordinates `json:&#34;coordinates&#34;`
+	Type        string        `json:"type"`
+	Coordinates []Coordinates `json:"coordinates"`
 }
 
 func (p *MultiPolygon) parseJSON(r io.Reader) (err error) {
 	decoder := json.NewDecoder(r)
-	err = decoder.Decode(&amp;p)
+	err = decoder.Decode(&p)
 	return err
 }
 
@@ -55,7 +55,7 @@ type geojson interface {
 }
 
 // Endpoint is  the name of the geojson handler endpoint
-const Endpoint = &#34;/tos2/geojson/&#34;
+const Endpoint = "/tos2/geojson/"
 
 //Handler handles a request for a geojsonPoint
 func Handler(w http.ResponseWriter, r *http.Request) {
@@ -66,7 +66,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 	// response
 	encoder := json.NewEncoder(w)
-	w.Header().Set(&#34;Content-Type&#34;, &#34;application/json&#34;)
+	w.Header().Set("Content-Type", "application/json")
 	err = encoder.Encode(resp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -78,20 +78,20 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 func matcher(r *http.Request) (resp geojson, err error) {
 	objectType := r.URL.Path[len(Endpoint):]
 	switch objectType {
-	case &#34;polygon&#34;:
+	case "polygon":
 		p := Polygon{}
 		err = p.parseJSON(r.Body)
-		return &amp;p, err
-	case &#34;point&#34;:
+		return &p, err
+	case "point":
 		p := Point{}
 		err = p.parseJSON(r.Body)
-		return &amp;p, err
-	case &#34;multipolygon&#34;:
+		return &p, err
+	case "multipolygon":
 		p := MultiPolygon{}
 		err = p.parseJSON(r.Body)
-		return &amp;p, err
+		return &p, err
 	default:
-		err = fmt.Errorf(&#34;Bad geoJSON object type&#34;)
+		err = fmt.Errorf("Bad geoJSON object type")
 	}
 	return
 }
@@ -101,7 +101,7 @@ func main() {
 	geoJSONHandler := http.HandlerFunc(Handler)
 	http.Handle(Endpoint, geoJSONHandler)
 	// server
-	port := os.Getenv(&#34;PORT&#34;)
-	addr := fmt.Sprintf(&#34;:%v&#34;, port)
+	port := os.Getenv("PORT")
+	addr := fmt.Sprintf(":%v", port)
 	http.ListenAndServe(addr, nil)
 }

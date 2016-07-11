@@ -1,12 +1,12 @@
 //
-// demonstration that the cols and rows reported on windows console app will overflow to negative if they&#39;re too big and don&#39;t cast them
+// demonstration that the cols and rows reported on windows console app will overflow to negative if they're too big and don't cast them
 //
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;syscall&#34;
-	&#34;unsafe&#34;
+	"fmt"
+	"syscall"
+	"unsafe"
 )
 
 type (
@@ -34,8 +34,8 @@ type (
 	}
 )
 
-var kernel32DLL = syscall.NewLazyDLL(&#34;kernel32.dll&#34;)
-var getConsoleScreenBufferInfoProc = kernel32DLL.NewProc(&#34;GetConsoleScreenBufferInfo&#34;)
+var kernel32DLL = syscall.NewLazyDLL("kernel32.dll")
+var getConsoleScreenBufferInfoProc = kernel32DLL.NewProc("GetConsoleScreenBufferInfo")
 
 func main() {
 	stdoutHandle := getStdHandle(syscall.STD_OUTPUT_HANDLE)
@@ -43,12 +43,12 @@ func main() {
 	var info, err = GetConsoleScreenBufferInfo(stdoutHandle)
 
 	if err != nil {
-		panic(&#34;could not get console screen buffer info&#34;)
+		panic("could not get console screen buffer info")
 	}
 
-	fmt.Printf(&#34;max x: %i max y: %i\n&#34;, info.MaximumWindowSize.X, info.MaximumWindowSize.Y)
-	fmt.Printf(&#34;max x * max y = %i\n&#34;, info.MaximumWindowSize.X*info.MaximumWindowSize.Y)
-	fmt.Printf(&#34;max x * max y = %i\n&#34;, int(info.MaximumWindowSize.X)*int(info.MaximumWindowSize.Y))
+	fmt.Printf("max x: %i max y: %i\n", info.MaximumWindowSize.X, info.MaximumWindowSize.Y)
+	fmt.Printf("max x * max y = %i\n", info.MaximumWindowSize.X*info.MaximumWindowSize.Y)
+	fmt.Printf("max x * max y = %i\n", int(info.MaximumWindowSize.X)*int(info.MaximumWindowSize.Y))
 
 }
 
@@ -66,7 +66,7 @@ func getError(r1, r2 uintptr, lastErr error) error {
 func getStdHandle(stdhandle int) uintptr {
 	handle, err := syscall.GetStdHandle(stdhandle)
 	if err != nil {
-		panic(fmt.Errorf(&#34;could not get standard io handle %d&#34;, stdhandle))
+		panic(fmt.Errorf("could not get standard io handle %d", stdhandle))
 	}
 	return uintptr(handle)
 }
@@ -75,8 +75,8 @@ func getStdHandle(stdhandle int) uintptr {
 // http://msdn.microsoft.com/en-us/library/windows/desktop/ms683171(v=vs.85).aspx
 func GetConsoleScreenBufferInfo(handle uintptr) (*CONSOLE_SCREEN_BUFFER_INFO, error) {
 	var info CONSOLE_SCREEN_BUFFER_INFO
-	if err := getError(getConsoleScreenBufferInfoProc.Call(handle, uintptr(unsafe.Pointer(&amp;info)), 0)); err != nil {
+	if err := getError(getConsoleScreenBufferInfoProc.Call(handle, uintptr(unsafe.Pointer(&info)), 0)); err != nil {
 		return nil, err
 	}
-	return &amp;info, nil
+	return &info, nil
 }

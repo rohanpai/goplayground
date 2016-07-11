@@ -15,7 +15,7 @@ func (a *A) getVal2() int {
 func main() {
 	a := map[int]A{ 1: A{10} }
 	
-	//println(&amp;a[1]) // wrong, cannot take the address of a[1]
+	//println(&a[1]) // wrong, cannot take the address of a[1]
 	
 	println(a[1].Value) // ok
 	//a[1].Value = 20 // wrong, cannot assign to a[1].Value

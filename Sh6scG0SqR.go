@@ -1,16 +1,16 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;net&#34;
+	"fmt"
+	"net"
 )
 
 func whois(dom, server string) string {
-	conn, err := net.Dial(&#34;tcp&#34;, server&#43;&#34;:43&#34;)
+	conn, err := net.Dial("tcp", server+":43")
 	if err != nil {
-		fmt.Println(&#34;Error&#34;)
+		fmt.Println("Error")
 	}
-	conn.Write([]byte(dom &#43; &#34;\r\n&#34;))
+	conn.Write([]byte(dom + "\r\n"))
 	buf := make([]byte, 1024)
 	res := []byte{}
 	for {
@@ -26,5 +26,5 @@ func whois(dom, server string) string {
 }
 
 func main() {
-	fmt.Println(whois(&#34;hello.com&#34;, &#34;com.whois-servers.net&#34;))
+	fmt.Println(whois("hello.com", "com.whois-servers.net"))
 }

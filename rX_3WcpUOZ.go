@@ -1,9 +1,9 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;math/rand&#34;
-	&#34;time&#34;
+	"fmt"
+	"math/rand"
+	"time"
 )
 
 const (
@@ -15,11 +15,11 @@ const (
 type screen [height][width]byte
 
 func (s *screen) print() {
-	fmt.Print(&#34;\x0c&#34;)
+	fmt.Print("\x0c")
 	for _, row := range *s {
 		for i, b := range row {
 			if b == 0 {
-				row[i] = &#39; &#39;
+				row[i] = ' '
 			}
 		}
 		fmt.Println(string(row[:]))
@@ -36,7 +36,7 @@ type ball struct {
 }
 
 func newBall() *ball {
-	return &amp;ball{
+	return &ball{
 		x:  rand.Intn(width),
 		y:  rand.Intn(height),
 		xd: (rand.Intn(2) * 2) - 1,
@@ -45,16 +45,16 @@ func newBall() *ball {
 }
 
 func (b *ball) move() {
-	moveBounce(&amp;b.x, &amp;b.xd, width)
-	moveBounce(&amp;b.y, &amp;b.yd, height)
+	moveBounce(&b.x, &b.xd, width)
+	moveBounce(&b.y, &b.yd, height)
 }
 
 func moveBounce(v, d *int, max int) {
-	*v &#43;= *d
-	if *v &lt; 0 {
+	*v += *d
+	if *v < 0 {
 		*v = -*v
 		*d = -*d
-	} else if *v &gt;= max {
+	} else if *v >= max {
 		*v = max - 2 - (*v - max)
 		*d = -*d
 	}
@@ -62,14 +62,14 @@ func moveBounce(v, d *int, max int) {
 
 func main() {
 	balls := []*ball{}
-	for i := 0; i &lt; numBalls; i&#43;&#43; {
+	for i := 0; i < numBalls; i++ {
 		balls = append(balls, newBall())
 	}
-	for i := 200; i &gt;= 0; i-- {
+	for i := 200; i >= 0; i-- {
 		var s screen
 		for _, b := range balls {
 			b.move()
-			s.paint(b.x, b.y, &#39;*&#39;)
+			s.paint(b.x, b.y, '*')
 		}
 		s.print()
 		time.Sleep(time.Second / 20)

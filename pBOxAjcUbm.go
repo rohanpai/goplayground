@@ -22,15 +22,15 @@ public class TestSchema {
 
     Schema schema;
 
-   // schema = new Schema.Parser().parse(new File(&#34;/home/vikas/phoenix/logger-schema.avsc&#34;));
+   // schema = new Schema.Parser().parse(new File("/home/vikas/phoenix/logger-schema.avsc"));
 
-   // schema = new Schema.Parser().parse(new File(&#34;/home/kartiksura/Downloads/logger-schema.avsc&#34;));
-    schema = new Schema.Parser().parse(new File(&#34;/home/kartiksura/Downloads/avrophoenix.avsc&#34;));
+   // schema = new Schema.Parser().parse(new File("/home/kartiksura/Downloads/logger-schema.avsc"));
+    schema = new Schema.Parser().parse(new File("/home/kartiksura/Downloads/avrophoenix.avsc"));
 
 
-    GenericDatumReader&lt;GenericRecord&gt; reader = new GenericDatumReader&lt;GenericRecord&gt;(schema);
+    GenericDatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(schema);
 
-    System.out.println(&#34;[getBinaryAvroRecords] : reader&#34;);
+    System.out.println("[getBinaryAvroRecords] : reader");
 
   }
 

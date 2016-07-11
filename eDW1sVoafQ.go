@@ -1,18 +1,18 @@
 package main
 
 import (
-	//&#34;bytes&#34;
-	&#34;code.google.com/p/go.crypto/ssh&#34;
-	//&#34;fmt&#34;
-	&#34;io&#34;
-	&#34;log&#34;
-	&#34;os&#34;
+	//"bytes"
+	"code.google.com/p/go.crypto/ssh"
+	//"fmt"
+	"io"
+	"log"
+	"os"
 )
 
 var (
-	serverAddress = &#34;172.17.42.1:49155&#34;
-	username      = &#34;root&#34;
-	password      = clientPassword(&#34;orobix2013&#34;)
+	serverAddress = "172.17.42.1:49155"
+	username      = "root"
+	password      = clientPassword("orobix2013")
 )
 
 type clientPassword string
@@ -83,12 +83,12 @@ const (
 
 func main() {
 	// An SSH client is represented with a slete). Currently only
-	// the &#34;password&#34; authentication method is supported.
+	// the "password" authentication method is supported.
 	//
 	// To authenticate with the remote server you must pass at least one
 	// implementation of ClientAuth via the Auth field in ClientConfig.
 
-	config := &amp;ssh.ClientConfig{
+	config := &ssh.ClientConfig{
 		User: username,
 		Auth: []ssh.ClientAuth{
 			// ClientAuthPassword wraps a ClientPassword implementation
@@ -96,9 +96,9 @@ func main() {
 			ssh.ClientAuthPassword(password),
 		},
 	}
-	client, err := ssh.Dial(&#34;tcp&#34;, serverAddress, config)
+	client, err := ssh.Dial("tcp", serverAddress, config)
 	if err != nil {
-		panic(&#34;Failed to dial: &#34; &#43; err.Error())
+		panic("Failed to dial: " + err.Error())
 	}
 
 	// Each ClientConn can support multiple interactive sessions,
@@ -107,7 +107,7 @@ func main() {
 	// Create a session
 	session, err := client.NewSession()
 	if err != nil {
-		log.Fatalf(&#34;unable to create session: %s&#34;, err)
+		log.Fatalf("unable to create session: %s", err)
 	}
 	defer session.Close()
 	// Set up terminal modes
@@ -117,21 +117,21 @@ func main() {
 		TTY_OP_OSPEED: 14400, // output speed = 14.4kbaud
 	}
 	// Request pseudo terminal
-	if err := session.RequestPty(&#34;xterm&#34;, 80, 40, modes); err != nil {
-		log.Fatalf(&#34;request for pseudo terminal failed: %s&#34;, err)
+	if err := session.RequestPty("xterm", 80, 40, modes); err != nil {
+		log.Fatalf("request for pseudo terminal failed: %s", err)
 	}
 
 	//var b bytes.Buffer
-	//session.Stdout = &amp;bi
+	//session.Stdout = &bi
 
 	stdin, err := session.StdinPipe()
 	if err != nil {
-		log.Fatalf(&#34;Unable to setup stdin for session: %v\n&#34;, err)
+		log.Fatalf("Unable to setup stdin for session: %v\n", err)
 	}
 
 	stdout, err := session.StdoutPipe()
 	if err != nil {
-		log.Fatalf(&#34;Unable to setup stdout for session: %v\n&#34;, err)
+		log.Fatalf("Unable to setup stdout for session: %v\n", err)
 	}
 
 	go io.Copy(os.Stdout, stdout)
@@ -140,15 +140,15 @@ func main() {
 
 	// Start remote shell
 	if err := session.Shell(); err != nil {
-		log.Fatalf(&#34;failed to start shell: %s&#34;, err)
+		log.Fatalf("failed to start shell: %s", err)
 	}
 	/*
-	       if err := session.Run(&#34;/bin/bash -x -e -c \&#34;sshfs piotr@172.17.42.1:/home/piotr/helloworld/ /mnt/ -o idmap=user;touch /mnt/aaa;/usr/sbin/sshd\&#34;&#34;); err != nil {
-	         panic(&#34;Failed to run: &#34; &#43; err.Error())
+	       if err := session.Run("/bin/bash -x -e -c \"sshfs piotr@172.17.42.1:/home/piotr/helloworld/ /mnt/ -o idmap=user;touch /mnt/aaa;/usr/sbin/sshd\""); err != nil {
+	         panic("Failed to run: " + err.Error())
 	       }
 
-	   if err = session.Run(&#34;sshfs piotr@172.17.42.1:/home/piotr/helloworld/ /mnt -o idmap=user; touch /mnt/ofoo&#34;); err != nil {
-	     log.Fatalf(&#34;Failed to run: %v\n&#34;, err)
+	   if err = session.Run("sshfs piotr@172.17.42.1:/home/piotr/helloworld/ /mnt -o idmap=user; touch /mnt/ofoo"); err != nil {
+	     log.Fatalf("Failed to run: %v\n", err)
 	   }
 	*/
 }

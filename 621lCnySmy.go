@@ -1,9 +1,9 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;math/rand&#34;
-	&#34;time&#34;
+	"fmt"
+	"math/rand"
+	"time"
 )
 
 type walkFn func(*int) walkFn
@@ -13,17 +13,17 @@ func pickRandom(fns ...walkFn) walkFn {
 }
 
 func walkEqual(i *int) walkFn {
-	*i &#43;= rand.Intn(7) - 3
+	*i += rand.Intn(7) - 3
 	return pickRandom(walkForward, walkBackward)
 }
 
 func walkForward(i *int) walkFn {
-	*i &#43;= rand.Intn(6)
+	*i += rand.Intn(6)
 	return pickRandom(walkEqual, walkBackward)
 }
 
 func walkBackward(i *int) walkFn {
-	*i &#43;= -rand.Intn(6)
+	*i += -rand.Intn(6)
 	return pickRandom(walkEqual, walkForward)
 }
 
@@ -33,8 +33,8 @@ func main() {
 	rand.Seed(time.Now().Unix())
 
 	fn, progress := walkEqual, 0
-	for i := 0; i &lt; 20; i&#43;&#43; {
-		fn = fn(&amp;progress)
+	for i := 0; i < 20; i++ {
+		fn = fn(&progress)
 		fmt.Println(progress)
 	}
 }

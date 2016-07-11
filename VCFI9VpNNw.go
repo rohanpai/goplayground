@@ -2,10 +2,10 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;math/rand&#34;
-	&#34;sync&#34;
-	&#34;time&#34;
+	"fmt"
+	"math/rand"
+	"sync"
+	"time"
 )
 
 // numbers maintains a set of random numbers.
@@ -29,7 +29,7 @@ func main() {
 	wg.Add(grs)
 
 	// Create three goroutines to generate random numbers.
-	for i := 0; i &lt; grs; i&#43;&#43; {
+	for i := 0; i < grs; i++ {
 		go func() {
 			random(10)
 			wg.Done()
@@ -48,7 +48,7 @@ func main() {
 // random generates random numbers and stores them into a slice.
 func random(amount int) {
 	// Generate as many random numbers as specified.
-	for i := 0; i &lt; amount; i&#43;&#43; {
+	for i := 0; i < amount; i++ {
 		n := rand.Intn(100)
 
 		// Protect this append to keep access safe.

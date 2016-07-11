@@ -5,8 +5,8 @@
 package main
 
 import (
-        &#34;fmt&#34;
-        &#34;math&#34;
+        "fmt"
+        "math"
 )
 
 
@@ -27,29 +27,29 @@ func main() {
         offset := 0.5 * (math.Sqrt(5) - 1.0)                    // swap out random numbers for a quasi-random sequence,
         prob    := 0.5                                          //  which converges faster
 
-        for count &lt; samples {
+        for count < samples {
                 
                 slot    := int(count) % len(avg);               // cycle through the various tests
                 acount  := float64(int(count) / len(avg))
                 
-                prob &#43;= offset					// generate a new quasi-random
+                prob += offset					// generate a new quasi-random
                 prob  = prob - float64(int(prob))
                 
-                sample := (math.Log(prob) * (picked[slot])) &#43; (math.Log(1-prob) * ((trials[slot]) - (picked[slot])))
-                avg[slot] = (avg[slot]*acount &#43; math.Exp(sample-base[slot])) / (acount &#43; 1)
-                count&#43;&#43;
+                sample := (math.Log(prob) * (picked[slot])) + (math.Log(1-prob) * ((trials[slot]) - (picked[slot])))
+                avg[slot] = (avg[slot]*acount + math.Exp(sample-base[slot])) / (acount + 1)
+                count++
                 }
         
-        fmt.Printf(&#34;Samples: %d\n&#34;, int(count))
-        fmt.Printf(&#34;Success/Trials\tBayes Factor\t1 / Bayes Factor\n&#34;)
+        fmt.Printf("Samples: %d\n", int(count))
+        fmt.Printf("Success/Trials\tBayes Factor\t1 / Bayes Factor\n")
 
         over := float64(1.0)                                    // the culmulative Bayes Factor
-        for i := 0; i &lt; len(avg); i&#43;&#43; {
+        for i := 0; i < len(avg); i++ {
                 
-                fmt.Printf(&#34;%4d/%4d\t%f\t%f\n&#34;, int(picked[i]), int(trials[i]), (1 / avg[i]), avg[i])
+                fmt.Printf("%4d/%4d\t%f\t%f\n", int(picked[i]), int(trials[i]), (1 / avg[i]), avg[i])
                 over *= avg[i]
                 }
         
-        fmt.Printf(&#34;overall\t%f\t%f\n&#34;, (1/over), over)		// flip the order around
+        fmt.Printf("overall\t%f\t%f\n", (1/over), over)		// flip the order around
 
         }

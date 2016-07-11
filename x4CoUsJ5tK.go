@@ -1,9 +1,9 @@
 package main
 
-// sort a map&#39;s keys in descending order of its values.
+// sort a map's keys in descending order of its values.
 
-import &#34;sort&#34;
-import &#34;fmt&#34;
+import "sort"
+import "fmt"
 
 type sortedMap struct {
 	m map[string]int
@@ -15,7 +15,7 @@ func (sm *sortedMap) Len() int {
 }
 
 func (sm *sortedMap) Less(i, j int) bool {
-	return sm.m[sm.s[i]] &gt; sm.m[sm.s[j]]
+	return sm.m[sm.s[i]] > sm.m[sm.s[j]]
 }
 
 func (sm *sortedMap) Swap(i, j int) {
@@ -29,18 +29,18 @@ func sortedKeys(m map[string]int) []string {
 	i := 0
 	for key, _ := range m {
 		sm.s[i] = key
-		i&#43;&#43;
+		i++
 	}
 	sort.Sort(sm)
 	return sm.s
 }
 
 func main() {
-	s := []string{&#34;Python&#34;, &#34;Python&#34;, &#34;Python&#34;, &#34;igor&#34;, &#34;igor&#34;, &#34;igor&#34;, &#34;igor&#34;, &#34;go&#34;, &#34;go&#34;, &#34;Golang&#34;, &#34;Golang&#34;, &#34;Golang&#34;, &#34;Golang&#34;, &#34;Py&#34;, &#34;Py&#34;}
+	s := []string{"Python", "Python", "Python", "igor", "igor", "igor", "igor", "go", "go", "Golang", "Golang", "Golang", "Golang", "Py", "Py"}
 	count := make(map[string]int)
 
 	for _, v := range s {
-		count[v]&#43;&#43;
+		count[v]++
 	}
 	
 	for _, res := range sortedKeys(count) {

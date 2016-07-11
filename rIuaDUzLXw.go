@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Landon Fuller &lt;landonf@mac68k.info&gt;
+ * Copyright (c) 2013 Landon Fuller <landonf@mac68k.info>
  * All rights reserved.
  */
 
@@ -7,14 +7,14 @@
 package pcap
 
 /*
-#include &lt;pcap/pcap.h&gt;
+#include <pcap/pcap.h>
 
-#include &lt;sys/select.h&gt;
+#include <sys/select.h>
 
-#include &lt;stdlib.h&gt;
-#include &lt;unistd.h&gt;
-#include &lt;string.h&gt;
-#include &lt;stdint.h&gt;
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdint.h>
 
 // Indirection required to use Go callbacks
 extern void mac68k_pcap_dispatchCallback (unsigned char *user, struct pcap_pkthdr *h, unsigned char *bytes);
@@ -22,7 +22,7 @@ static void pcap_dispatch_cb_handler (u_char *user, const struct pcap_pkthdr *h,
     mac68k_pcap_dispatchCallback((unsigned char *) user, (struct pcap_pkthdr *) h, (unsigned char *) bytes);
 }
 
-// cgo gets upset when we use &#39;select&#39;
+// cgo gets upset when we use 'select'
 static int my_select (int nfds, fd_set *readfds, fd_set *writefds, fd_set *errorfds, struct timeval *timeout) {
     return select(nfds, readfds, writefds, errorfds, timeout);
 }
@@ -38,11 +38,11 @@ static int MY_FD_ISSET (int fd, fd_set *fdset) {
     return FD_ISSET(fd, fdset);
 }
 */
-import &#34;C&#34;
+import "C"
 import (
-	&#34;errors&#34;
-	&#34;fmt&#34;
-	&#34;unsafe&#34;
+	"errors"
+	"fmt"
+	"unsafe"
 )
 
 // Server that manages polling the backing file descriptor
@@ -65,7 +65,7 @@ type pollServer struct {
 }
 
 func max(x C.int, y C.int) C.int {
-	if x &gt; y {
+	if x > y {
 		return x
 	}
 
@@ -83,22 +83,22 @@ func (server *pollServer) selector() {
 	maxfd = 0
 	maxfd = max(server.pcapfd, maxfd)
 	maxfd = max(server.waitfd, maxfd)
-	maxfd &#43;= 1
+	maxfd += 1
 
 	/* Configure fd sets */
 	var master_readset C.fd_set
-	C.MY_FD_ZERO(&amp;master_readset)
+	C.MY_FD_ZERO(&master_readset)
 
-	C.MY_FD_SET(server.pcapfd, &amp;master_readset)
-	C.MY_FD_SET(server.waitfd, &amp;master_readset)
+	C.MY_FD_SET(server.pcapfd, &master_readset)
+	C.MY_FD_SET(server.waitfd, &master_readset)
 
 	for {
 		readset := master_readset
 
-		ret, err := C.my_select(maxfd, &amp;readset, nil, nil, nil)
+		ret, err := C.my_select(maxfd, &readset, nil, nil, nil)
 		if ret == -1 {
-			// Shouldn&#39;t happen!
-			fmt.Println(&#34;Unexpected select error&#34;, err)
+			// Shouldn't happen!
+			fmt.Println("Unexpected select error", err)
 		}
 
 		/* The select timed out */
@@ -107,15 +107,15 @@ func (server *pollServer) selector() {
 		}
 
 		/* Check for completion */
-		if C.MY_FD_ISSET(server.waitfd, &amp;readset) != 0 {
-			fmt.Println(&#34;Cleaning up&#34;)
+		if C.MY_FD_ISSET(server.waitfd, &readset) != 0 {
+			fmt.Println("Cleaning up")
 			C.close(server.waitfd)
 			C.close(server.signalfd)
 			break
 		}
 
 		/* Check for pcap readability */
-		if C.MY_FD_ISSET(server.waitfd, &amp;readset) != 0 {
+		if C.MY_FD_ISSET(server.waitfd, &readset) != 0 {
 			/* Dispatch a read */
 			C.pcap_dispatch(server.source.cptr, -1, unsafe.Pointer(C.pcap_dispatch_cb_handler), nil)
 		}
@@ -138,8 +138,8 @@ func newPollServer(source *captureSource) (*pollServer, error) {
 
 	/* Configure the fd-based signaling mechanism */
 	var fds [2]C.int
-	if ret, err := C.pipe(&amp;fds[0]); ret != 0 {
-		return nil, fmt.Errorf(&#34;Failed to create signal pipe: %v&#34;, err)
+	if ret, err := C.pipe(&fds[0]); ret != 0 {
+		return nil, fmt.Errorf("Failed to create signal pipe: %v", err)
 	}
 
 	server.waitfd = fds[0]

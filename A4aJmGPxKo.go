@@ -1,8 +1,8 @@
 package main
 
 import (
-	&#34;golang.org/x/net/context&#34;
-	&#34;time&#34;
+	"golang.org/x/net/context"
+	"time"
 )
 
 type Request struct {
@@ -10,20 +10,20 @@ type Request struct {
 }
 
 func Increment(c context.Context) context.Context {
-	x := c.Value(&#34;x&#34;).(int)
-	return context.WithValue(c, &#34;x&#34;, x&#43;1)
+	x := c.Value("x").(int)
+	return context.WithValue(c, "x", x+1)
 }
 
 func outer(r *Request, next func(r *Request)) {
-	r.context = context.WithValue(r.context, &#34;x&#34;, 0)
+	r.context = context.WithValue(r.context, "x", 0)
 	next(r)
 
-	// Here&#39;s a random time-consuming task.
+	// Here's a random time-consuming task.
 	time.Sleep(100 * time.Millisecond)
 
 	r.context = Increment(r.context)
-	if r.context.Value(&#34;x&#34;).(int) != 2 {
-		panic(&#34;oh shiii....&#34;)
+	if r.context.Value("x").(int) != 2 {
+		panic("oh shiii....")
 	}
 }
 
@@ -38,6 +38,6 @@ func inner(r *Request) {
 }
 
 func main() {
-	r := &amp;Request{context.TODO()}
+	r := &Request{context.TODO()}
 	outer(r, inner) // Imitate middleware chain
 }

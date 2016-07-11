@@ -2,26 +2,26 @@
 package main
 
 import (
-	&#34;flag&#34;
-	&#34;fmt&#34;
-	//ftp &#34;github.com/jlaffaye/goftp&#34;
-	//ftp &#34;github.com/jawr/ftp.go&#34;
-	//&#34;bitbucket.org/zombiezen/ftp&#34;
-	ftp &#34;github.com/jum/tinyftp&#34;
-	&#34;log&#34;
-	&#34;net&#34;
-	&#34;os&#34;
-	&#34;strings&#34;
+	"flag"
+	"fmt"
+	//ftp "github.com/jlaffaye/goftp"
+	//ftp "github.com/jawr/ftp.go"
+	//"bitbucket.org/zombiezen/ftp"
+	ftp "github.com/jum/tinyftp"
+	"log"
+	"net"
+	"os"
+	"strings"
 )
 
-var verbose = flag.Bool(&#34;v&#34;, false, &#34;verbose&#34;)
+var verbose = flag.Bool("v", false, "verbose")
 
 func main() {
 	flag.Usage = func() {
-		fmt.Println(&#34;ftputl &lt;host[:port]&gt; &lt;user&gt; &lt;pass&gt; &lt;dir&gt; &lt;file&gt; [dst]&#34;)
+		fmt.Println("ftputl <host[:port]> <user> <pass> <dir> <file> [dst]")
 	}
 	flag.Parse()
-	if flag.NArg() != 6 &amp;&amp; flag.NArg() != 5 {
+	if flag.NArg() != 6 && flag.NArg() != 5 {
 		flag.Usage()
 		flag.PrintDefaults()
 		os.Exit(1)
@@ -29,8 +29,8 @@ func main() {
 	host, user, pass, dir, file := flag.Arg(0), flag.Arg(1),
 		flag.Arg(2), flag.Arg(3), flag.Arg(4)
 
-	if !strings.Contains(host, &#34;:&#34;) {
-		host &#43;= &#34;:21&#34;
+	if !strings.Contains(host, ":") {
+		host += ":21"
 	}
 	dst := file
 	if flag.NArg() == 6 {
@@ -38,16 +38,16 @@ func main() {
 	}
 
 	if *verbose {
-		log.Println(&#34;ftp connect&#34;, host)
+		log.Println("ftp connect", host)
 	}
-	c, code, msg, err := ftp.Dial(&#34;tcp&#34;, host)
+	c, code, msg, err := ftp.Dial("tcp", host)
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println(code, msg)
 
 	if *verbose {
-		log.Println(&#34;ftp login&#34;, host)
+		log.Println("ftp login", host)
 	}
 	code, msg, err = c.Login(user, pass)
 	if err != nil {
@@ -56,7 +56,7 @@ func main() {
 	fmt.Println(code, msg)
 
 	if *verbose {
-		log.Println(&#34;ftp cd&#34;, dir)
+		log.Println("ftp cd", dir)
 	}
 	code, msg, err = c.Cwd(dir)
 	if err != nil {
@@ -70,23 +70,23 @@ func main() {
 	}
 	fmt.Println(addr, code, msg)
 
-	dconn, err := net.Dial(&#34;tcp&#34;, addr)
+	dconn, err := net.Dial("tcp", addr)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer dconn.Close()
 
 	if *verbose {
-		log.Println(&#34;ftp type I&#34;)
+		log.Println("ftp type I")
 	}
-	code, msg, err = c.Type(&#34;I&#34;)
+	code, msg, err = c.Type("I")
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println(code, msg)
 
 	if *verbose {
-		log.Println(&#34;creating&#34;, dst)
+		log.Println("creating", dst)
 	}
 	w, err := os.Create(dst)
 	if err != nil {
@@ -100,12 +100,12 @@ func main() {
 	fmt.Println(code, msg, n)
 
 	if *verbose {
-		log.Println(&#34;get&#34;, file)
+		log.Println("get", file)
 	}
 	n, code, msg, err = c.RetrieveTo(file, dconn, w)
 	if err != nil {
 		log.Fatal(err)
 	}
 	w.Close()
-	fmt.Println(&#34;done, copy bytes:&#34;, n)
+	fmt.Println("done, copy bytes:", n)
 }

@@ -1,8 +1,8 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;sort&#34;
+	"fmt"
+	"sort"
 )
 
 type Node struct {
@@ -31,7 +31,7 @@ func (a ByKeys) Len() int { return len(a) }
 
 func (a ByKeys) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 
-func (a ByKeys) Less(i, j int) bool { return len(a[i]) &lt; len(a[j]) }
+func (a ByKeys) Less(i, j int) bool { return len(a[i]) < len(a[j]) }
 
 const nul = 0x0
 
@@ -41,7 +41,7 @@ func New() *Trie {
 
 	node := newNode(nil, 0, 0, false)
 
-	return &amp;Trie{
+	return &Trie{
 
 		root: node,
 
@@ -66,7 +66,7 @@ func (t *Trie) Root() *Node {
 
 func (t *Trie) Add(key string, meta interface{}) *Node {
 
-	t.size&#43;&#43;
+	t.size++
 
 	runes := []rune(key)
 
@@ -122,9 +122,9 @@ func (t *Trie) Remove(key string) {
 
 	for n := node.Parent(); n != nil; n = n.Parent() {
 
-		i&#43;&#43;
+		i++
 
-		if len(n.Children()) &gt; 1 {
+		if len(n.Children()) > 1 {
 
 			r := rs[len(rs)-i]
 
@@ -142,7 +142,7 @@ func (t *Trie) Remove(key string) {
 
 func (t *Trie) Keys() []string {
 
-	return t.PrefixSearch(&#34;&#34;)
+	return t.PrefixSearch("")
 
 }
 
@@ -156,7 +156,7 @@ func (t Trie) FuzzySearch(pre string) []string {
 		pm []rune
 	)
 
-	fuzzycollect(t.Root(), 0, pm, []rune(pre), &amp;keys)
+	fuzzycollect(t.Root(), 0, pm, []rune(pre), &keys)
 
 	sort.Sort(ByKeys(keys))
 
@@ -178,7 +178,7 @@ func (t Trie) PrefixSearch(pre string) []string {
 
 	}
 
-	collect(node, []rune(pre), &amp;keys)
+	collect(node, []rune(pre), &keys)
 
 	return keys
 
@@ -216,7 +216,7 @@ func (t Trie) addrune(node *Node, runes []rune, i int) *Node {
 
 	n.mask |= bitmask
 
-	i&#43;&#43;
+	i++
 
 	return t.addrune(n, runes[1:], i)
 
@@ -224,7 +224,7 @@ func (t Trie) addrune(node *Node, runes []rune, i int) *Node {
 
 func newNode(parent *Node, val rune, m uint64, term bool) *Node {
 
-	return &amp;Node{
+	return &Node{
 
 		val: val,
 
@@ -341,7 +341,7 @@ func findNode(node *Node, runes []rune) *Node {
 
 	var nrunes []rune
 
-	if len(runes) &gt; 1 {
+	if len(runes) > 1 {
 
 		nrunes = runes[1:]
 
@@ -373,7 +373,7 @@ func maskrune(r rune) uint64 {
 
 	i := uint64(1)
 
-	return i &lt;&lt; (uint64(r) - 97)
+	return i << (uint64(r) - 97)
 
 }
 
@@ -421,7 +421,7 @@ func fuzzycollect(node *Node, idx int, partialmatch, partial []rune, keys *[]str
 
 	for v, n := range children {
 
-		if (n.mask &amp; m) != m {
+		if (n.mask & m) != m {
 
 			continue
 
@@ -429,7 +429,7 @@ func fuzzycollect(node *Node, idx int, partialmatch, partial []rune, keys *[]str
 
 		if v == partial[idx] {
 
-			fuzzycollect(n, idx&#43;1, append(partialmatch, v), partial, keys)
+			fuzzycollect(n, idx+1, append(partialmatch, v), partial, keys)
 
 			continue
 
@@ -444,22 +444,22 @@ func fuzzycollect(node *Node, idx int, partialmatch, partial []rune, keys *[]str
 func main() {
 
 	t := New()
-	t.Add(&#34;sublime&#34;, &#34;hello&#34;)
+	t.Add("sublime", "hello")
 
-	node, _ := t.Find(&#34;sublime&#34;)
+	node, _ := t.Find("sublime")
 	b := node.Meta()
 	fmt.Println(b)
 
-	t.Remove(&#34;sublime&#34;)
+	t.Remove("sublime")
 
-	nod, _ := t.Find(&#34;sublime&#34;)
+	nod, _ := t.Find("sublime")
 
 	bb := nod.Meta()
 	fmt.Println(bb)
 
-	a := t.PrefixSearch(&#34;sub&#34;)
+	a := t.PrefixSearch("sub")
 
-	_ = t.FuzzySearch(&#34;sblm&#34;)
+	_ = t.FuzzySearch("sblm")
 
 	for _, v := range a {
 		fmt.Println(v)

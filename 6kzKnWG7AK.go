@@ -1,24 +1,24 @@
 package main
 
 import (
-	&#34;bytes&#34;
-	&#34;fmt&#34;
-	&#34;regexp&#34;
-	&#34;strings&#34;
-	&#34;unicode&#34;
+	"bytes"
+	"fmt"
+	"regexp"
+	"strings"
+	"unicode"
 )
 
 func main() {
-	fmt.Println(SwapCase(&#34;Hello Hi&#34;))
+	fmt.Println(SwapCase("Hello Hi"))
 	// hELLO hI
 
-	fmt.Println(SwapCaseII(&#34;Hello Hi&#34;))
+	fmt.Println(SwapCaseII("Hello Hi"))
 	// hELLO hI
 
-	fmt.Println(ReverseString(&#34;Hello Hi&#34;))
+	fmt.Println(ReverseString("Hello Hi"))
 	// iH olleH
 
-	fmt.Println(CheckPalindrome(&#34;Anne, I vote more cars race Rome-to-Vienna&#34;))
+	fmt.Println(CheckPalindrome("Anne, I vote more cars race Rome-to-Vienna"))
 	// true
 }
 
@@ -44,15 +44,15 @@ func SwapCaseII(str string) string {
 
 // rune is variable-length and can be made up of one or more bytes.
 // rune literals are mapped to their unicode codepoint.
-// For example, a rune literal &#39;a&#39; is a number 97.
+// For example, a rune literal 'a' is a number 97.
 // 32 is the offset of the uppercase and lowercase characters.
-// So if you add 32 to &#39;A&#39;, you get &#39;a&#39; and vice versa.
+// So if you add 32 to 'A', you get 'a' and vice versa.
 func SwapRune(r rune) rune {
 	switch {
-	case &#39;a&#39; &lt;= r &amp;&amp; r &lt;= &#39;z&#39;:
-		return r - &#39;a&#39; &#43; &#39;A&#39;
-	case &#39;A&#39; &lt;= r &amp;&amp; r &lt;= &#39;Z&#39;:
-		return r - &#39;A&#39; &#43; &#39;a&#39;
+	case 'a' <= r && r <= 'z':
+		return r - 'a' + 'A'
+	case 'A' <= r && r <= 'Z':
+		return r - 'A' + 'a'
 	default:
 		return r
 	}
@@ -63,7 +63,7 @@ func SwapRune(r rune) rune {
 // We need to use rune because string is immutable.
 func ReverseString(str string) string {
 	runes := []rune(str)
-	for i, j := 0, len(runes)-1; i &lt; j; i, j = i&#43;1, j-1 {
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
 		runes[i], runes[j] = runes[j], runes[i]
 	}
 	return string(runes)
@@ -76,7 +76,7 @@ func CheckPalindrome(str string) bool {
 	str = strings.ToLower(str)
 
 	var validID = regexp.MustCompile(`\s{1,}`)
-	str = validID.ReplaceAllString(str, &#34;&#34;)
+	str = validID.ReplaceAllString(str, "")
 
 	rvs := ReverseString(str)
 
@@ -95,17 +95,17 @@ func CleanUp(str string) string {
 
 	// validID := regexp.MustCompile(`\s{2,}`)
 	// func TrimSpace(s string) string
-	// slicing off all &#34;leading&#34; and
-	// &#34;trailing&#34; white space, as defined by Unicode.
+	// slicing off all "leading" and
+	// "trailing" white space, as defined by Unicode.
 	str = strings.TrimSpace(str)
 
 	// func Fields(s string) []string
 	// Fields splits the slice s around each instance
-	// of &#34;one or more consecutive white space&#34;
+	// of "one or more consecutive white space"
 	slice := strings.Fields(str)
 
 	// now join them with a single white space character
-	return strings.Join(slice, &#34; &#34;)
+	return strings.Join(slice, " ")
 }
 
 // ReplaceNonAlnumWithSpace removes all alphanumeric characters.
@@ -116,35 +116,35 @@ func ReplaceNonAlnumWithSpace(str string) string {
 	// alphanumeric (== [0-9A-Za-z])
 	// \s is a white space character
 	validID := regexp.MustCompile(`[^[:alnum:]\s]`)
-	return validID.ReplaceAllString(str, &#34; &#34;)
+	return validID.ReplaceAllString(str, " ")
 }
 
 // ExpandApostrophe expands the apostrophe phrases.
 // And convert them to lower case letters.
 func ExpandApostrophe(str string) string {
-	// assignment between string is not &#34;copy&#34;
+	// assignment between string is not "copy"
 	// even if str1 is longer than str2
-	// like str1 := &#34;Hello&#34;, str2 = &#34;&#34;
-	// str1 = str2 makes str1 &#34;&#34;
-	str = strings.Replace(strings.ToLower(str), &#34;&#39;d&#34;, &#34; would&#34;, -1)
+	// like str1 := "Hello", str2 = ""
+	// str1 = str2 makes str1 ""
+	str = strings.Replace(strings.ToLower(str), "'d", " would", -1)
 
-	// If n &lt; 0, there is no limit on the number of replacements.
-	str = strings.Replace(str, &#34;&#39;ve&#34;, &#34; have&#34;, -1)
-	str = strings.Replace(str, &#34;&#39;re&#34;, &#34; are&#34;, -1)
-	str = strings.Replace(str, &#34;&#39;m&#34;, &#34; am&#34;, -1)
-	str = strings.Replace(str, &#34;t&#39;s&#34;, &#34;t is&#34;, -1)
-	str = strings.Replace(str, &#34;&#39;ll&#34;, &#34; will&#34;, -1)
+	// If n < 0, there is no limit on the number of replacements.
+	str = strings.Replace(str, "'ve", " have", -1)
+	str = strings.Replace(str, "'re", " are", -1)
+	str = strings.Replace(str, "'m", " am", -1)
+	str = strings.Replace(str, "t's", "t is", -1)
+	str = strings.Replace(str, "'ll", " will", -1)
 
-	str = strings.Replace(str, &#34;won&#39;t&#34;, &#34;will not&#34;, -1)
-	str = strings.Replace(str, &#34;can&#39;t&#34;, &#34;can not&#34;, -1)
+	str = strings.Replace(str, "won't", "will not", -1)
+	str = strings.Replace(str, "can't", "can not", -1)
 
-	str = strings.Replace(str, &#34;haven&#39;t&#34;, &#34;have not&#34;, -1)
-	str = strings.Replace(str, &#34;hasn&#39;t&#34;, &#34;has not&#34;, -1)
+	str = strings.Replace(str, "haven't", "have not", -1)
+	str = strings.Replace(str, "hasn't", "has not", -1)
 
-	str = strings.Replace(str, &#34;dn&#39;t&#34;, &#34;d not&#34;, -1)
-	str = strings.Replace(str, &#34;don&#39;t&#34;, &#34;do not&#34;, -1)
-	str = strings.Replace(str, &#34;doesn&#39;t&#34;, &#34;does not&#34;, -1)
-	str = strings.Replace(str, &#34;didn&#39;t&#34;, &#34;did not&#34;, -1)
+	str = strings.Replace(str, "dn't", "d not", -1)
+	str = strings.Replace(str, "don't", "do not", -1)
+	str = strings.Replace(str, "doesn't", "does not", -1)
+	str = strings.Replace(str, "didn't", "did not", -1)
 
 	return str
 }

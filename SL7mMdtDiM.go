@@ -1,9 +1,9 @@
 // An example package using Go-as-if-it-had-parametric-polymorphism,
-// with an &#34;iter&#34; package in the standard library, following an
+// with an "iter" package in the standard library, following an
 // already idiomatic Go iteration pattern.
 //
-// The feature is entirely imaginary, but I&#39;ve tried to write
-// the code to fit as much within Go&#39;s existing idioms as possible.
+// The feature is entirely imaginary, but I've tried to write
+// the code to fit as much within Go's existing idioms as possible.
 //
 // Generics questions that this code does not attempt to resolve:
 //	- What semantics are there for equality of values
@@ -15,29 +15,29 @@
 // or language-feature implementation roadtraps.
 package main
 import (
-	&#34;os&#34;
-	&#34;log&#34;
-	&#34;iter&#34;
+	"os"
+	"log"
+	"iter"
 )
 
 func main() {
-	f, err := os.Open(&#34;/etc/passwd&#34;)
+	f, err := os.Open("/etc/passwd")
 	if err != nil {
 		log.Fatal(err)
 	}
-	r := strings.NewReader(&#34;light blue\nfaded khaki\n&#34;)
+	r := strings.NewReader("light blue\nfaded khaki\n")
 	iter0 := iter.BufioScanner(bufio.NewScanner(f))
-	iter1 := iter.Slice&lt;string&gt;{&#34;one&#34;, &#34;two&#34;}
+	iter1 := iter.Slice<string>{"one", "two"}
 	both := iter.Sequence(iter0, iter1)
 	prefixed := iter.Map(both, func(s string) string {
-		return &#34;x: &#34; &#43; s
+		return "x: " + s
 	})
 	foo, err := iter.Gather(prefixed)
 	if err != nil {
 		log.Fatal(err)
 	}
-	// foo is []string{&#34;x: light blue&#34;, &#34;x: faded khaki&#34;, &#34;x: one&#34;, &#34;x: two&#34;}
-	fmt.Printf(&#34;%v\n&#34;, foo)
+	// foo is []string{"x: light blue", "x: faded khaki", "x: one", "x: two"}
+	fmt.Printf("%v\n", foo)
 }
 
 ///////////////////////////////////////////////////////////
@@ -47,7 +47,7 @@ func main() {
 package iter
 
 // Iter represents an iterable collection of values.
-type Iter&lt;T&gt; interface {
+type Iter<T> interface {
 	// Next advances the iterator to the next value, which will then
 	// be available through the Value method. It returns
 	// false when the iteration stops, either by reaching the end
@@ -69,7 +69,7 @@ type Iter&lt;T&gt; interface {
 
 // Gather iterates through all the items in iter
 // and returns them as a slice.
-func Gather&lt;T&gt;(iter Iter&lt;T&gt;) ([]T, error) {
+func Gather<T>(iter Iter<T>) ([]T, error) {
 	var slice []T
 	while iter.Next() {
 		slice = append(slice, iter.Value()
@@ -79,7 +79,7 @@ func Gather&lt;T&gt;(iter Iter&lt;T&gt;) ([]T, error) {
 
 // Identity returns the identity function for
 // a given type.
-func Identity&lt;T&gt;() func(T) T {
+func Identity<T>() func(T) T {
 	return func(t T) T {
 		return t
 	}
@@ -89,15 +89,15 @@ func Identity&lt;T&gt;() func(T) T {
 // a value f(x) for every value in the given iterator.
 // Any non-nil error returned from the underlying iterator
 // will be transformed by the given err function.
-func Map&lt;S, T&gt;(
-	iter Iter&lt;S&gt;,
+func Map<S, T>(
+	iter Iter<S>,
 	transformError func(error) error,
 	f func(S) T,
-) Iter&lt;T&gt; {
+) Iter<T> {
 	if transformError == nil {
-		transformError = Identity&lt;error&gt;()
+		transformError = Identity<error>()
 	}
-	return &amp;mapping{
+	return &mapping{
 		Iter: iter,
 		f: f,
 	}
@@ -109,14 +109,14 @@ func Map&lt;S, T&gt;(
 // When checking for interface type compatibility,
 // methods must be compatible. So if S==T
 // then mapping will automatically
-// implement Iter&lt;S&gt; but not Iter&lt;T&gt;.
+// implement Iter<S> but not Iter<T>.
 // It will implement interface {
 //	Next() bool
 //	Close() error
 //	Err() error
 // }
-type mapping&lt;S, T&gt; struct {
-	Iter&lt;S&gt;
+type mapping<S, T> struct {
+	Iter<S>
 	f func(S) T
 	transformError func(error) error
 }
@@ -129,7 +129,7 @@ func (m *mapping) Err() error {
 	return m.transformError
 }
 
-func BufioScanner(r *bufio.Scanner) Iter&lt;string&gt; {
+func BufioScanner(r *bufio.Scanner) Iter<string> {
 	return bufioScanner(r)
 }
 
@@ -153,15 +153,15 @@ func (b bufioScanner) Close() error {
 	return nil
 }
 
-type slice&lt;T&gt; struct {
+type slice<T> struct {
 	first bool
 	values []T
 }
 
 // Slice implements Iter on a slice.
 // The values are traversed from beginning to end.
-func NewSlice&lt;T&gt;(values []T) Iter&lt;T&gt; {
-	return &amp;slice{
+func NewSlice<T>(values []T) Iter<T> {
+	return &slice{
 		first: true,
 		values: values,
 	}
@@ -173,7 +173,7 @@ func (s *slice) Next() bool {
 	} else {
 		s.values = s.elems[1:]
 	}
-	return len(s.values) &gt; 0
+	return len(s.values) > 0
 }
 
 func (s *slice) Err() error {
@@ -195,19 +195,19 @@ func (s *slice) Value() s.T {
 // iterators. All are closed in turn when or before
 // the returned iterator is closed.
 //
-func Sequence(iters ...Iter&lt;T&gt;) Iter&lt;T&gt; {
-	return &amp;sequence{
+func Sequence(iters ...Iter<T>) Iter<T> {
+	return &sequence{
 		iters: iters,
 	}
 }
 
-type sequence struct&lt;T&gt; {
-	iters []Iter&lt;T&gt;
+type sequence struct<T> {
+	iters []Iter<T>
 	err error
 }
 
 func (s *sequence) Next() bool {
-	for len(s.iters) &gt; 0 {
+	for len(s.iters) > 0 {
 		iter := s.iters[0]
 		if iter.Next() {
 			return true
@@ -227,7 +227,7 @@ func (s *sequence) Err() error {
 	if s.err != nil {
 		return s.err
 	}
-	if len(s.iters) &gt; 0 {
+	if len(s.iters) > 0 {
 		s.err = s.iters[0].Err()
 		return s.err
 	}
@@ -236,8 +236,8 @@ func (s *sequence) Err() error {
 
 func (s *sequence) Value() s.T {
 	if len(s.iters) == 0 {
-		// Note the use of &#34;zero&#34; here, as a more
-		// general form of &#34;nil&#34; that is a valid
+		// Note the use of "zero" here, as a more
+		// general form of "nil" that is a valid
 		// zero value for any type, not just pointers.
 		return zero
 	}
@@ -246,8 +246,8 @@ func (s *sequence) Value() s.T {
 
 func (s *sequence) Close() error {
 	var closeErr error
-	for len(s.iters) &gt; 0 {
-		if err := s.iters[0].Close(); err != nil &amp;&amp; closeErr == nil {
+	for len(s.iters) > 0 {
+		if err := s.iters[0].Close(); err != nil && closeErr == nil {
 			closeErr = err
 		}
 		s.iters = s.iters[1:]
@@ -258,7 +258,7 @@ func (s *sequence) Close() error {
 // Concurrent returns a channel reading the
 // results of al the given iterators running
 // concurrently.
-func Concurrent&lt;T&gt;(iters ...Iter&lt;T&gt;) chan T {
+func Concurrent<T>(iters ...Iter<T>) chan T {
 	c := make(chan T)
 	go func() {
 		var wg sync.WaitGroup
@@ -268,7 +268,7 @@ func Concurrent&lt;T&gt;(iters ...Iter&lt;T&gt;) chan T {
 				defer wg.Done()
 				defer iter.Close()
 				for iter.Next() {
-					c &lt;- iter.Value()
+					c <- iter.Value()
 				}
 			}()
 		}

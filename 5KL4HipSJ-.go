@@ -5,8 +5,8 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;math&#34;
+	"fmt"
+	"math"
 )
 
 // Point represents a point in space.
@@ -21,11 +21,11 @@ func New(x int, y int) Point {
 }
 
 // Distance finds the length of the hypotenuse between two points.
-// Forumula is the square root of (x2 - x1)^2 &#43; (y2 - y1)^2
+// Forumula is the square root of (x2 - x1)^2 + (y2 - y1)^2
 func (p Point) Distance(p2 Point) float64 {
 	first := math.Pow(float64(p2.X-p.X), 2)
 	second := math.Pow(float64(p2.Y-p.Y), 2)
-	return math.Sqrt(first &#43; second)
+	return math.Sqrt(first + second)
 }
 
 // main is the entry point for the application.
@@ -34,5 +34,5 @@ func main() {
 	p2 := New(26, -80)
 
 	dist := p1.Distance(p2)
-	fmt.Println(&#34;Distance&#34;, dist)
+	fmt.Println("Distance", dist)
 }

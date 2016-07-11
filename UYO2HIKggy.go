@@ -1,7 +1,7 @@
 package main
 
 import (
-	&#34;fmt&#34;
+	"fmt"
 )
 
 // Polygon defines a set of points that complete a ring around a geographic area
@@ -9,14 +9,14 @@ type Polygon [][2]float64
 
 // PolygonRings defines a MongoDB Structure for storing multiple polygon rings
 type PolygonRings struct {
-	Type        string    `bson:&#34;type&#34;`
-	Coordinates []Polygon `bson:&#34;coordinates&#34;`
+	Type        string    `bson:"type"`
+	Coordinates []Polygon `bson:"coordinates"`
 }
 
 // Represents a marine station and its polygons
 type MarineStation struct {
-	StationId string       `bson:&#34;station_id&#34;`
-	Polygons  PolygonRings `bson:&#34;polygons&#34;`
+	StationId string       `bson:"station_id"`
+	Polygons  PolygonRings `bson:"polygons"`
 }
 
 func main() {
@@ -27,9 +27,9 @@ func main() {
 
 	// Create a marine station for AMZ123
 	marineStation := MarineStation{
-		StationId: &#34;AMZ123&#34;,
+		StationId: "AMZ123",
 		Polygons: PolygonRings{
-			Type:        &#34;Polygon&#34;,
+			Type:        "Polygon",
 			Coordinates: []Polygon{},
 		},
 	}
@@ -69,15 +69,15 @@ func Display(marineStations []MarineStation) {
 
 	for _, marineStation := range marineStations {
 
-		fmt.Printf(&#34;\nStation: %s\n&#34;, marineStation.StationId)
+		fmt.Printf("\nStation: %s\n", marineStation.StationId)
 
 		for index, rings := range marineStation.Polygons.Coordinates {
 
-			fmt.Printf(&#34;Ring: %d\n&#34;, index)
+			fmt.Printf("Ring: %d\n", index)
 
 			for _, coordinate := range rings {
 
-				fmt.Printf(&#34;Point: %f,%f\n&#34;, coordinate[0], coordinate[1])
+				fmt.Printf("Point: %f,%f\n", coordinate[0], coordinate[1])
 			}
 		}
 	}

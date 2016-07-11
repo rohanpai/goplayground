@@ -1,10 +1,10 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;github.com/gonum/graph&#34;
-	&#34;github.com/gonum/graph/concrete&#34;
-	&#34;github.com/gonum/graph/search&#34;
+	"fmt"
+	"github.com/gonum/graph"
+	"github.com/gonum/graph/concrete"
+	"github.com/gonum/graph/search"
 )
 
 func main() {
@@ -13,6 +13,6 @@ func main() {
 	g.AddNode(n0, []graph.Node{n1, n2})
 	g.AddEdge(concrete.GonumEdge{n2, n3})
 	path, v := search.BreadthFirstSearch(n0, n3, g)
-	fmt.Println(&#34;path:&#34;, path)
-	fmt.Println(&#34;nodes visited:&#34;, v)
+	fmt.Println("path:", path)
+	fmt.Println("nodes visited:", v)
 }

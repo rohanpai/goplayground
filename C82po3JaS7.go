@@ -1,13 +1,13 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;reflect&#34;
-	&#34;strconv&#34;
+	"fmt"
+	"reflect"
+	"strconv"
 )
 
 var f0 = func() {
-	fmt.Println(&#34;Hello 0&#34;)
+	fmt.Println("Hello 0")
 }
 
 func main() {
@@ -16,17 +16,17 @@ func main() {
 	// We must use Function Literal
 	// or the anonymous function must return something
 	/*
-	   we can&#39;t do this
+	   we can't do this
 
 	   myqueue.PushBack(func(str string) {
 	   	fmt.Println(str)
-	   }(&#34;Hello&#34;))
+	   }("Hello"))
 
 	   fmt.Println(func(str string) {
 	   	fmt.Println(str)
-	   }(&#34;Hello&#34;))
+	   }("Hello"))
 
-	   (func literal)(&#34;Hello&#34;) used as value
+	   (func literal)("Hello") used as value
 
 	   because the anonymous function closure
 	   does not return anything
@@ -35,7 +35,7 @@ func main() {
 	// Function Literal
 	temp := func(str string) string {
 		return str
-	}(&#34;Hello 08&#34;)
+	}("Hello 08")
 	fmt.Println(temp)
 	// Hello 08
 
@@ -50,7 +50,7 @@ func main() {
 	fmt.Println(reflect.TypeOf(f0)) // func()
 
 	f1 := func() {
-		fmt.Println(&#34;Hello 09&#34;)
+		fmt.Println("Hello 09")
 	}
 	f1()                            // Hello 09
 	fmt.Println(reflect.TypeOf(f1)) // func()
@@ -58,12 +58,12 @@ func main() {
 	f2 := func(str string) {
 		fmt.Println(str)
 	}
-	f2(&#34;Hello 10&#34;) // Hello 10
+	f2("Hello 10") // Hello 10
 
 	f3 := func(str string) string {
 		return str
 	}
-	fmt.Println(f3(&#34;Hello 11&#34;)) // Hello 11
+	fmt.Println(f3("Hello 11")) // Hello 11
 
 	// Just a function named f4
 	// It takes an integer as an argument
@@ -72,7 +72,7 @@ func main() {
 		// num is valid inside this block
 		return func() string {
 			s := strconv.Itoa(num)
-			return &#34;Hello &#34; &#43; s
+			return "Hello " + s
 		}
 	}
 

@@ -1,9 +1,9 @@
-/* &#34;Benchmarking&#34; a table sort under Linux.
+/* "Benchmarking" a table sort under Linux.
    # R.Wobst, @(#) Dec 27 2011, 20:02:29
    A table of ROWxCOL size is filled with random 31 bit integers and
    then sorted by row no. N where N runs from 0 to COL.
    The time is measured and also the memory usage, by grepping all lines
-   from /dev/proc/status which start with &#34;Vm&#34;.
+   from /dev/proc/status which start with "Vm".
 
    At the end, the same is done in Python to compare.
 
@@ -21,12 +21,12 @@
 package main
 
 import (
-        &#34;fmt&#34;
-        &#34;os&#34;
-        &#34;rand&#34;
-        &#34;sort&#34;
-        &#34;strings&#34;
-        &#34;time&#34;
+        "fmt"
+        "os"
+        "rand"
+        "sort"
+        "strings"
+        "time"
 )
 
 // the global var: sort column
@@ -42,19 +42,19 @@ type Table []Row
 
 func (lst Table) Len() int           { return len(lst) }
 func (lst Table) Swap(i, j int)      { lst[j], lst[i] = lst[i], lst[j] }
-func (lst Table) Less(i, j int) bool { return lst[i][N] &lt; lst[j][N] }
+func (lst Table) Less(i, j int) bool { return lst[i][N] < lst[j][N] }
 
 // get memory usage
 func prtmem() {
-    procdev := fmt.Sprintf(&#34;/proc/%d/status&#34;, os.Getpid())
+    procdev := fmt.Sprintf("/proc/%d/status", os.Getpid())
     fd, _ := os.Open(procdev)
     defer fd.Close()
 
     b := make([]byte, 4096)
     fd.Read(b)
-    for _, lin := range strings.Split(string(b), &#34;\n&#34;) {
-        if &#34;Vm&#34; == lin[:2] {
-            fmt.Printf(&#34;%s\n&#34;, lin)
+    for _, lin := range strings.Split(string(b), "\n") {
+        if "Vm" == lin[:2] {
+            fmt.Printf("%s\n", lin)
         }
     }
 }
@@ -64,9 +64,9 @@ func main() {
         tb := Table(make([]Row, ROW))
 
         // fill the table
-        for i := 0; i &lt; ROW; i&#43;&#43; {
+        for i := 0; i < ROW; i++ {
                 r := make(Row, COL)
-                for j := 0; j &lt; COL; j&#43;&#43; {
+                for j := 0; j < COL; j++ {
                         r[j] = rand.Int31()
                 }
                 tb[i] = r
@@ -75,12 +75,12 @@ func main() {
         t0 := time.Nanoseconds()
 
         // do the sort, one sort for each column
-        for N = 0; N &lt; COL; N&#43;&#43; {
+        for N = 0; N < COL; N++ {
                 sort.Sort(tb)
         }
 
         t1 := time.Nanoseconds()
-        fmt.Printf(&#34;%.2f seconds\n&#34;, float32(t1-t0)/1.e&#43;9)
+        fmt.Printf("%.2f seconds\n", float32(t1-t0)/1.e+9)
 
         // print memory usage
         prtmem()
@@ -95,7 +95,7 @@ import random, time, os
 
 COL = 100
 ROW = 10000
-UPPER = (1&lt;&lt;31) - 1
+UPPER = (1<<31) - 1
 
 Table = []
 
@@ -116,12 +116,12 @@ for scol in xrange(COL):
 
 t1 = time.time()
 
-print &#34;%.2f seconds&#34; % (t1-t0)
+print "%.2f seconds" % (t1-t0)
 
 # get memory usage
-fd = open(&#39;/proc/%d/status&#39; % os.getpid(), &#39;r&#39;)
+fd = open('/proc/%d/status' % os.getpid(), 'r')
 for l in fd.readlines():
-    if l.strip().startswith(&#39;Vm&#39;):
+    if l.strip().startswith('Vm'):
         print l,
 fd.close()
 */

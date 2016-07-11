@@ -1,12 +1,12 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;github.com/soniakeys/meeus/base&#34;
-	&#34;github.com/soniakeys/meeus/julian&#34;
-	&#34;github.com/soniakeys/meeus/line&#34;
-	&#34;math&#34;
-	&#34;time&#34;
+	"fmt"
+	"github.com/soniakeys/meeus/base"
+	"github.com/soniakeys/meeus/julian"
+	"github.com/soniakeys/meeus/line"
+	"math"
+	"time"
 )
 
 func main() {
@@ -37,7 +37,7 @@ func main() {
 	}
 	y, m, d := julian.JDToCalendar(jd)
 	dInt, dFrac := math.Modf(d)
-	fmt.Printf(&#34;%d %s %.4f\n&#34;, y, time.Month(m), d)
-	fmt.Printf(&#34;%d %s %d, at %.64s TD(UT)\n&#34;, y, time.Month(m), int(dInt),
+	fmt.Printf("%d %s %.4f\n", y, time.Month(m), d)
+	fmt.Printf("%d %s %d, at %.64s TD(UT)\n", y, time.Month(m), int(dInt),
 		base.NewFmtTime(dFrac*24*3600))
 }

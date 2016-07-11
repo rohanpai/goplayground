@@ -3,16 +3,16 @@ package main
 // // Flags are based on python3.3-config --cflags and --ldflags
 // #cgo darwin CFLAGS:-I/usr/local/Cellar/python3/3.3.0/Frameworks/Python.framework/Versions/3.3/include/python3.3m -I/usr/local/Cellar/python3/3.3.0/Frameworks/Python.framework/Versions/3.3/include/python3.3m -fno-common -dynamic -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk -arch x86_64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk -I/usr/local/include -I/usr/local/opt/sqlite/include
 // #cgo darwin LDFLAGS: -L. -L/usr/local/Cellar/python3/3.3.0/Frameworks/Python.framework/Versions/3.3/lib/python3.3/config-3.3m -ldl -framework CoreFoundation -lpython3.3m
-// #include &lt;Python.h&gt;
-import &#34;C&#34;
+// #include <Python.h>
+import "C"
 
 import (
-	&#34;log&#34;
-	&#34;os&#34;
-	&#34;os/signal&#34;
-	&#34;syscall&#34;
-	&#34;time&#34;
-	&#34;unsafe&#34;
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+	"unsafe"
 )
 
 type syscall_Termios struct {
@@ -63,14 +63,14 @@ func fcntl(fd int, cmd int, arg int) (val int, err error) {
 func tcsetattr(fd int, termios *syscall_Termios) {
 	r, _, e := syscall.Syscall(syscall.SYS_IOCTL, uintptr(fd), uintptr(syscall_TCSETS), uintptr(unsafe.Pointer(termios)))
 	if r != 0 {
-		panic(os.NewSyscallError(&#34;SYS_IOCTL&#34;, e))
+		panic(os.NewSyscallError("SYS_IOCTL", e))
 	}
 }
 
 func tcgetattr(fd int, termios *syscall_Termios) {
 	r, _, e := syscall.Syscall(syscall.SYS_IOCTL, uintptr(fd), uintptr(syscall_TCGETS), uintptr(unsafe.Pointer(termios)))
 	if r != 0 {
-		panic(os.NewSyscallError(&#34;SYS_IOCTL&#34;, e))
+		panic(os.NewSyscallError("SYS_IOCTL", e))
 	}
 }
 
@@ -83,7 +83,7 @@ func main() {
 		sigio     = make(chan os.Signal)
 		orig_tios syscall_Termios
 	)
-	in, err = syscall.Open(&#34;/dev/tty&#34;, syscall.O_RDONLY, 0)
+	in, err = syscall.Open("/dev/tty", syscall.O_RDONLY, 0)
 	if err != nil {
 		panic(err)
 	}
@@ -91,40 +91,40 @@ func main() {
 	signal.Notify(sigio, syscall.SIGIO)
 
 	fcntl(in, syscall.F_SETFL, syscall.O_ASYNC|syscall.O_NONBLOCK)
-	tcgetattr(in, &amp;orig_tios)
+	tcgetattr(in, &orig_tios)
 	tios := orig_tios
-	tios.Iflag &amp;^= syscall_BRKINT | syscall_IXON
-	tios.Lflag &amp;^= syscall_ECHO | syscall_ICANON |
+	tios.Iflag &^= syscall_BRKINT | syscall_IXON
+	tios.Lflag &^= syscall_ECHO | syscall_ICANON |
 		syscall_ISIG | syscall_IEXTEN
-	tios.Cflag &amp;^= syscall_CSIZE | syscall_PARENB
+	tios.Cflag &^= syscall_CSIZE | syscall_PARENB
 	tios.Cflag |= syscall_CS8
 	tios.Cc[syscall_VMIN] = 1
 	tios.Cc[syscall_VTIME] = 0
 
-	tcsetattr(in, &amp;tios)
+	tcsetattr(in, &tios)
 	defer func() {
-		tcsetattr(in, &amp;orig_tios)
+		tcsetattr(in, &orig_tios)
 		syscall.Close(in)
 	}()
 	buf := make([]byte, 128)
 	for {
-		log.Println(&#34;Waiting on signal&#34;)
+		log.Println("Waiting on signal")
 		select {
-		case &lt;-sigio:
-			log.Println(&#34;Read..&#34;)
+		case <-sigio:
+			log.Println("Read..")
 			n, err := syscall.Read(in, buf)
-			log.Println(&#34;Received:&#34;, n, err)
+			log.Println("Received:", n, err)
 			if err == syscall.EAGAIN || err == syscall.EWOULDBLOCK {
 				break
 			}
-			if n &gt; 0 {
+			if n > 0 {
 				if buf[0] == 17 {
 					return
 				}
-				log.Println(&#34;buf:&#34;, buf[:n])
+				log.Println("buf:", buf[:n])
 			}
-		case &lt;-time.After(time.Second * 5):
-			log.Println(&#34;Timed out&#34;)
+		case <-time.After(time.Second * 5):
+			log.Println("Timed out")
 			return
 		}
 	}

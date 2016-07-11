@@ -1,42 +1,42 @@
 package main
 
 import (
-	&#34;database/sql&#34;
-	&#34;fmt&#34;
-	&#34;log&#34;
-	&#34;time&#34;
+	"database/sql"
+	"fmt"
+	"log"
+	"time"
 
-	//_ &#34;code.google.com/p/gosqlite/sqlite3&#34;
-	_ &#34;github.com/mattn/go-sqlite3&#34;
-	//_ &#34;github.com/mxk/go-sqlite/sqlite3&#34;
+	//_ "code.google.com/p/gosqlite/sqlite3"
+	_ "github.com/mattn/go-sqlite3"
+	//_ "github.com/mxk/go-sqlite/sqlite3"
 )
 
 type TimeStamp struct{ *time.Time }
 
 func (t TimeStamp) Scan(value interface{}) error {
-	fmt.Printf(&#34;%T\n&#34;, value)
+	fmt.Printf("%T\n", value)
 	//...
 	return nil
 }
 
 func main() {
-	db, err := sql.Open(&#34;sqlite3&#34;, &#34;:memory:&#34;)
+	db, err := sql.Open("sqlite3", ":memory:")
 	if err != nil {
-		log.Fatalf(&#34;cannot open an SQLite memory database: %v&#34;, err)
+		log.Fatalf("cannot open an SQLite memory database: %v", err)
 	}
 	defer db.Close()
 
-	// sqlite&gt; select strftime(&#39;%J&#39;, &#39;2015-04-13T19:22:19.773Z&#39;), strftime(&#39;%J&#39;, &#39;2015-04-13T19:22:19&#39;);
-	_, err = db.Exec(&#34;CREATE TABLE unix_time (time datetime); INSERT INTO unix_time (time) VALUES (strftime(&#39;%Y-%m-%dT%H:%MZ&#39;,&#39;now&#39;))&#34;)
+	// sqlite> select strftime('%J', '2015-04-13T19:22:19.773Z'), strftime('%J', '2015-04-13T19:22:19');
+	_, err = db.Exec("CREATE TABLE unix_time (time datetime); INSERT INTO unix_time (time) VALUES (strftime('%Y-%m-%dT%H:%MZ','now'))")
 	if err != nil {
-		log.Fatalf(&#34;cannot create schema: %v&#34;, err)
+		log.Fatalf("cannot create schema: %v", err)
 	}
 
-	row := db.QueryRow(&#34;SELECT time FROM unix_time&#34;)
+	row := db.QueryRow("SELECT time FROM unix_time")
 	var t time.Time
-	err = row.Scan(TimeStamp{&amp;t})
+	err = row.Scan(TimeStamp{&t})
 	if err != nil {
-		log.Fatalf(&#34;cannot scan time: %v&#34;, err)
+		log.Fatalf("cannot scan time: %v", err)
 	}
 	fmt.Println(t)
 }

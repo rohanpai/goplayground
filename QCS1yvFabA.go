@@ -1,6 +1,6 @@
 package main
 
-import &#34;fmt&#34;
+import "fmt"
 
 func main() {
 	const (
@@ -9,9 +9,9 @@ func main() {
 		Einval = 5
 	)
 
-	a := [...]string{Enone: &#34;no error&#34;, Eio: &#34;Eio&#34;, Einval: &#34;invalid argument&#34;}
-	s := []string{Enone: &#34;no error&#34;, Eio: &#34;Eio&#34;, Einval: &#34;invalid argument&#34;}
-	m := map[int]string{Enone: &#34;no error&#34;, Eio: &#34;Eio&#34;, Einval: &#34;invalid argument&#34;}
+	a := [...]string{Enone: "no error", Eio: "Eio", Einval: "invalid argument"}
+	s := []string{Enone: "no error", Eio: "Eio", Einval: "invalid argument"}
+	m := map[int]string{Enone: "no error", Eio: "Eio", Einval: "invalid argument"}
 
 	fmt.Println(a)
 	fmt.Println(s)

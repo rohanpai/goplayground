@@ -3,15 +3,15 @@
 package main
 
 import (
-	&#34;container/ring&#34;
-	&#34;encoding/csv&#34;
-	&#34;errors&#34;
-	&#34;files&#34;
-	&#34;fmt&#34;
-	&#34;io&#34;
-	&#34;os&#34;
-	&#34;runtime&#34;
-	&#34;strconv&#34;
+	"container/ring"
+	"encoding/csv"
+	"errors"
+	"files"
+	"fmt"
+	"io"
+	"os"
+	"runtime"
+	"strconv"
 )
 
 // a simple struct representing a customer account, by account number and name
@@ -41,9 +41,9 @@ const bufSize = 100
 // function ld is the Levenshtein Distance implementation
 // this was taken from Rosetta Code at: http://rosettacode.org/wiki/Levenshtein_distance#Go
 func ld(s, t string) int {
-	d := make([][]int, len(s)&#43;1)
+	d := make([][]int, len(s)+1)
 	for i := range d {
-		d[i] = make([]int, len(t)&#43;1)
+		d[i] = make([]int, len(t)+1)
 	}
 	for i := range d {
 		d[i][0] = i
@@ -51,19 +51,19 @@ func ld(s, t string) int {
 	for j := range d[0] {
 		d[0][j] = j
 	}
-	for j := 1; j &lt;= len(t); j&#43;&#43; {
-		for i := 1; i &lt;= len(s); i&#43;&#43; {
+	for j := 1; j <= len(t); j++ {
+		for i := 1; i <= len(s); i++ {
 			if s[i-1] == t[j-1] {
 				d[i][j] = d[i-1][j-1]
 			} else {
 				min := d[i-1][j]
-				if d[i][j-1] &lt; min {
+				if d[i][j-1] < min {
 					min = d[i][j-1]
 				}
-				if d[i-1][j-1] &lt; min {
+				if d[i-1][j-1] < min {
 					min = d[i-1][j-1]
 				}
-				d[i][j] = min &#43; 1
+				d[i][j] = min + 1
 			}
 		}
 
@@ -81,11 +81,11 @@ func read(src io.Reader) map[string][]customer {
 	// read all records and organize them into the regions map
 	e := files.ReadCSV(src,
 		func(line int, fields []string) error {
-			if line &lt; 2 {
+			if line < 2 {
 				return nil
 			}
 			if len(fields) != 25 {
-				return errors.New(&#34;Incorrect file format.  Wrong number of columns.&#34;)
+				return errors.New("Incorrect file format.  Wrong number of columns.")
 			}
 			if _, ok := regions[fields[5]]; !ok {
 				regions[fields[regionField]] = make([]customer, 0, 10)
@@ -94,7 +94,7 @@ func read(src io.Reader) map[string][]customer {
 			return nil
 		})
 
-	// don&#39;t continue if the wrong number of columns were observed
+	// don't continue if the wrong number of columns were observed
 	if e != nil {
 		panic(e)
 	}
@@ -102,21 +102,21 @@ func read(src io.Reader) map[string][]customer {
 	return regions
 }
 
-// this function processes a &#39;job&#39;
+// this function processes a 'job'
 // each job encapsulates the region to which it corresponds, the slice of customers in that region, and a channel for communicating potential matches
 func process(j job) {
-	// defer closing the job&#39;s channel
+	// defer closing the job's channel
 	defer close(j.comm)
 
 	// do the LD comparisons and send those that are small enough (1/2 size) through the channel
 	// the nested loop compares all pairs of accounts without comparing any pair twice
 	var size int
-	for i := 0; i &lt; len(j.accounts)-1; i&#43;&#43; {
-		for k := i &#43; 1; k &lt; len(j.accounts); k&#43;&#43; {
+	for i := 0; i < len(j.accounts)-1; i++ {
+		for k := i + 1; k < len(j.accounts); k++ {
 
-			// compute the &#39;size&#39; of this  comparison, being the longer of the two strings
+			// compute the 'size' of this  comparison, being the longer of the two strings
 			il, kl := len(j.accounts[i].name), len(j.accounts[k].name)
-			if il &gt; kl {
+			if il > kl {
 				size = il
 			} else {
 				size = kl
@@ -125,10 +125,10 @@ func process(j job) {
 			// compute the edit distance (Levenshtein)
 			ed := ld(j.accounts[i].name, j.accounts[k].name)
 
-			// if the edit distance is smaller than half the &#39;size&#39; computed above, send it through
+			// if the edit distance is smaller than half the 'size' computed above, send it through
 			// this 1/2 ratio was chosen arbitrarily and is open to debate
-			if ed &lt; (size / 2) {
-				j.comm &lt;- []string{strconv.Itoa(ed), strconv.Itoa(size), j.accounts[i].num, j.accounts[i].name, j.accounts[k].num, j.accounts[k].name}
+			if ed < (size / 2) {
+				j.comm <- []string{strconv.Itoa(ed), strconv.Itoa(size), j.accounts[i].num, j.accounts[i].name, j.accounts[k].num, j.accounts[k].name}
 			}
 		}
 	}
@@ -147,16 +147,16 @@ func main() {
 	// compute the number of comparisons to be performed and add a job for each region to the queue
 	var comparisons int64
 	for k, v := range regions {
-		// this formula was derived from &#39;n choose 2&#39;
+		// this formula was derived from 'n choose 2'
 		// we are computing it for each region and summing them
-		comparisons &#43;= int64(((len(v) * len(v)) - len(v)) / 2)
+		comparisons += int64(((len(v) * len(v)) - len(v)) / 2)
 
 		// add a job to the queue and advance to the next Value
 		q.Value = job{region: k, accounts: v, comm: make(chan []string, 10)}
 		q = q.Next()
 	}
-	// using Stderr because Stdout will be dumped to the output file like so: cat &#34;filename.csv&#34; | crmld &gt; output.csv
-	fmt.Fprintln(os.Stderr, &#34;Total number of comparisons to compute: &#34;, comparisons)
+	// using Stderr because Stdout will be dumped to the output file like so: cat "filename.csv" | crmld > output.csv
+	fmt.Fprintln(os.Stderr, "Total number of comparisons to compute: ", comparisons)
 
 	// start a pool of active jobs
 	p := q.Unlink(runtime.NumCPU())
@@ -176,15 +176,15 @@ func main() {
 
 	// start writing the output
 	for {
-		// if there are no more jobs, we&#39;re done
-		if p.Len() == 0 &amp;&amp; q.Len() == 0 {
+		// if there are no more jobs, we're done
+		if p.Len() == 0 && q.Len() == 0 {
 			break
 		}
 
-		// try to read from the currently selected jobs&#39; channel
+		// try to read from the currently selected jobs' channel
 		// failing that, move on to check the next job
 		select {
-		case line, ok := &lt;-p.Value.(job).comm:
+		case line, ok := <-p.Value.(job).comm:
 			if line != nil {
 				output = append(output, line)
 				if len(output) == cap(output) {
@@ -196,11 +196,11 @@ func main() {
 					output = make([][]string, 0, bufSize)
 				}
 			} else if !ok {
-				count &#43;= len(p.Value.(job).accounts)
-				fmt.Fprintln(os.Stderr, &#34;Region %v completed: %v of %v in total&#34;, p.Value.(job).region, count, comparisons)
+				count += len(p.Value.(job).accounts)
+				fmt.Fprintln(os.Stderr, "Region %v completed: %v of %v in total", p.Value.(job).region, count, comparisons)
 				p = p.Prev()
 				p.Unlink(1)
-				if q.Len() &gt; 0 {
+				if q.Len() > 0 {
 					p.Link(q.Unlink(1))
 					go process(p.Next().Value.(job))
 				}

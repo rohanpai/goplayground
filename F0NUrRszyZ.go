@@ -1,19 +1,19 @@
 package main
 
 import (
-	&#34;database/sql&#34;
-	&#34;fmt&#34;
-	&#34;log&#34;
-	//	&#34;os&#34;
-	//&#34;os/user&#34;
-	&#34;time&#34;
+	"database/sql"
+	"fmt"
+	"log"
+	//	"os"
+	//"os/user"
+	"time"
 
-	//_ &#34;github.com/Go-SQL-Driver/MySQL&#34;
-	//_ &#34;github.com/bmizerany/pq&#34;
-	_ &#34;github.com/mattn/go-sqlite3&#34;
+	//_ "github.com/Go-SQL-Driver/MySQL"
+	//_ "github.com/bmizerany/pq"
+	_ "github.com/mattn/go-sqlite3"
 )
 
-const DB_NAME = &#34;foo_test&#34;
+const DB_NAME = "foo_test"
 
 const (
 	//MySQL = iota
@@ -22,9 +22,9 @@ const (
 )
 
 var engine = map[int]string{
-	//0: &#34;MySQL&#34;,
-	//1: &#34;PostgreSQL&#34;,
-	0: &#34;SQLite&#34;,
+	//0: "MySQL",
+	//1: "PostgreSQL",
+	0: "SQLite",
 }
 
 var dbs = make([]*sql.DB, 1)
@@ -33,31 +33,31 @@ var dbs = make([]*sql.DB, 1)
 var datetime = time.Now().UTC()
 
 var CREATE = map[int]string{
-	//MySQL:    &#34;CREATE TABLE times (id INT, datetime TIMESTAMP)&#34;,
-	//Postgres: &#34;CREATE TABLE times (id integer, datetime timestamp with time zone)&#34;,
-	SQLite: &#34;CREATE TABLE IF NOT EXISTS times (id INTEGER PRIMARY KEY NOT NULL, datetime TEXT)&#34;,
+	//MySQL:    "CREATE TABLE times (id INT, datetime TIMESTAMP)",
+	//Postgres: "CREATE TABLE times (id integer, datetime timestamp with time zone)",
+	SQLite: "CREATE TABLE IF NOT EXISTS times (id INTEGER PRIMARY KEY NOT NULL, datetime TEXT)",
 }
 
-var INSERT = fmt.Sprintf(&#34;INSERT OR REPLACE INTO times (id, datetime) VALUES(0, &#39;%s&#39;)&#34;,
+var INSERT = fmt.Sprintf("INSERT OR REPLACE INTO times (id, datetime) VALUES(0, '%s')",
 	datetime.Format(time.RFC3339))
 
 const (
-	//DROP   = &#34;DROP TABLE times&#34;
-	SELECT = &#34;SELECT * FROM times WHERE id = 0&#34;
+	//DROP   = "DROP TABLE times"
+	SELECT = "SELECT * FROM times WHERE id = 0"
 )
 
-// For SQL table &#34;times&#34;
+// For SQL table "times"
 type Times struct {
 	Id       int
 	Datetime time.Time
 }
 
 func (t Times) String() string {
-	return fmt.Sprintf(&#34;{%d, %s}&#34;, t.Id, t.Datetime.Format(time.RFC3339))
+	return fmt.Sprintf("{%d, %s}", t.Id, t.Datetime.Format(time.RFC3339))
 }
 
 func (t *Times) Args1() []interface{} {
-	return []interface{}{&amp;t.Id, &amp;t.Datetime}
+	return []interface{}{&t.Id, &t.Datetime}
 }
 
 func (t *Times) Scan(src interface{}) (err error) {
@@ -65,13 +65,13 @@ func (t *Times) Scan(src interface{}) (err error) {
 	if ok {
 		t.Datetime, err = time.Parse(time.RFC3339, value)
 	} else {
-		err = fmt.Errorf(&#34;Unexpected type: %T&#34;, src)
+		err = fmt.Errorf("Unexpected type: %T", src)
 	}
 	return
 }
 
 func (t *Times) Args2() []interface{} {
-	return []interface{}{&amp;t.Id, t}
+	return []interface{}{&t.Id, t}
 }
 
 func main() {
@@ -85,8 +85,8 @@ func main() {
 
 		// MySQL
 
-		dbMySQL, err := sql.Open(&#34;mysql&#34;, fmt.Sprintf(&#34;%s@unix(%s)/%s&#34;,
-			username, &#34;/var/run/mysqld/mysqld.sock&#34;, DB_NAME))
+		dbMySQL, err := sql.Open("mysql", fmt.Sprintf("%s@unix(%s)/%s",
+			username, "/var/run/mysqld/mysqld.sock", DB_NAME))
 		if err != nil {
 			panic(err)
 		}
@@ -99,8 +99,8 @@ func main() {
 
 		// PostgreSQL
 
-		dbPostgres, err := sql.Open(&#34;postgres&#34;, fmt.Sprintf(&#34;user=%s dbname=%s host=%s sslmode=disable&#34;,
-			username, DB_NAME, &#34;/var/run/postgresql&#34;))
+		dbPostgres, err := sql.Open("postgres", fmt.Sprintf("user=%s dbname=%s host=%s sslmode=disable",
+			username, DB_NAME, "/var/run/postgresql"))
 		if err != nil {
 			panic(err)
 		}
@@ -113,10 +113,10 @@ func main() {
 	*/
 	// SQLite3
 
-	filename := DB_NAME &#43; &#34;.db&#34;
+	filename := DB_NAME + ".db"
 	//defer os.Remove(filename)
 
-	dbSQLite, err := sql.Open(&#34;sqlite3&#34;, filename)
+	dbSQLite, err := sql.Open("sqlite3", filename)
 	if err != nil {
 		panic(err)
 	}
@@ -130,7 +130,7 @@ func main() {
 	// == Insert
 
 	input := Times{0, datetime} // SQL statement in INSERT
-	output := &amp;Times{}
+	output := &Times{}
 
 	for i, db := range dbs {
 		if _, err := db.Exec(INSERT); err != nil {
@@ -139,25 +139,25 @@ func main() {
 
 		// Scan output
 		rows := db.QueryRow(SELECT)
-		fmt.Println(&#34;== Testing with Args1()&#34;)
+		fmt.Println("== Testing with Args1()")
 
 		if err = rows.Scan(output.Args1()...); err != nil {
-			log.Printf(&#34;%s: %s\n\n&#34;, engine[i], err)
+			log.Printf("%s: %s\n\n", engine[i], err)
 		} else {
-			if fmt.Sprintf(&#34;%s&#34;, input) != fmt.Sprintf(&#34;%s&#34;, output) {
-				log.Printf(&#34;%s: got different data\ninput:  %v\noutput: %v\n\n&#34;,
+			if fmt.Sprintf("%s", input) != fmt.Sprintf("%s", output) {
+				log.Printf("%s: got different data\ninput:  %v\noutput: %v\n\n",
 					engine[i], input, output)
 			}
 		}
 
 		rows = db.QueryRow(SELECT)
-		fmt.Println(&#34;== Testing with Args2()&#34;)
+		fmt.Println("== Testing with Args2()")
 
 		if err = rows.Scan(output.Args2()...); err != nil {
-			log.Printf(&#34;%s: %s\n\n&#34;, engine[i], err)
+			log.Printf("%s: %s\n\n", engine[i], err)
 		} else {
-			if fmt.Sprintf(&#34;%v&#34;, input) != fmt.Sprintf(&#34;%v&#34;, output) {
-				log.Printf(&#34;%s: got different data\ninput:  %v\noutput: %v\n\n&#34;,
+			if fmt.Sprintf("%v", input) != fmt.Sprintf("%v", output) {
+				log.Printf("%s: got different data\ninput:  %v\noutput: %v\n\n",
 					engine[i], input, output)
 			}
 		}

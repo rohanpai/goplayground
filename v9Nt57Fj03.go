@@ -7,8 +7,8 @@ package main
 // interfaces create.
 
 import (
-	&#34;encoding/xml&#34;
-	&#34;fmt&#34;
+	"encoding/xml"
+	"fmt"
 )
 
 type PlainVector []int
@@ -16,7 +16,7 @@ type CopyVector []int
 type ManualVector []int
 
 func (v CopyVector) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	// Encapsulating the &#34;copy to different structure&#34; pattern
+	// Encapsulating the "copy to different structure" pattern
 	vX := struct{ X, Y, Z int }{v[0], v[1], v[2]}
 	e.EncodeElement(vX, start)
 
@@ -25,7 +25,7 @@ func (v CopyVector) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 
 func (v *CopyVector) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	vX := struct{ X, Y, Z int }{}
-	d.DecodeElement(&amp;vX, &amp;start)
+	d.DecodeElement(&vX, &start)
 
 	*v = CopyVector{vX.X, vX.Y, vX.Z}
 
@@ -34,18 +34,18 @@ func (v *CopyVector) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 
 func (v ManualVector) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	// Encoding tokens manually to inject attributes and comments
-	start.Attr = []xml.Attr{xml.Attr{Name: xml.Name{Local: &#34;method&#34;}, Value: &#34;unicorns&#34;}}
+	start.Attr = []xml.Attr{xml.Attr{Name: xml.Name{Local: "method"}, Value: "unicorns"}}
 	e.EncodeToken(start)
-	e.EncodeToken(xml.Comment(&#34;We can emit comments, too.&#34;))
+	e.EncodeToken(xml.Comment("We can emit comments, too."))
 
-	e.EncodeToken(xml.Comment(&#34;Value of X&#34;))
-	e.EncodeElement(v[0], xml.StartElement{Name: xml.Name{Local: &#34;X&#34;}})
+	e.EncodeToken(xml.Comment("Value of X"))
+	e.EncodeElement(v[0], xml.StartElement{Name: xml.Name{Local: "X"}})
 
-	e.EncodeToken(xml.Comment(&#34;Value of Y&#34;))
-	e.EncodeElement(v[1], xml.StartElement{Name: xml.Name{Local: &#34;Y&#34;}})
+	e.EncodeToken(xml.Comment("Value of Y"))
+	e.EncodeElement(v[1], xml.StartElement{Name: xml.Name{Local: "Y"}})
 
-	e.EncodeToken(xml.Comment(&#34;Value of Z&#34;))
-	e.EncodeElement(v[2], xml.StartElement{Name: xml.Name{Local: &#34;Z&#34;}})
+	e.EncodeToken(xml.Comment("Value of Z"))
+	e.EncodeElement(v[2], xml.StartElement{Name: xml.Name{Local: "Z"}})
 
 	e.EncodeToken(xml.EndElement{Name: start.Name})
 
@@ -53,9 +53,9 @@ func (v ManualVector) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 }
 
 func (v *ManualVector) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	// We don&#39;t really care about comments or unicorns
+	// We don't really care about comments or unicorns
 	vX := struct{ X, Y, Z int }{}
-	d.DecodeElement(&amp;vX, &amp;start)
+	d.DecodeElement(&vX, &start)
 
 	*v = ManualVector{vX.X, vX.Y, vX.Z}
 	return nil
@@ -79,14 +79,14 @@ func main() {
 	fmt.Println()
 
 	vP := PlainVector{}
-	err := xml.Unmarshal(encoded[0], &amp;vP)
+	err := xml.Unmarshal(encoded[0], &vP)
 	fmt.Println(vP, err)
 
 	vC := CopyVector{}
-	err = xml.Unmarshal(encoded[1], &amp;vC)
+	err = xml.Unmarshal(encoded[1], &vC)
 	fmt.Println(vC, err)
 
 	vM := ManualVector{}
-	err = xml.Unmarshal(encoded[2], &amp;vM)
+	err = xml.Unmarshal(encoded[2], &vM)
 	fmt.Println(vM, err)
 }

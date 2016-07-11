@@ -1,8 +1,8 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;runtime&#34;
+	"fmt"
+	"runtime"
 )
 
 func a() {
@@ -22,10 +22,10 @@ func c() {
 func printStack(stack []uintptr) {
 	for _, pc := range stack {
 		f := runtime.FuncForPC(pc)
-		fmt.Println(f.Name() &#43; &#34;()&#34;)
+		fmt.Println(f.Name() + "()")
 		file, line := f.FileLine(f.Entry())
-		fmt.Printf(&#34;\t%s:%d\n&#34;, file, line)
-		if f.Name() == &#34;main.main&#34; {
+		fmt.Printf("\t%s:%d\n", file, line)
+		if f.Name() == "main.main" {
 			break
 		}
 	}

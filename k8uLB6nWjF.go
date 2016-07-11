@@ -1,47 +1,47 @@
 package main
 
 import (
-	&#34;crypto/hmac&#34;
-	&#34;crypto/sha512&#34;
-	&#34;encoding/base64&#34;
-	&#34;encoding/hex&#34;
-	&#34;encoding/json&#34;
-	&#34;fmt&#34;
-	&#34;io/ioutil&#34;
-	&#34;net/http&#34;
-	&#34;net/url&#34;
+	"crypto/hmac"
+	"crypto/sha512"
+	"encoding/base64"
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"net/url"
 
-	&#34;golang.org/x/crypto/scrypt&#34;
+	"golang.org/x/crypto/scrypt"
 )
 
 type Status struct {
-	Code   int               `json:&#34;code&#34;`
-	Name   string            `json:&#34;name&#34;`
-	Desc   string            `json:&#34;desc&#34;`
-	Fields map[string]string `json:&#34;fields&#34;`
+	Code   int               `json:"code"`
+	Name   string            `json:"name"`
+	Desc   string            `json:"desc"`
+	Fields map[string]string `json:"fields"`
 }
 
 type GetSaltResult struct {
-	Status       `json:&#34;status&#34;`
-	Salt         string `json:&#34;salt&#34;`
-	CSRFToken    string `json:&#34;csrf_token&#34;`
-	LoginSession string `json:&#34;login_session&#34;`
+	Status       `json:"status"`
+	Salt         string `json:"salt"`
+	CSRFToken    string `json:"csrf_token"`
+	LoginSession string `json:"login_session"`
 }
 
 func main() {
 	var urlString string
 	var url *url.URL
-	email := &#34;MyEmail&#34;
-	password := []byte(&#34;MyPassword&#34;)
+	email := "MyEmail"
+	password := []byte("MyPassword")
 
 	// Get Salt
-	urlString = &#34;https://keybase.io/_/api/1.0/getsalt.json&#34;
+	urlString = "https://keybase.io/_/api/1.0/getsalt.json"
 	url, _ = url.Parse(urlString)
 	q := url.Query()
-	q.Set(&#34;email_or_username&#34;, email)
+	q.Set("email_or_username", email)
 	url.RawQuery = q.Encode()
 	resp, _ := http.Get(url.String())
-	result := &amp;GetSaltResult{}
+	result := &GetSaltResult{}
 	decoder := json.NewDecoder(resp.Body)
 	_ = decoder.Decode(result)
 
@@ -54,13 +54,13 @@ func main() {
 	mac.Write(pwh)
 
 	// Login
-	urlString = &#34;https://keybase.io/_/api/1.0/login.json&#34;
+	urlString = "https://keybase.io/_/api/1.0/login.json"
 	url, _ = url.Parse(urlString)
 	q = url.Query()
-	q.Set(&#34;email_or_username&#34;, email)
-	q.Set(&#34;hmac_pwh&#34;, hex.EncodeToString(mac.Sum(nil)))
-	q.Set(&#34;login_session&#34;, base64.StdEncoding.EncodeToString(loginSession))
-	q.Set(&#34;csrf_token&#34;, result.CSRFToken)
+	q.Set("email_or_username", email)
+	q.Set("hmac_pwh", hex.EncodeToString(mac.Sum(nil)))
+	q.Set("login_session", base64.StdEncoding.EncodeToString(loginSession))
+	q.Set("csrf_token", result.CSRFToken)
 	resp, _ = http.PostForm(url.String(), q)
 	contents, _ := ioutil.ReadAll(resp.Body)
 	fmt.Println(string(contents))

@@ -1,21 +1,21 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;local/gl&#34;
-	&#34;local/glfw&#34;
-	&#34;runtime&#34;
-	&#34;time&#34;
+	"fmt"
+	"local/gl"
+	"local/glfw"
+	"runtime"
+	"time"
 )
 
 func main() {
 	runtime.LockOSThread()
 	glfw.SetErrorCallback(errorCallback)
 	if !glfw.Init() {
-		panic(&#34;INIT FAIL&#34;)
+		panic("INIT FAIL")
 	}
 	defer glfw.Terminate()
-	window, err := glfw.CreateWindow(640, 480, &#34;Testing&#34;, nil, nil)
+	window, err := glfw.CreateWindow(640, 480, "Testing", nil, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -31,49 +31,49 @@ func main() {
 	VertexShader := gl.CreateShader(gl.VERTEX_SHADER)
 	vssrc := gl.GLString(vertexShaderSource)
 	defer gl.GLStringFree(vssrc)
-	gl.ShaderSource(VertexShader, 1, &amp;vssrc, nil)
+	gl.ShaderSource(VertexShader, 1, &vssrc, nil)
 	gl.CompileShader(VertexShader)
 	var vstatus gl.Int
-	gl.GetShaderiv(VertexShader, gl.COMPILE_STATUS, &amp;vstatus)
-	fmt.Printf(&#34;Compiled Vertex Shader: %v\n&#34;, vstatus)
+	gl.GetShaderiv(VertexShader, gl.COMPILE_STATUS, &vstatus)
+	fmt.Printf("Compiled Vertex Shader: %v\n", vstatus)
 
 	// FRAGMENT SHADER
 	FragShader := gl.CreateShader(gl.FRAGMENT_SHADER)
 	fssrc := gl.GLString(fragmentShaderSource)
 	defer gl.GLStringFree(fssrc)
-	gl.ShaderSource(FragShader, 1, &amp;fssrc, nil)
+	gl.ShaderSource(FragShader, 1, &fssrc, nil)
 	gl.CompileShader(FragShader)
 	var fstatus gl.Int
-	gl.GetShaderiv(FragShader, gl.COMPILE_STATUS, &amp;fstatus)
-	fmt.Printf(&#34;Compiled Fragment Shader: %v\n&#34;, fstatus)
+	gl.GetShaderiv(FragShader, gl.COMPILE_STATUS, &fstatus)
+	fmt.Printf("Compiled Fragment Shader: %v\n", fstatus)
 
 	// CREATE PROGRAM
 	shaderprogram := gl.CreateProgram()
 	gl.AttachShader(shaderprogram, VertexShader)
 	gl.AttachShader(shaderprogram, FragShader)
-	fragoutstring := gl.GLString(&#34;outColor&#34;)
+	fragoutstring := gl.GLString("outColor")
 	defer gl.GLStringFree(fragoutstring)
 	gl.BindFragDataLocation(shaderprogram, gl.Uint(0), fragoutstring)
 
 	gl.LinkProgram(shaderprogram)
 	var linkstatus gl.Int
-	gl.GetProgramiv(shaderprogram, gl.LINK_STATUS, &amp;linkstatus)
-	fmt.Printf(&#34;Program Link: %v\n&#34;, linkstatus)
+	gl.GetProgramiv(shaderprogram, gl.LINK_STATUS, &linkstatus)
+	fmt.Printf("Program Link: %v\n", linkstatus)
 
 	/////////////////// WORKS FOR SOME REASON
-	gl.VertexAttribPointer(gl.Uint(0), gl.Int(2), gl.FLOAT, gl.FALSE, gl.Sizei(0), gl.Pointer(&amp;verts[0]))
+	gl.VertexAttribPointer(gl.Uint(0), gl.Int(2), gl.FLOAT, gl.FALSE, gl.Sizei(0), gl.Pointer(&verts[0]))
 	gl.EnableVertexAttribArray(0)
 
 	////////////////DOES NOT WORK
 	// VERTEX BUFFER
 	/*var vbo gl.Uint
-	gl.GenBuffers(1, &amp;vbo)
+	gl.GenBuffers(1, &vbo)
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
-	gl.BufferData(gl.ARRAY_BUFFER, gl.Sizeiptr(len(verts)*4), gl.Pointer(&amp;verts), gl.STATIC_DRAW)
+	gl.BufferData(gl.ARRAY_BUFFER, gl.Sizeiptr(len(verts)*4), gl.Pointer(&verts), gl.STATIC_DRAW)
 
 	// VERTEX ARRAY
 	var vao gl.Uint
-	gl.GenVertexArrays(1, &amp;vao)
+	gl.GenVertexArrays(1, &vao)
 	gl.BindVertexArray(vao)
 	gl.EnableVertexAttribArray(0)
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
@@ -100,7 +100,7 @@ var verts = []gl.Float{
 	-1.0, -1.0}
 
 const (
-	Title              = &#34;OpenGL Shader&#34;
+	Title              = "OpenGL Shader"
 	Width              = 640
 	Height             = 480
 	vertexShaderSource = `
@@ -122,5 +122,5 @@ void main()
 )
 
 func errorCallback(err glfw.ErrorCode, desc string) {
-	fmt.Printf(&#34;%v: %v\n&#34;, err, desc)
+	fmt.Printf("%v: %v\n", err, desc)
 }

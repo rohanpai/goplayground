@@ -1,15 +1,15 @@
 package main
 
 import (
-	&#34;bufio&#34;
-	&#34;fmt&#34;
-	&#34;io&#34;
-	&#34;strings&#34;
+	"bufio"
+	"fmt"
+	"io"
+	"strings"
 )
 
 func main() {
-	fmap := Frequency(strings.NewReader(&#34;Francisco, Francisco&#34;))
-	fmt.Println(Suggest(&#34;Fransisco&#34;, fmap))
+	fmap := Frequency(strings.NewReader("Francisco, Francisco"))
+	fmt.Println(Suggest("Fransisco", fmap))
 	// Francisco
 }
 
@@ -25,9 +25,9 @@ func Frequency(reader io.Reader) map[string]int {
 	//
 	for scanner.Scan() {
 		// Remove all leading and trailing Unicode code points.
-		word := strings.Trim(scanner.Text(), &#34;,-!;:\&#34;?.&#34;)
+		word := strings.Trim(scanner.Text(), ",-!;:\"?.")
 		if _, exist := fmap[word]; exist {
-			fmap[word]&#43;&#43;
+			fmap[word]++
 		} else {
 			fmap[word] = 1
 		}
@@ -39,32 +39,32 @@ func Frequency(reader io.Reader) map[string]int {
 // with edit distance 1 to the channel one.
 // This is much more probable than the one with 2 edit distance.
 func distanceOne(txt string, one chan string) {
-	const alphabet = &#34;abcdefghijklmnopqrstuvwxyz&#34;
+	const alphabet = "abcdefghijklmnopqrstuvwxyz"
 	type pair struct {
 		front, back string
 	}
 	pairs := []pair{}
-	for i := 0; i &lt;= len(txt); i&#43;&#43; {
+	for i := 0; i <= len(txt); i++ {
 		pairs = append(pairs, pair{txt[:i], txt[i:]})
 	}
 	for _, pair := range pairs {
 		// deletion of pair.back[0]
-		if len(pair.back) &gt; 0 {
-			one &lt;- pair.front &#43; pair.back[1:]
+		if len(pair.back) > 0 {
+			one <- pair.front + pair.back[1:]
 		}
 		// transpose of pair.back[0] and pair.back[1]
-		if len(pair.back) &gt; 1 {
-			one &lt;- pair.front &#43; string(pair.back[1]) &#43; string(pair.back[0]) &#43; pair.back[2:]
+		if len(pair.back) > 1 {
+			one <- pair.front + string(pair.back[1]) + string(pair.back[0]) + pair.back[2:]
 		}
 		// replace of pair.back[0]
 		for _, elem := range alphabet {
-			if len(pair.back) &gt; 0 {
-				one &lt;- pair.front &#43; string(elem) &#43; pair.back[1:]
+			if len(pair.back) > 0 {
+				one <- pair.front + string(elem) + pair.back[1:]
 			}
 		}
 		// insertion
 		for _, elem := range alphabet {
-			one &lt;- pair.front &#43; string(elem) &#43; pair.back
+			one <- pair.front + string(elem) + pair.back
 		}
 	}
 }
@@ -77,7 +77,7 @@ func distanceMore(word string, other chan string) {
 		distanceOne(word, one)
 		close(one)
 	}()
-	// retrieve from distanceOne results and break when it&#39;s done
+	// retrieve from distanceOne results and break when it's done
 	for v := range one {
 		// run distanceOne in addition to the results from the first distanceOne
 		distanceOne(v, other)
@@ -92,9 +92,9 @@ func known(txt string, distFunc func(string, chan string), fmap map[string]int) 
 		close(words)
 	}()
 	maxFq := 0
-	suggest := &#34;&#34;
+	suggest := ""
 	for wd := range words {
-		if freq, exist := fmap[wd]; exist &amp;&amp; freq &gt; maxFq {
+		if freq, exist := fmap[wd]; exist && freq > maxFq {
 			maxFq, suggest = freq, wd
 		}
 	}
@@ -107,10 +107,10 @@ func Suggest(txt string, fmap map[string]int) string {
 	if _, exist := fmap[txt]; exist {
 		return txt
 	}
-	if v := known(txt, distanceOne, fmap); v != &#34;&#34; {
+	if v := known(txt, distanceOne, fmap); v != "" {
 		return v
 	}
-	if v := known(txt, distanceMore, fmap); v != &#34;&#34; {
+	if v := known(txt, distanceMore, fmap); v != "" {
 		return v
 	}
 	// edit distance 3, 4, and more ...

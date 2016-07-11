@@ -1,15 +1,15 @@
 package main
 
-import &#34;fmt&#34;
+import "fmt"
 
 // GeoPoint maps against Postgis geographical point
 type GeoPoint struct {
-	Lat float64 `json:&#34;lat&#34;`
-	Lng float64 `json:&#34;lng&#34;`
+	Lat float64 `json:"lat"`
+	Lng float64 `json:"lng"`
 }
 
 func (p *GeoPoint) String() string {
-	return fmt.Sprintf(&#34;POINT(%v %v)&#34;, p.Lat, p.Lng)
+	return fmt.Sprintf("POINT(%v %v)", p.Lat, p.Lng)
 }
 
 // Scan implements the Scanner interface and will scan the Postgis POINT(x y) into the GeoPoint struct
@@ -21,7 +21,7 @@ func (p *GeoPoint) Scan(val interface{}) error {
 
 	r := bytes.NewReader(b)
 	var wkbByteOrder uint8
-	if err := binary.Read(r, binary.LittleEndian, &amp;wkbByteOrder); err != nil {
+	if err := binary.Read(r, binary.LittleEndian, &wkbByteOrder); err != nil {
 		return err
 	}
 
@@ -32,11 +32,11 @@ func (p *GeoPoint) Scan(val interface{}) error {
 	case 1:
 		byteOrder = binary.LittleEndian
 	default:
-		return fmt.Errorf(&#34;invalid byte order %u&#34;, wkbByteOrder)
+		return fmt.Errorf("invalid byte order %u", wkbByteOrder)
 	}
 
 	var wkbGeometryType uint64
-	if err := binary.Read(r, byteOrder, &amp;wkbGeometryType); err != nil {
+	if err := binary.Read(r, byteOrder, &wkbGeometryType); err != nil {
 		return err
 	}
 
@@ -53,5 +53,5 @@ func (p *GeoPoint) Value() (driver.Value, error) {
 }
 
 func main() {
-	fmt.Println(&#34;Hello, playground&#34;)
+	fmt.Println("Hello, playground")
 }

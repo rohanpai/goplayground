@@ -1,25 +1,25 @@
 package main
 
 import (
-	&#34;encoding/json&#34;
-	&#34;fmt&#34;
+	"encoding/json"
+	"fmt"
 )
 
 type request struct {
-	Operations map[string]Op `json:&#34;operations&#34;`
+	Operations map[string]Op `json:"operations"`
 }
 type Op struct {
-	Opp  Operation `json:&#34;opp&#34;`
-	Test string    `json:&#34;test&#34;`
+	Opp  Operation `json:"opp"`
+	Test string    `json:"test"`
 }
 type Operation struct {
-	Width  int `json:&#34;width&#34;`
-	Height int `json:&#34;height&#34;`
+	Width  int `json:"width"`
+	Height int `json:"height"`
 }
 
 func (o *Operation) UnmarshalJSON(b []byte) error {
 	type xoperation Operation
-	xo := &amp;xoperation{Width: 500, Height: 50}
+	xo := &xoperation{Width: 500, Height: 50}
 	if err := json.Unmarshal(b, xo); err != nil {
 		return err
 	}
@@ -29,22 +29,22 @@ func (o *Operation) UnmarshalJSON(b []byte) error {
 
 func main() {
 	jsonStr := `{
-			&#34;operations&#34;: {
-				&#34;001&#34;: {
-			 		&#34;test&#34;:&#34;test1&#34;,
-			 		&#34;opp&#34;:{
-					&#34;width&#34;: 101
+			"operations": {
+				"001": {
+			 		"test":"test1",
+			 		"opp":{
+					"width": 101
 			 		}
 				},
-				&#34;002&#34;: {
-			 		&#34;test&#34;:&#34;test2&#34;,
-			 		&#34;opp&#34;:{
-					&#34;width&#34;: 102
+				"002": {
+			 		"test":"test2",
+			 		"opp":{
+					"width": 102
 			 		}
 				}
 			}
 		}`
 	req := request{}
-	json.Unmarshal([]byte(jsonStr), &amp;req)
+	json.Unmarshal([]byte(jsonStr), &req)
 	fmt.Println(req)
 }

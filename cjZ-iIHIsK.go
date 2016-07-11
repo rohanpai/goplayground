@@ -1,7 +1,7 @@
 // Sample program to show how polymorphic behavior with interfaces.
 package main
 
-import &#34;fmt&#34;
+import "fmt"
 
 // notifier is an interface that defines notification
 // type behavior.
@@ -17,7 +17,7 @@ type user struct {
 
 // notify implements the notifier interface with a pointer receiver.
 func (u *user) notify() {
-	fmt.Printf(&#34;Sending user Email To %s&lt;%s&gt;\n&#34;,
+	fmt.Printf("Sending user Email To %s<%s>\n",
 		u.name,
 		u.email)
 }
@@ -30,7 +30,7 @@ type admin struct {
 
 // notify implements the notifier interface with a pointer receiver.
 func (a *admin) notify() {
-	fmt.Printf(&#34;Sending admin Email To %s&lt;%s&gt;\n&#34;,
+	fmt.Printf("Sending admin Email To %s<%s>\n",
 		a.name,
 		a.email)
 }
@@ -38,12 +38,12 @@ func (a *admin) notify() {
 // main is the entry point for the application.
 func main() {
 	// Create two values one of type user and one of type admin.
-	bill := user{&#34;Bill&#34;, &#34;bill@email.com&#34;}
-	jill := admin{&#34;Jill&#34;, &#34;jill@email.com&#34;}
+	bill := user{"Bill", "bill@email.com"}
+	jill := admin{"Jill", "jill@email.com"}
 
 	// Pass a pointer of the values to support the interface.
-	sendNotification(&amp;bill)
-	sendNotification(&amp;jill)
+	sendNotification(&bill)
+	sendNotification(&jill)
 }
 
 // sendNotification accepts values that implement the notifier

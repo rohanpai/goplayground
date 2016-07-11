@@ -1,6 +1,6 @@
 package main
 
-import &#34;fmt&#34;
+import "fmt"
 
 // Factory A Factory which defines a GetFactory method to return a factory instance
 type Factory interface {
@@ -83,13 +83,13 @@ func (mdb *MongoDB) AddData(sql string, data string) error {
 
 // CreateFile creates file
 func (zfs *ZFS) CreateFile(fileName string) (bool, error) {
-	file := File{content: &#34;ZFS Content&#34;, fileName: fileName}
+	file := File{content: "ZFS Content", fileName: fileName}
 	zfs.files[fileName] = file
 	if _, ok := zfs.files[fileName]; ok {
 		return true, nil
 	}
 
-	return false, fmt.Errorf(&#34;Something bad happened.&#34;)
+	return false, fmt.Errorf("Something bad happened.")
 }
 
 // GetFile gets a file
@@ -98,18 +98,18 @@ func (zfs *ZFS) GetFile(fileName string) (File, error) {
 		return f, nil
 	}
 
-	return File{}, fmt.Errorf(&#34;File is still there.&#34;)
+	return File{}, fmt.Errorf("File is still there.")
 }
 
 // CreateFile creates file
 func (ntfs *NTFS) CreateFile(fileName string) (bool, error) {
-	file := File{content: &#34;NTFS Content&#34;, fileName: fileName}
+	file := File{content: "NTFS Content", fileName: fileName}
 	ntfs.files[fileName] = file
 	if _, ok := ntfs.files[fileName]; ok {
 		return true, nil
 	}
 
-	return false, fmt.Errorf(&#34;Something bad happened.&#34;)
+	return false, fmt.Errorf("Something bad happened.")
 }
 
 // GetFile gets a file
@@ -118,25 +118,25 @@ func (ntfs *NTFS) GetFile(fileName string) (File, error) {
 		return f, nil
 	}
 
-	return File{}, fmt.Errorf(&#34;File is still there.&#34;)
+	return File{}, fmt.Errorf("File is still there.")
 }
 
 // GetFactory Create a Factory for the databases
 func (db Databases) GetFactory() Factory {
-	return Databases{&amp;MongoDB{make(map[string]string)}, &amp;OracleDB{make(map[string]string)}}
+	return Databases{&MongoDB{make(map[string]string)}, &OracleDB{make(map[string]string)}}
 }
 
 // GetFactory Create a Factory for the filesystems
 func (fs Filesystems) GetFactory() Factory {
-	return Filesystems{&amp;ZFS{make(map[string]File)}, &amp;NTFS{make(map[string]File)}}
+	return Filesystems{&ZFS{make(map[string]File)}, &NTFS{make(map[string]File)}}
 }
 
 // GetFactory is an abstract factory which returns factories
 func GetFactory(factoryType string) Factory {
 	switch factoryType {
-	case &#34;database&#34;:
+	case "database":
 		return Databases{}.GetFactory()
-	case &#34;filesystems&#34;:
+	case "filesystems":
 		return Filesystems{}.GetFactory()
 	}
 	return nil
@@ -145,11 +145,11 @@ func GetFactory(factoryType string) Factory {
 // GetDatabase This works like a concrete database factory. It returns a concrete
 // database based on databaseType
 func GetDatabase(databaseType string) Database {
-	f := GetFactory(&#34;database&#34;)
+	f := GetFactory("database")
 	switch databaseType {
-	case &#34;mongo&#34;:
+	case "mongo":
 		return f.(Databases).MongoDB
-	case &#34;oracle&#34;:
+	case "oracle":
 		return f.(Databases).OracleDB
 	}
 	return nil
@@ -158,23 +158,23 @@ func GetDatabase(databaseType string) Database {
 // GetFilesystems This works like a concrete filesystem factory. Returns a concrete
 // filesystem
 func GetFilesystems(filesystemType string) Filesystem {
-	f := GetFactory(&#34;filesystems&#34;)
+	f := GetFactory("filesystems")
 	switch filesystemType {
-	case &#34;zfs&#34;:
+	case "zfs":
 		return f.(Filesystems).ZFS
-	case &#34;ntfs&#34;:
+	case "ntfs":
 		return f.(Filesystems).NTFS
 	}
 	return nil
 }
 
 func main() {
-	database := GetDatabase(&#34;mongo&#34;)
-	database.AddData(&#34;bla&#34;, &#34;data bla&#34;)
-	fmt.Println(&#34;database: &#34;, database.RunQuery(&#34;bla&#34;))
+	database := GetDatabase("mongo")
+	database.AddData("bla", "data bla")
+	fmt.Println("database: ", database.RunQuery("bla"))
 
-	filesystem := GetFilesystems(&#34;zfs&#34;)
-	filesystem.CreateFile(&#34;bla&#34;)
-	file, _ := filesystem.GetFile(&#34;bla&#34;)
-	fmt.Println(&#34;file content: &#34;, file.content)
+	filesystem := GetFilesystems("zfs")
+	filesystem.CreateFile("bla")
+	file, _ := filesystem.GetFile("bla")
+	fmt.Println("file content: ", file.content)
 }

@@ -5,10 +5,10 @@
 package main
 
 import (
-	&#34;errors&#34;
-	&#34;fmt&#34;
-	&#34;math/rand&#34;
-	&#34;time&#34;
+	"errors"
+	"fmt"
+	"math/rand"
+	"time"
 )
 
 func init() {
@@ -18,7 +18,7 @@ func init() {
 // =============================================================================
 
 // EOD represents the end of the data stream.
-var EOD = errors.New(&#34;EOD&#34;)
+var EOD = errors.New("EOD")
 
 // Data is the structure of the data we are copying.
 type Data struct {
@@ -37,11 +37,11 @@ func (Xenia) Pull(d *Data) error {
 		return EOD
 
 	case 5:
-		return errors.New(&#34;Error reading data from Xenia&#34;)
+		return errors.New("Error reading data from Xenia")
 
 	default:
-		d.Line = &#34;Data&#34;
-		fmt.Println(&#34;In:&#34;, d.Line)
+		d.Line = "Data"
+		fmt.Println("In:", d.Line)
 		return nil
 	}
 }
@@ -51,7 +51,7 @@ type Pillar struct{}
 
 // Store knows how to store data into Pillar.
 func (Pillar) Store(d Data) error {
-	fmt.Println(&#34;Out:&#34;, d.Line)
+	fmt.Println("Out:", d.Line)
 	return nil
 }
 
@@ -71,7 +71,7 @@ type IO struct{}
 // pull knows how to pull bulks of data from Xenia.
 func (IO) pull(x *Xenia, data []Data) (int, error) {
 	for i := range data {
-		if err := x.Pull(&amp;data[i]); err != nil {
+		if err := x.Pull(&data[i]); err != nil {
 			return i, err
 		}
 	}
@@ -95,9 +95,9 @@ func (io IO) Copy(sys *System, batch int) error {
 	for {
 		data := make([]Data, batch)
 
-		i, err := io.pull(&amp;sys.Xenia, data)
-		if i &gt; 0 {
-			if err := io.store(&amp;sys.Pillar, data[:i]); err != nil {
+		i, err := io.pull(&sys.Xenia, data)
+		if i > 0 {
+			if err := io.store(&sys.Pillar, data[:i]); err != nil {
 				return err
 			}
 		}
@@ -119,7 +119,7 @@ func main() {
 	}
 
 	var io IO
-	if err := io.Copy(&amp;sys, 3); err != EOD {
+	if err := io.Copy(&sys, 3); err != EOD {
 		fmt.Println(err)
 	}
 }

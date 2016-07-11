@@ -1,13 +1,13 @@
 package main
 
 import (
-	&#34;bytes&#34;
-	&#34;encoding/binary&#34;
-	&#34;fmt&#34;
-	&#34;io&#34;
-	&#34;io/ioutil&#34;
-	&#34;os&#34;
-	&#34;path/filepath&#34;
+	"bytes"
+	"encoding/binary"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 )
 
 // WavFormat : data structure
@@ -30,55 +30,55 @@ type WavFormat struct {
 
 // Decode : decode wav data
 func (w *WavFormat) Decode(r io.Reader) error {
-	if err := binary.Read(r, binary.BigEndian, &amp;w.ChunkID); err != nil {
+	if err := binary.Read(r, binary.BigEndian, &w.ChunkID); err != nil {
 		return err
 	}
 
-	if err := binary.Read(r, binary.LittleEndian, &amp;w.ChunkSize); err != nil {
+	if err := binary.Read(r, binary.LittleEndian, &w.ChunkSize); err != nil {
 		return err
 	}
 
-	if err := binary.Read(r, binary.BigEndian, &amp;w.Format); err != nil {
+	if err := binary.Read(r, binary.BigEndian, &w.Format); err != nil {
 		return err
 	}
 
-	if err := binary.Read(r, binary.BigEndian, &amp;w.Subchunk1ID); err != nil {
+	if err := binary.Read(r, binary.BigEndian, &w.Subchunk1ID); err != nil {
 		return err
 	}
 
-	if err := binary.Read(r, binary.LittleEndian, &amp;w.Subchunk1Size); err != nil {
+	if err := binary.Read(r, binary.LittleEndian, &w.Subchunk1Size); err != nil {
 		return err
 	}
 
-	if err := binary.Read(r, binary.LittleEndian, &amp;w.AudioFormat); err != nil {
+	if err := binary.Read(r, binary.LittleEndian, &w.AudioFormat); err != nil {
 		return err
 	}
 
-	if err := binary.Read(r, binary.LittleEndian, &amp;w.NumChannels); err != nil {
+	if err := binary.Read(r, binary.LittleEndian, &w.NumChannels); err != nil {
 		return err
 	}
 
-	if err := binary.Read(r, binary.LittleEndian, &amp;w.SampleRate); err != nil {
+	if err := binary.Read(r, binary.LittleEndian, &w.SampleRate); err != nil {
 		return err
 	}
 
-	if err := binary.Read(r, binary.LittleEndian, &amp;w.ByteRate); err != nil {
+	if err := binary.Read(r, binary.LittleEndian, &w.ByteRate); err != nil {
 		return err
 	}
 
-	if err := binary.Read(r, binary.LittleEndian, &amp;w.BlockAlign); err != nil {
+	if err := binary.Read(r, binary.LittleEndian, &w.BlockAlign); err != nil {
 		return err
 	}
 
-	if err := binary.Read(r, binary.LittleEndian, &amp;w.BitsPerSample); err != nil {
+	if err := binary.Read(r, binary.LittleEndian, &w.BitsPerSample); err != nil {
 		return err
 	}
 
-	if err := binary.Read(r, binary.BigEndian, &amp;w.Subchunk2ID); err != nil {
+	if err := binary.Read(r, binary.BigEndian, &w.Subchunk2ID); err != nil {
 		return err
 	}
 
-	if err := binary.Read(r, binary.LittleEndian, &amp;w.Subchunk2Size); err != nil {
+	if err := binary.Read(r, binary.LittleEndian, &w.Subchunk2Size); err != nil {
 		return err
 	}
 
@@ -93,7 +93,7 @@ func (w *WavFormat) Decode(r io.Reader) error {
 
 func main() {
 
-	files, err := filepath.Glob(&#34;xa*&#34;)
+	files, err := filepath.Glob("xa*")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
@@ -120,6 +120,6 @@ func main() {
 			continue
 		}
 		accum = accum[len(accum)-r.Len():]
-		fmt.Println(&#34;Success! Bytes remaining:&#34;, len(accum))
+		fmt.Println("Success! Bytes remaining:", len(accum))
 	}
 }

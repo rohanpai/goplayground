@@ -1,35 +1,35 @@
 package main
 
 import (
-	&#34;encoding/json&#34;
-	&#34;fmt&#34;
-	&#34;io&#34;
+	"encoding/json"
+	"fmt"
+	"io"
 )
 
 type Record struct {
-	Author Author `json:&#34;author&#34;`
-	Title  string `json:&#34;title&#34;`
-	URL    string `json:&#34;url&#34;`
+	Author Author `json:"author"`
+	Title  string `json:"title"`
+	URL    string `json:"url"`
 }
 
 type Author struct {
-	ID    uint64 `json:&#34;id&#34;`
-	Email string `json:&#34;email&#34;`
+	ID    uint64 `json:"id"`
+	Email string `json:"email"`
 }
 
 type author Author
 
 func (a *Author) UnmarshalJSON(b []byte) (err error) {
-	j, s, n := author{}, &#34;&#34;, uint64(0)
-	if err = json.Unmarshal(b, &amp;j); err == nil {
+	j, s, n := author{}, "", uint64(0)
+	if err = json.Unmarshal(b, &j); err == nil {
 		*a = Author(j)
 		return
 	}
-	if err = json.Unmarshal(b, &amp;s); err == nil {
+	if err = json.Unmarshal(b, &s); err == nil {
 		a.Email = s
 		return
 	}
-	if err = json.Unmarshal(b, &amp;n); err == nil {
+	if err = json.Unmarshal(b, &n); err == nil {
 		a.ID = n
 	}
 	return
@@ -43,21 +43,21 @@ func Decode(r io.Reader) (x *Record, err error) {
 
 func main() {
 	var r []Record
-	fmt.Println(&#34;ERROR:&#34;, json.Unmarshal([]byte(`[{
-	  &#34;author&#34;: &#34;attila@attilaolah.eu&#34;,
-	  &#34;title&#34;:  &#34;My Blog&#34;,
-	  &#34;url&#34;:    &#34;http://attilaolah.eu&#34;
+	fmt.Println("ERROR:", json.Unmarshal([]byte(`[{
+	  "author": "attila@attilaolah.eu",
+	  "title":  "My Blog",
+	  "url":    "http://attilaolah.eu"
 	}, {
-	  &#34;author&#34;: 1234567890,
-	  &#34;title&#34;:  &#34;Westartup&#34;,
-	  &#34;url&#34;:    &#34;http://www.westartup.eu&#34;
+	  "author": 1234567890,
+	  "title":  "Westartup",
+	  "url":    "http://www.westartup.eu"
 	}, {
-	  &#34;author&#34;: {
-	    &#34;id&#34;:    1234567890,
-	    &#34;email&#34;: &#34;nospam@westartup.eu&#34;
+	  "author": {
+	    "id":    1234567890,
+	    "email": "nospam@westartup.eu"
 	  },
-	  &#34;title&#34;:  &#34;Westartup&#34;,
-	  &#34;url&#34;:    &#34;http://www.westartup.eu&#34;
-	}]`), &amp;r))
-	fmt.Println(&#34;RECORDS:&#34;, r)
+	  "title":  "Westartup",
+	  "url":    "http://www.westartup.eu"
+	}]`), &r))
+	fmt.Println("RECORDS:", r)
 }

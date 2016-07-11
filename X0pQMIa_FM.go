@@ -1,41 +1,41 @@
 package main
 
 import (
-	&#34;code.google.com/p/go.net/websocket&#34;
-	&#34;encoding/base64&#34;
-	&#34;flag&#34;
-	&#34;log&#34;
-	&#34;net&#34;
-	&#34;net/http&#34;
+	"code.google.com/p/go.net/websocket"
+	"encoding/base64"
+	"flag"
+	"log"
+	"net"
+	"net/http"
 )
 
 var (
-	listen = flag.String(&#34;listen&#34;, &#34;:6080&#34;, &#34;Location to listen for connections&#34;)
+	listen = flag.String("listen", ":6080", "Location to listen for connections")
 )
 
 func main() {
 	flag.Parse()
 	var wsConfig *websocket.Config
 	var err error
-	if wsConfig, err = websocket.NewConfig(&#34;ws://127.0.0.1:6080/&#34;, &#34;http://127.0.0.1:6080&#34;); err != nil {
+	if wsConfig, err = websocket.NewConfig("ws://127.0.0.1:6080/", "http://127.0.0.1:6080"); err != nil {
 		log.Fatalf(err.Error())
 		return
 	}
 
-	// wsConfig.Protocol = []string{&#34;base64&#34;}
-	http.Handle(&#34;/websockify&#34;, websocket.Server{Handler: wsh,
+	// wsConfig.Protocol = []string{"base64"}
+	http.Handle("/websockify", websocket.Server{Handler: wsh,
 		Config: *wsConfig,
 		Handshake: func(ws *websocket.Config, req *http.Request) error {
-			ws.Protocol = []string{&#34;base64&#34;}
+			ws.Protocol = []string{"base64"}
 			return nil
 		}})
-	http.Handle(&#34;/novnc/&#34;, http.StripPrefix(&#34;/novnc/&#34;, http.FileServer(http.Dir(&#34;./novnc/&#34;))))
+	http.Handle("/novnc/", http.StripPrefix("/novnc/", http.FileServer(http.Dir("./novnc/"))))
 	log.Fatal(http.ListenAndServe(*listen, nil))
 }
 
 func wsh(ws *websocket.Conn) {
-	loc := &#34;127.0.0.1:5901&#34;
-	vc, err := net.Dial(&#34;tcp&#34;, loc)
+	loc := "127.0.0.1:5901"
+	vc, err := net.Dial("tcp", loc)
 	defer vc.Close()
 	if err != nil {
 		log.Print(err)
@@ -68,7 +68,7 @@ func wsh(ws *websocket.Conn) {
 				return
 			}
 			base64.StdEncoding.Encode(dbuf, sbuf[0:n])
-			n = ((n &#43; 2) / 3) * 4
+			n = ((n + 2) / 3) * 4
 			ws.Write(dbuf[0:n])
 			if e != nil {
 				return

@@ -1,11 +1,11 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;testing&#34;
+	"fmt"
+	"testing"
 
-	. &#34;github.com/juju/affinity&#34;
-	&#34;github.com/juju/affinity/storage/mem&#34;
+	. "github.com/juju/affinity"
+	"github.com/juju/affinity/storage/mem"
 )
 
 // MessageBoard defines the interface for a message board service.
@@ -26,10 +26,10 @@ type MessageBoard interface {
 
 var MessageBoardRoles RoleMap = NewRoleMap(LurkerRole, PosterRole, ModeratorRole)
 
-var AccessDenied error = fmt.Errorf(&#34;Access denied&#34;)
+var AccessDenied error = fmt.Errorf("Access denied")
 
 // MessageBoardResource represents the entire message board.
-var MessageBoardResource Resource = NewResource(&#34;message-board:&#34;,
+var MessageBoardResource Resource = NewResource("message-board:",
 	ReadPerm, ListPerm, PostPerm, DeletePerm, StickyPerm, BanPerm)
 
 // mbConn is a connection to the message board service as a certain user.
@@ -42,10 +42,10 @@ func (mb *mbConn) Lurk(pageNumber int) (string, error) {
 	// Check that the user has list permissions on the message board
 	can, err := mb.Can(mb.AsUser, ListPerm, MessageBoardResource)
 	if err != nil {
-		return &#34;&#34;, err
+		return "", err
 	}
 	if !can {
-		return &#34;&#34;, AccessDenied
+		return "", AccessDenied
 	}
 	// Get the page content
 	return mb.loadPage(pageNumber)
@@ -63,23 +63,23 @@ func (mb *mbConn) Post(msg string) (int, error) {
 }
 
 func main(t *testing.T) {
-	// Let&#39;s set up an RBAC store. We&#39;ll use the in-memory store
+	// Let's set up an RBAC store. We'll use the in-memory store
 	// for this example. You should use something more permanent like the Mongo store.
 	store := mem.NewStore()
 	// Admin lets us grant and revoke roles
 	admin := NewAdmin(store, MessageBoardRoles)
-	// Anonymous scheme users can lurk and that&#39;s all
-	admin.Grant(User{Identity{&#34;anon&#34;, &#34;*&#34;}}, LurkerRole, MessageBoardResource)
+	// Anonymous scheme users can lurk and that's all
+	admin.Grant(User{Identity{"anon", "*"}}, LurkerRole, MessageBoardResource)
 	// Verified Gooble users can post
-	admin.Grant(User{Identity{&#34;gooble&#34;, &#34;*&#34;}}, PosterRole, MessageBoardResource)
+	admin.Grant(User{Identity{"gooble", "*"}}, PosterRole, MessageBoardResource)
 
 	// A wild anon appears
-	anon := User{Identity{&#34;anon&#34;, &#34;10.55.61.128&#34;}}
+	anon := User{Identity{"anon", "10.55.61.128"}}
 
 	// Connect to the message board service as this user
-	// In a web application, you&#39;ll likely derive the user from http.Request, using
+	// In a web application, you'll likely derive the user from http.Request, using
 	// OAuth, OpenID, cookies, etc.
-	mb := &amp;mbConn{&amp;Access{store, MessageBoardRoles}, anon}
+	mb := &mbConn{&Access{store, MessageBoardRoles}, anon}
 
 	// Print the first page of the message board. The MessageBoard will check
 	// Access.Can(user, ListPerm, MessageBoardResource).
@@ -91,11 +91,11 @@ func main(t *testing.T) {
 
 	// A tame authenticated user appears. Reattach as tame user now.
 	// In real life, this would likely be in a distinct http.Handler with its own session.
-	tame := User{Identity{&#34;gooble&#34;, &#34;YourRealName&#34;}}
-	mb = &amp;mbConn{&amp;Access{store, MessageBoardRoles}, tame}
+	tame := User{Identity{"gooble", "YourRealName"}}
+	mb = &mbConn{&Access{store, MessageBoardRoles}, tame}
 
 	// Post a message.
-	_, err = mb.Post(&#34;check &#39;em&#34;)
+	_, err = mb.Post("check 'em")
 	if err != nil {
 		panic(err)
 	}

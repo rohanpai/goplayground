@@ -1,10 +1,10 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;math/rand&#34;
-	&#34;sync&#34;
-	&#34;time&#34;
+	"fmt"
+	"math/rand"
+	"sync"
+	"time"
 )
 
 /*
@@ -17,44 +17,44 @@ type Person interface {
 type person string
 
 func (p person) GetReady(wg *sync.WaitGroup) {
-	fmt.Println(string(p), &#34;started to get ready.&#34;)
+	fmt.Println(string(p), "started to get ready.")
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
 		t := time.Duration(rand.Intn(5)) * time.Second
 		time.Sleep(t)
-		fmt.Println(string(p), &#34;spent&#34;, t, &#34;getting ready.&#34;)
+		fmt.Println(string(p), "spent", t, "getting ready.")
 
 	}()
 }
 
 func (p person) PutOnShoes(wg *sync.WaitGroup) {
-	fmt.Println(string(p), &#34;started putting on shoes.&#34;)
+	fmt.Println(string(p), "started putting on shoes.")
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
 		t := time.Duration(rand.Intn(5)) * time.Second
 		time.Sleep(t)
-		fmt.Println(string(p), &#34;spent&#34;, t, &#34;putting on shoes.&#34;)
+		fmt.Println(string(p), "spent", t, "putting on shoes.")
 
 	}()
 }
 
 type Alarm interface {
-	ArmTheAlarm() &lt;-chan struct{}
+	ArmTheAlarm() <-chan struct{}
 }
 
 type alarm struct{}
 
-func (alarm) ArmTheAlarm() &lt;-chan struct{} {
-	fmt.Println(&#34;Arming the alarm.&#34;)
+func (alarm) ArmTheAlarm() <-chan struct{} {
+	fmt.Println("Arming the alarm.")
 	done := make(chan struct{})
 
 	go func() {
-		fmt.Println(&#34;Alarm is counting down.&#34;)
+		fmt.Println("Alarm is counting down.")
 		time.Sleep(5 * time.Second)
-		fmt.Println(&#34;Alarm is armed!&#34;)
-		done &lt;- struct{}{}
+		fmt.Println("Alarm is armed!")
+		done <- struct{}{}
 	}()
 	return done
 }
@@ -63,9 +63,9 @@ func main() {
 	rand.Seed(0)
 
 	wg := new(sync.WaitGroup)
-	alice, bob := person(&#34;Alice&#34;), person(&#34;Bob&#34;)
+	alice, bob := person("Alice"), person("Bob")
 
-	fmt.Println(&#34;Let&#39;s go for a walk!&#34;)
+	fmt.Println("Let's go for a walk!")
 
 	// Get ready
 	bob.GetReady(wg)
@@ -80,8 +80,8 @@ func main() {
 	bob.PutOnShoes(wg)
 	wg.Wait()
 
-	fmt.Println(&#34;Exiting and locking the door.&#34;)
+	fmt.Println("Exiting and locking the door.")
 
 	// Wait for the alarm to arm itself
-	&lt;-done
+	<-done
 }

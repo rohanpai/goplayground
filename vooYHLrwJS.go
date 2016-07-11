@@ -1,10 +1,10 @@
 package nnet
 
 import (
-	&#34;math&#34;
-    	&#34;bytes&#34;
-	&#34;encoding/gob&#34;
-	&#34;math/rand&#34;
+	"math"
+    	"bytes"
+	"encoding/gob"
+	"math/rand"
 )
 
 /////////////// Neuron Types
@@ -15,7 +15,7 @@ import (
 type Sigmoid struct{}
 
 func (a *Sigmoid) Activate(sum float64) float64 {
-	return 1.0 / (1.0 &#43; math.Exp(-sum))
+	return 1.0 / (1.0 + math.Exp(-sum))
 }
 func (n *Sigmoid) DActivateDSum(sum, output float64) float64 {
 	return output * (1 - output)
@@ -60,7 +60,7 @@ func (l SquaredDistance) LossAndDLossDPred(pred, truth, deriv []float64) float64
 	for i := range pred {
 		diff := pred[i] - truth[i]
 		deriv[i] = diff
-		loss &#43;= math.Pow(diff, 2)
+		loss += math.Pow(diff, 2)
 	}
 	loss /= 2
 	loss /= float64(len(pred))
@@ -75,10 +75,10 @@ type ManhattanDistance struct{}
 func (m ManhattanDistance) LossAndDLossDPred(pred, truth, deriv []float64) float64 {
 	loss := 0.0
 	for i := range pred {
-		loss &#43;= math.Abs(pred[i] - truth[i])
-		if pred[i] &gt; truth[i] {
+		loss += math.Abs(pred[i] - truth[i])
+		if pred[i] > truth[i] {
 			deriv[i] = 1.0 / float64(len(pred))
-		} else if pred[i] &lt; truth[i] {
+		} else if pred[i] < truth[i] {
 			deriv[i] = -1.0 / float64(len(pred))
 		} else {
 			deriv[i] = 0
@@ -131,7 +131,7 @@ func (n *Neuron) GobEncode() (buf []byte, err error) {
 func (n *Neuron) GobDecode(buf []byte) (err error) {
 	r := bytes.NewBuffer(buf)
 	decoder := gob.NewDecoder(r)
-	err = decoder.Decode(&amp;n.Weights)
+	err = decoder.Decode(&n.Weights)
 	if err != nil {
 		return err
 	}
@@ -141,9 +141,9 @@ func (n *Neuron) GobDecode(buf []byte) (err error) {
 // Compute the weighted sum and the activation function
 func (n *Neuron) Process(input []float64) (output, sum float64) {
 	for i, val := range input {
-		sum &#43;= val * n.Weights[i]
+		sum += val * n.Weights[i]
 	}
-	sum &#43;= n.Weights[len(n.Weights)-1] //Bias term
+	sum += n.Weights[len(n.Weights)-1] //Bias term
 	return n.Activate(sum), sum
 }
 
@@ -158,9 +158,9 @@ func (n *Neuron) Process(input []float64) (output, sum float64) {
 
 func (n *Neuron) Initialize(nInputs int, r Activator) {
 	n.Activator = r
-	n.nWeights = nInputs &#43; 1 // Plus one is for the bias term
+	n.nWeights = nInputs + 1 // Plus one is for the bias term
 	n.Weights = make([]float64, n.nWeights)
-	// I&#39;m not sure if this should be here or not
+	// I'm not sure if this should be here or not
 	n.InitializeWeights()
 }
 

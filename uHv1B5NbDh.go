@@ -1,15 +1,15 @@
 package main
 
 import (
-	&#34;bufio&#34;
-	&#34;fmt&#34;
-	gzip &#34;github.com/klauspost/pgzip&#34;
-	//&#34;compress/gzip&#34;
-	&#34;os&#34;
-	&#34;runtime&#34;
-	&#34;strconv&#34;
-	&#34;strings&#34;
-	&#34;time&#34;
+	"bufio"
+	"fmt"
+	gzip "github.com/klauspost/pgzip"
+	//"compress/gzip"
+	"os"
+	"runtime"
+	"strconv"
+	"strings"
+	"time"
 )
 
 // Time processing allcities.txt from http://download.geonames.org/export/dump/ - recompressed to gzip.
@@ -32,14 +32,14 @@ type City struct {
 	/* Skip 4 Admin */
 	Population int       //  bigint (8 byte int)
 	Elevation  int       //  in meters, integer
-	Dem        string    //  digital elevation model, srtm3 or gtopo30, average elevation of 3&#39;&#39;x3&#39;&#39; (ca 90mx90m) or 30&#39;&#39;x30&#39;&#39; (ca 900mx900m) area in meters, integer. srtm processed by cgiar/ciat.
+	Dem        string    //  digital elevation model, srtm3 or gtopo30, average elevation of 3''x3'' (ca 90mx90m) or 30''x30'' (ca 900mx900m) area in meters, integer. srtm processed by cgiar/ciat.
 	Timezone   string    //  the timezone id (see file timeZone.txt) varchar(40)
 	Modified   time.Time //  date of last modification in yyyy-MM-dd format
 }
 
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
-	file, err := os.Open(&#34;allCountries.txt.gz&#34;)
+	file, err := os.Open("allCountries.txt.gz")
 	if err != nil {
 		panic(err)
 	}
@@ -53,15 +53,15 @@ func main() {
 	n := 0
 	for scan.Scan() {
 		line := scan.Text()
-		s := strings.Split(line, &#34;\t&#34;)
-		if len(s) &lt; 19 {
+		s := strings.Split(line, "\t")
+		if len(s) < 19 {
 			continue
 		}
 		c := City{}
 		c.GeonameID, _ = strconv.Atoi(s[0])
 		c.Name = s[1]
 		c.AsciiName = s[2]
-		c.AlternateNames = strings.Split(s[3], &#34;,&#34;)
+		c.AlternateNames = strings.Split(s[3], ",")
 		c.Latitude, _ = strconv.ParseFloat(s[4], 64)
 		c.Longitude, _ = strconv.ParseFloat(s[5], 64)
 		c.FeatureClass = s[6]
@@ -72,10 +72,10 @@ func main() {
 		c.Elevation, _ = strconv.Atoi(s[15])
 		c.Dem = s[16]
 		c.Timezone = s[17]
-		c.Modified, _ = time.Parse(&#34;2006-01-02&#34;, s[18])
-		//fmt.Printf(&#34;%#v\n&#34;, c)
-		n&#43;&#43;
+		c.Modified, _ = time.Parse("2006-01-02", s[18])
+		//fmt.Printf("%#v\n", c)
+		n++
 	}
 	d := time.Since(t)
-	fmt.Printf(&#34;Processed %d entries in %v, %.1f entries/sec.&#34;, n, d, float64(n)/(float64(d)/float64(time.Second)))
+	fmt.Printf("Processed %d entries in %v, %.1f entries/sec.", n, d, float64(n)/(float64(d)/float64(time.Second)))
 }

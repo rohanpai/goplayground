@@ -17,7 +17,7 @@ const (
         Hour                 = 60 * Minute
 )
 
-// Add returns the time t&#43;d.
+// Add returns the time t+d.
 func (t Time) Add(d Duration) Time
 */
 
@@ -26,8 +26,8 @@ func (t Time) Add(d Duration) Time
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;time&#34;
+	"fmt"
+	"time"
 )
 
 // fiveSeconds is a typed constant of type int64.
@@ -51,7 +51,7 @@ func main() {
 	// type time.Duration in argument to now.Add
 
 	// Display the values.
-	fmt.Printf(&#34;Now     : %v\n&#34;, now)
-	fmt.Printf(&#34;Nano    : %v\n&#34;, lessFiveNanoseconds)
-	fmt.Printf(&#34;Seconds : %v\n&#34;, lessFiveSeconds)
+	fmt.Printf("Now     : %v\n", now)
+	fmt.Printf("Nano    : %v\n", lessFiveNanoseconds)
+	fmt.Printf("Seconds : %v\n", lessFiveSeconds)
 }

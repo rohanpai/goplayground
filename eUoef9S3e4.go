@@ -1,10 +1,10 @@
 package main
 
 import (
-	&#34;os&#34;
-	&#34;os/exec&#34;
+	"os"
+	"os/exec"
 
-	&#34;gopkg.in/qml.v1&#34;
+	"gopkg.in/qml.v1"
 )
 
 func main() {
@@ -15,10 +15,10 @@ func main() {
 
 type Foo struct{}
 
-// DoClick runs the command &#34;echo FOO!&#34; and copies it&#39;s stdout to
-// this programs&#39; stdout.
+// DoClick runs the command "echo FOO!" and copies it's stdout to
+// this programs' stdout.
 func (Foo) DoClick() {
-	cmd := exec.Command(&#34;echo&#34;, &#34;FOO!&#34;)
+	cmd := exec.Command("echo", "FOO!")
 	cmd.Stdout = os.Stdout
 
 	if err := cmd.Run(); err != nil {
@@ -35,9 +35,9 @@ func run() error {
 	engine := qml.NewEngine()
 
 	ctx := engine.Context()
-	ctx.SetVar(&#34;foo&#34;, Foo{})
+	ctx.SetVar("foo", Foo{})
 
-	obj, err := engine.LoadString(&#34;foo.qml&#34;, QML)
+	obj, err := engine.LoadString("foo.qml", QML)
 	if err != nil {
 		return err
 	}
@@ -60,14 +60,14 @@ Rectangle {
 	Button {
 		anchors.top: parent.top
 		anchors.left: parent.left
-		text: &#34;DoClick&#34;
+		text: "DoClick"
 		onClicked: foo.doClick()
 	}
 
 	Button {
 		anchors.bottom: parent.bottom
 		anchors.right: parent.right
-		text: &#34;GoDoClick&#34;
+		text: "GoDoClick"
 		onClicked: foo.goDoClick()
 	}
 }

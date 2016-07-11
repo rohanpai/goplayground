@@ -1,10 +1,10 @@
 package main
 
 import (
-    &#34;errors&#34;
-    &#34;fmt&#34;
-    &#34;reflect&#34;
-    &#34;sync&#34;
+    "errors"
+    "fmt"
+    "reflect"
+    "sync"
 )
 
 type invoke struct {
@@ -27,10 +27,10 @@ func (self *invokeList) add(fn interface{}, args ...interface{}) error {
 
     fnValue := reflect.ValueOf(fn)
     if fnValue.Kind() != reflect.Func {
-        return errors.New(&#34;Non-callable function&#34;)
+        return errors.New("Non-callable function")
     }
     if fnValue.Type().NumIn() != len(args) {
-        return errors.New(&#34;Error arguments number&#34;)
+        return errors.New("Error arguments number")
     }
 
     argsValue := make([]reflect.Value, len(args))
@@ -38,7 +38,7 @@ func (self *invokeList) add(fn interface{}, args ...interface{}) error {
         argsValue[i] = reflect.ValueOf(arg)
     }
 
-    self.list = append(self.list, &amp;invoke{fnValue, argsValue})
+    self.list = append(self.list, &invoke{fnValue, argsValue})
     return nil
 }
 
@@ -65,5 +65,5 @@ func main() {
 		fmt.Println(msg)
 	}
 	
-	destructors.add(done, &#34;I&#39;m done&#34;)
+	destructors.add(done, "I'm done")
 }

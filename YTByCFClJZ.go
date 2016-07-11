@@ -1,16 +1,16 @@
 package main
 
 import (
-	&#34;bytes&#34;
-	&#34;crypto/aes&#34;
-	&#34;crypto/cipher&#34;
-	&#34;crypto/hmac&#34;
-	&#34;crypto/sha1&#34;
-	&#34;fmt&#34;
-	&#34;io&#34;
-	&#34;os&#34;
+	"bytes"
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/hmac"
+	"crypto/sha1"
+	"fmt"
+	"io"
+	"os"
 
-	&#34;golang.org/x/crypto/pbkdf2&#34;
+	"golang.org/x/crypto/pbkdf2"
 )
 
 var (
@@ -46,28 +46,28 @@ func main() {
 	authcode := raw[31:]
 
 	// Print raw contents
-	fmt.Printf(&#34;Testing decryption of file data payload.\n&#34;)
-	fmt.Printf(&#34;Salt: %x\n&#34;, salt)
-	fmt.Printf(&#34;PW Code: %x\n&#34;, pwcode)
-	fmt.Printf(&#34;Encrypted contents: %x\n&#34;, data)
-	fmt.Printf(&#34;Auth Code: %x\n&#34;, authcode)
+	fmt.Printf("Testing decryption of file data payload.\n")
+	fmt.Printf("Salt: %x\n", salt)
+	fmt.Printf("PW Code: %x\n", pwcode)
+	fmt.Printf("Encrypted contents: %x\n", data)
+	fmt.Printf("Auth Code: %x\n", authcode)
 
 	// Generate decryption/auth keys and password verifier from password and salt
-	decKey, authKey, pwv := generateKeys([]byte(&#34;golang&#34;), salt, aes256KeyLen)
+	decKey, authKey, pwv := generateKeys([]byte("golang"), salt, aes256KeyLen)
 
-	fmt.Printf(&#34;Decryption key: %x\n&#34;, decKey)
-	fmt.Printf(&#34;Auth key: %x\n&#34;, authKey)
-	fmt.Printf(&#34;Password verifier: %x\n&#34;, pwv)
+	fmt.Printf("Decryption key: %x\n", decKey)
+	fmt.Printf("Auth key: %x\n", authKey)
+	fmt.Printf("Password verifier: %x\n", pwv)
 
 	// Check password verification.
 	if !checkPasswordVerification(pwv, pwcode) {
-		fmt.Printf(&#34;Password verification failed.\n&#34;)
+		fmt.Printf("Password verification failed.\n")
 	}
 
 	// Check MAC authentication code from the payload matches
 	// the MAC code generated from auth key and encrypted content.
 	if !checkAuthentication(data, authcode, authKey) {
-		fmt.Printf(&#34;Authentication failed.\n&#34;)
+		fmt.Printf("Authentication failed.\n")
 	}
 
 	// Generate the IV (or counter?)
@@ -77,7 +77,7 @@ func main() {
 	// Get the decryption stream
 	decStream := decryptStream(data, decKey, iv[:])
 
-	fmt.Printf(&#34;Decrypted Contents: \n&#34;)
+	fmt.Printf("Decrypted Contents: \n")
 	io.Copy(os.Stdout, decStream)
 }
 
@@ -97,10 +97,10 @@ func checkAuthentication(message, authcode, key []byte) bool {
 }
 
 func generateKeys(password, salt []byte, keySize int) (encKey, authKey, pwv []byte) {
-	totalSize := (keySize * 2) &#43; 2 // enc &#43; auth &#43; pv sizes
+	totalSize := (keySize * 2) + 2 // enc + auth + pv sizes
 
 	key := pbkdf2.Key(password, salt, iterationCount, totalSize, sha1.New)
-	fmt.Printf(&#34;Master key: %x\n&#34;, key)
+	fmt.Printf("Master key: %x\n", key)
 	encKey = key[:keySize]
 	authKey = key[keySize : keySize*2]
 	pwv = key[keySize*2:]

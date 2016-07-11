@@ -1,10 +1,10 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;sync&#34;
-	&#34;sync/atomic&#34;
-	&#34;unsafe&#34;
+	"fmt"
+	"sync"
+	"sync/atomic"
+	"unsafe"
 )
 
 type IntMap interface {
@@ -19,7 +19,7 @@ type Locked struct {
 }
 
 func NewLocked() *Locked {
-	return &amp;Locked{make(map[int]int), sync.RWMutex{}}
+	return &Locked{make(map[int]int), sync.RWMutex{}}
 }
 
 func (c *Locked) Get(k int) (v int, ok bool) {
@@ -46,7 +46,7 @@ const stripes = 53
 type Striped [stripes]stripe
 
 func NewStriped() *Striped {
-	m := &amp;Striped{}
+	m := &Striped{}
 	for i := range m {
 		m[i].e = make(map[int]int)
 	}
@@ -54,7 +54,7 @@ func NewStriped() *Striped {
 }
 
 func (c *Striped) Get(k int) (v int, ok bool) {
-	s := &amp;c[k%stripes]
+	s := &c[k%stripes]
 	s.m.RLock()
 	v, ok = s.e[k]
 	s.m.RUnlock()
@@ -62,7 +62,7 @@ func (c *Striped) Get(k int) (v int, ok bool) {
 }
 
 func (c *Striped) Set(k int, v int) {
-	s := &amp;c[k%stripes]
+	s := &c[k%stripes]
 	s.m.Lock()
 	s.e[k] = v
 	s.m.Unlock()
@@ -76,15 +76,15 @@ type Atomic struct {
 
 func NewAtomic() *Atomic {
 	items := make(map[int]int)
-	return &amp;Atomic{unsafe.Pointer(&amp;items), sync.Mutex{}}
+	return &Atomic{unsafe.Pointer(&items), sync.Mutex{}}
 }
 
 func (c *Atomic) get() map[int]int {
-	return *(*map[int]int)(atomic.LoadPointer(&amp;c.items))
+	return *(*map[int]int)(atomic.LoadPointer(&c.items))
 }
 
 func (c *Atomic) set(m map[int]int) {
-	atomic.StorePointer(&amp;c.items, unsafe.Pointer(&amp;m))
+	atomic.StorePointer(&c.items, unsafe.Pointer(&m))
 }
 
 func (c *Atomic) Get(k int) (v int, ok bool) {
@@ -95,7 +95,7 @@ func (c *Atomic) Get(k int) (v int, ok bool) {
 func (c *Atomic) Set(k int, v int) {
 	c.m.Lock()
 	m := c.get()
-	cp := make(map[int]int, len(m)&#43;1)
+	cp := make(map[int]int, len(m)+1)
 	for k, v := range m {
 		cp[k] = v
 	}

@@ -1,10 +1,10 @@
 package main
 
 import (
-	&#34;errors&#34;
-	&#34;strings&#34;
+	"errors"
+	"strings"
 
-	&#34;github.com/emicklei/go-restful&#34;
+	"github.com/emicklei/go-restful"
 )
 
 func main() {
@@ -18,28 +18,28 @@ type WorkspaceObject struct {
 }
 
 type CrudObject struct {
-	ID           *uint32 `json:&#34;ID,omitempty&#34; db:&#34;ID&#34;`
-	Name         *string `json:&#34;Name,omitempty&#34; db:&#34;Name&#34;`
+	ID           *uint32 `json:"ID,omitempty" db:"ID"`
+	Name         *string `json:"Name,omitempty" db:"Name"`
 }
 
 var wo = []WorkspaceObject{
-	{&#34;Profiles&#34;, &#34;ProfilesID&#34;, &#34;profiles&#34;},
-	{&#34;Dashboards&#34;, &#34;DashboardsID&#34;, &#34;dashboards&#34;},
-	{&#34;Filtersets&#34;, &#34;FiltersetsID&#34;, &#34;filtersets&#34;},
-	{&#34;KeywordGroups&#34;, &#34;KeywordGroupsID&#34;, &#34;keyword-groups&#34;},
-	{&#34;Teams&#34;, &#34;TeamsID&#34;, &#34;teams&#34;},
+	{"Profiles", "ProfilesID", "profiles"},
+	{"Dashboards", "DashboardsID", "dashboards"},
+	{"Filtersets", "FiltersetsID", "filtersets"},
+	{"KeywordGroups", "KeywordGroupsID", "keyword-groups"},
+	{"Teams", "TeamsID", "teams"},
 }
 
 func SetupCrudRoutes() {
 
 	ws := new(restful.WebService)
 	ws.
-		Path(&#34;/workspaces/{WorkspacesID}/&#34;).
+		Path("/workspaces/{WorkspacesID}/").
 		Consumes(restful.MIME_JSON).
 		Produces(restful.MIME_JSON)
 
 	for _, object := range wo {
-		SetupWorkspaceObjectCrudRoutes(ws, &amp;object)
+		SetupWorkspaceObjectCrudRoutes(ws, &object)
 	}
 
 	restful.Add(ws)
@@ -47,45 +47,45 @@ func SetupCrudRoutes() {
 
 func SetupWorkspaceObjectCrudRoutes(ws *restful.WebService, wo *WorkspaceObject) {
 
-	ws.Route(ws.GET(&#34;/&#34; &#43; wo.Slug &#43; &#34;/&#34;).To(CrudIndex).
-		Doc(&#34;get a profile&#34;).
+	ws.Route(ws.GET("/" + wo.Slug + "/").To(CrudIndex).
+		Doc("get a profile").
 		Writes(Profile{})) // on the response
 
-	ws.Route(ws.GET(&#34;/&#34; &#43; wo.Slug &#43; &#34;/{&#34; &#43; wo.ID &#43; &#34;}/&#34;).To(CrudView).
-		Doc(&#34;get a profile&#34;).
-		Param(ws.PathParameter(wo.ID, &#34;identifier of the profile&#34;).DataType(&#34;uint32&#34;)).
+	ws.Route(ws.GET("/" + wo.Slug + "/{" + wo.ID + "}/").To(CrudView).
+		Doc("get a profile").
+		Param(ws.PathParameter(wo.ID, "identifier of the profile").DataType("uint32")).
 		Writes(Profile{})) // on the response
 
-	ws.Route(ws.PATCH(&#34;/&#34; &#43; wo.Slug &#43; &#34;/{&#34; &#43; wo.ID &#43; &#34;}/&#34;).To(CrudUpdate).
-		Doc(&#34;update a profile&#34;).
+	ws.Route(ws.PATCH("/" + wo.Slug + "/{" + wo.ID + "}/").To(CrudUpdate).
+		Doc("update a profile").
 		Reads(Profile{})) // from the request
 
-	ws.Route(ws.POST(&#34;/&#34; &#43; wo.Slug &#43; &#34;/&#34;).To(CrudAdd).
-		Doc(&#34;create a profile&#34;).
-		Param(ws.PathParameter(wo.ID, &#34;identifier of the profile&#34;).DataType(&#34;uint32&#34;)).
+	ws.Route(ws.POST("/" + wo.Slug + "/").To(CrudAdd).
+		Doc("create a profile").
+		Param(ws.PathParameter(wo.ID, "identifier of the profile").DataType("uint32")).
 		Reads(Profile{})) // from the request
 
-	ws.Route(ws.DELETE(&#34;/&#34; &#43; wo.Slug &#43; &#34;/{&#34; &#43; wo.ID &#43; &#34;}/&#34;).To(CrudRemove).
-		Doc(&#34;delete a profile&#34;).
-		Param(ws.PathParameter(wo.ID, &#34;identifier of the profile&#34;).DataType(&#34;uint32&#34;)))
+	ws.Route(ws.DELETE("/" + wo.Slug + "/{" + wo.ID + "}/").To(CrudRemove).
+		Doc("delete a profile").
+		Param(ws.PathParameter(wo.ID, "identifier of the profile").DataType("uint32")))
 }
 
 func CrudIndex(r *restful.Request, w *restful.Response) {
-	log.Println(&#34;I haven&#39;t been written yet!&#34;)
+	log.Println("I haven't been written yet!")
 }
 
 func CrudView(r *restful.Request, w *restful.Response) {
-	log.Println(&#34;I haven&#39;t been written yet!&#34;)
+	log.Println("I haven't been written yet!")
 }
 
 func CrudAdd(r *restful.Request, w *restful.Response) {
-	log.Println(&#34;I haven&#39;t been written yet!&#34;)
+	log.Println("I haven't been written yet!")
 }
 
 func CrudUpdate(r *restful.Request, w *restful.Response) {
-	log.Println(&#34;I haven&#39;t been written yet!&#34;)
+	log.Println("I haven't been written yet!")
 }
 
 func CrudRemove(r *restful.Request, w *restful.Response) {
-	log.Println(&#34;I haven&#39;t been written yet!&#34;)
+	log.Println("I haven't been written yet!")
 }

@@ -1,13 +1,13 @@
 package main
 
 import (
-	&#34;os&#34;
+	"os"
 )
 
 func main() {
 
-	for i := 0; i &lt; 67757; i&#43;&#43; {
-		file, err := os.Open(&#34;.&#34;)
+	for i := 0; i < 67757; i++ {
+		file, err := os.Open(".")
 		if err != nil {
 			panic(err)
 		}

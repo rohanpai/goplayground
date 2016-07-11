@@ -1,8 +1,8 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;math/big&#34; // high-precision math
+	"fmt"
+	"math/big" // high-precision math
 )
 
 func arccot(x int64, unity *big.Int) *big.Int {
@@ -29,14 +29,14 @@ func arccot(x int64, unity *big.Int) *big.Int {
 			sum.Sub(sum, term)
 		}
 		sign = !sign
-		n &#43;= 2
+		n += 2
 	}
 	return sum
 }
 
 func main() {
 	ndigits := int64(500)
-	digits := big.NewInt(ndigits &#43; 10)
+	digits := big.NewInt(ndigits + 10)
 	unity := big.NewInt(0)
 	unity.Exp(big.NewInt(10), digits, nil)
 	pi := big.NewInt(0)
@@ -44,14 +44,14 @@ func main() {
 	pi.Mul(four, pi.Sub(pi.Mul(four, arccot(5, unity)), arccot(239, unity)))
 	//val := big.Mul(4, big.Sub(big.Mul(4, arccot(5, unity)), arccot(239, unity)))
 	pistring := pi.String()[0:ndigits]
-	fmt.Println(&#34;Computed pi: &#34;, pistring)
+	fmt.Println("Computed pi: ", pistring)
 	digitcount := make([]int, 10)
 	for _, digit := range pistring {
-		val := digit - &#39;0&#39;
-		digitcount[val]&#43;&#43;
+		val := digit - '0'
+		digitcount[val]++
 	}
-	fmt.Printf(&#34;Digit\tCount\n&#34;)
+	fmt.Printf("Digit\tCount\n")
 	for i, digit := range digitcount {
-		fmt.Printf(&#34;%d\t%d\n&#34;, i, digit)
+		fmt.Printf("%d\t%d\n", i, digit)
 	}
 }

@@ -1,31 +1,31 @@
 package main
 
 import (
-	&#34;bufio&#34;
-	&#34;crypto/ecdsa&#34;
-	&#34;crypto/elliptic&#34;
-	&#34;crypto/rand&#34;
-	_ &#34;crypto/sha512&#34;
-	&#34;crypto/tls&#34;
-	&#34;crypto/x509&#34;
-	&#34;crypto/x509/pkix&#34;
-	&#34;encoding/pem&#34;
-	&#34;log&#34;
-	&#34;math/big&#34;
-	&#34;net&#34;
-	&#34;sync&#34;
-	&#34;time&#34;
+	"bufio"
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rand"
+	_ "crypto/sha512"
+	"crypto/tls"
+	"crypto/x509"
+	"crypto/x509/pkix"
+	"encoding/pem"
+	"log"
+	"math/big"
+	"net"
+	"sync"
+	"time"
 )
 
 var wg sync.WaitGroup
-var host = &#34;127.0.0.1&#34;
+var host = "127.0.0.1"
 
 func main() {
 	// Create a root CA.
 	rootCertPem, _ := generate_cert(true, nil)
 	rootCert, err := x509.ParseCertificate(rootCertPem.Bytes)
 	if err != nil {
-		log.Fatalf(&#34;failt to make parent: %s&#34;, err)
+		log.Fatalf("failt to make parent: %s", err)
 	}
 	// Make the CertPool.
 	pool := x509.NewCertPool()
@@ -41,20 +41,20 @@ func main() {
 	c, err := tls.X509KeyPair(pem.EncodeToMemory(clientCertPem),
 		pem.EncodeToMemory(clientKeyPem))
 	if err != nil {
-		log.Fatalf(&#34;making client TLS cert: %s&#34;, err)
+		log.Fatalf("making client TLS cert: %s", err)
 	}
-	config := &amp;tls.Config{
+	config := &tls.Config{
 		Certificates: []tls.Certificate{c},
 		RootCAs:      pool,
 		ServerName:   host,
 	}
 	config.BuildNameToCertificate()
 
-	client, err := tls.Dial(&#34;tcp&#34;, host&#43;&#34;:6976&#34;, config)
+	client, err := tls.Dial("tcp", host+":6976", config)
 	if err != nil {
-		log.Fatalf(&#34;error connecting: %v\n&#34;, err)
+		log.Fatalf("error connecting: %v\n", err)
 	}
-	n, err := client.Write([]byte(&#34;hello, server&#34;))
+	n, err := client.Write([]byte("hello, server"))
 	log.Println(n, err)
 	client.Close()
 }
@@ -65,24 +65,24 @@ func server(rootCert *x509.Certificate, pool *x509.CertPool) {
 	c, err := tls.X509KeyPair(pem.EncodeToMemory(serverCertPem),
 		pem.EncodeToMemory(serverKeyPem))
 	if err != nil {
-		log.Fatalf(&#34;making server TLS cert: %s&#34;, err)
+		log.Fatalf("making server TLS cert: %s", err)
 	}
-	config := &amp;tls.Config{
+	config := &tls.Config{
 		Certificates: []tls.Certificate{c},
 		ServerName:   host,
 		ClientCAs:    pool,
 		ClientAuth:   tls.RequireAndVerifyClientCert,
 	}
 	config.BuildNameToCertificate()
-	server, err := tls.Listen(&#34;tcp&#34;, host&#43;&#34;:6976&#34;, config)
+	server, err := tls.Listen("tcp", host+":6976", config)
 	if err != nil {
-		log.Fatalf(&#34;getting connection: %v\n&#34;, err)
+		log.Fatalf("getting connection: %v\n", err)
 	}
 	wg.Done()
 	for {
 		conn, err := server.Accept()
 		if err != nil {
-			log.Println(&#34;error accepting:&#34;, err)
+			log.Println("error accepting:", err)
 		} else {
 			go handler(conn)
 		}
@@ -93,12 +93,12 @@ func handler(conn net.Conn) {
 	defer conn.Close()
 	br := bufio.NewReader(conn)
 	for {
-		line, err := br.ReadString(&#39;\n&#39;)
+		line, err := br.ReadString('\n')
 		if err != nil {
-			log.Println(&#34;reading line&#34;, conn.LocalAddr(), &#34;-&#34;, conn.RemoteAddr(), &#34;:&#34;, err)
+			log.Println("reading line", conn.LocalAddr(), "-", conn.RemoteAddr(), ":", err)
 			return
 		}
-		log.Println(&#34;got message:&#34;, line)
+		log.Println("got message:", line)
 	}
 }
 
@@ -106,7 +106,7 @@ func generate_cert(ca bool, parent *x509.Certificate) (*pem.Block, *pem.Block) {
 	// Generate a key.
 	key, err := ecdsa.GenerateKey(elliptic.P224(), rand.Reader)
 	if err != nil {
-		log.Fatalf(&#34;failed to generate private key: %s&#34;, err)
+		log.Fatalf("failed to generate private key: %s", err)
 	}
 	// Fill out the template.
 	template := x509.Certificate{
@@ -124,18 +124,18 @@ func generate_cert(ca bool, parent *x509.Certificate) (*pem.Block, *pem.Block) {
 		template.KeyUsage |= x509.KeyUsageCertSign
 	}
 	if parent == nil {
-		parent = &amp;template
+		parent = &template
 	}
 	// Generate the certificate.
-	cert, err := x509.CreateCertificate(rand.Reader, &amp;template, parent, &amp;key.PublicKey, key)
+	cert, err := x509.CreateCertificate(rand.Reader, &template, parent, &key.PublicKey, key)
 	if err != nil {
-		log.Fatalf(&#34;Failed to create certificate: %s&#34;, err)
+		log.Fatalf("Failed to create certificate: %s", err)
 	}
 	// Marshal the key.
 	b, err := x509.MarshalECPrivateKey(key)
 	if err != nil {
-		log.Fatalf(&#34;Failed to marshal ecdsa: %s&#34;, err)
+		log.Fatalf("Failed to marshal ecdsa: %s", err)
 	}
-	return &amp;pem.Block{Type: &#34;CERTIFICATE&#34;, Bytes: cert},
-		&amp;pem.Block{Type: &#34;ECDSA PRIVATE KEY&#34;, Bytes: b}
+	return &pem.Block{Type: "CERTIFICATE", Bytes: cert},
+		&pem.Block{Type: "ECDSA PRIVATE KEY", Bytes: b}
 }

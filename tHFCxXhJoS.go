@@ -1,7 +1,7 @@
 package main
 
 import (
-        &#34;net&#34;
+        "net"
 )
 
 type GPSFix struct {
@@ -19,10 +19,10 @@ type GPS struct {
 }
 
 func NewGPS (remote string) (GPS, err error) {
-        if remote == &#34;&#34; {
-                remote = &#34;127.0.0.1:2947&#34;
+        if remote == "" {
+                remote = "127.0.0.1:2947"
         }
-        conn, err := net.Dial(&#34;tcp&#34;, remote)
+        conn, err := net.Dial("tcp", remote)
         gps := new(GPS)
         gps.conn = conn
         gps.Remote = remote

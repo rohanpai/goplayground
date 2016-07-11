@@ -5,7 +5,7 @@
 // this service as a single call to ListenAndServe.
 package main
 
-import &#34;net/http&#34;
+import "net/http"
 
 func main() {
 
@@ -15,5 +15,5 @@ func main() {
 	// and other server constructs.
 	//
 	// In this example we will create a file server in one line of code
-	http.ListenAndServe(&#34;:4000&#34;, http.FileServer(http.Dir(&#34;.&#34;)))
+	http.ListenAndServe(":4000", http.FileServer(http.Dir(".")))
 }

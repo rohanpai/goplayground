@@ -1,15 +1,15 @@
 package main
 
 import (
-	&#34;bytes&#34;
-	&#34;fmt&#34;
-	&#34;sort&#34;
-	&#34;strings&#34;
+	"bytes"
+	"fmt"
+	"sort"
+	"strings"
 )
 
 func main() {
 	func() {
-		slice := []string{&#34;D&#34;, &#34;C&#34;, &#34;A&#34;, &#34;E&#34;, &#34;X&#34;}
+		slice := []string{"D", "C", "A", "E", "X"}
 		rs := permuteStrings(slice)
 		// var buf bytes.Buffer
 		buf := new(bytes.Buffer)
@@ -19,12 +19,12 @@ func main() {
 			}
 		}
 		if len(buf.String()) != 600 {
-			fmt.Errorf(&#34;Length should be 600 but %d&#34;, len(buf.String()))
+			fmt.Errorf("Length should be 600 but %d", len(buf.String()))
 		}
 	}()
 
 	func() {
-		slice := []string{&#34;E&#34;, &#34;A&#34;, &#34;A&#34;}
+		slice := []string{"E", "A", "A"}
 		rs := permuteStrings(slice)
 		// var buf bytes.Buffer
 		buf := new(bytes.Buffer)
@@ -34,12 +34,12 @@ func main() {
 			}
 		}
 		if len(buf.String()) != 9 || len(rs) != 3 {
-			fmt.Errorf(&#34;Length should be 9 but %d&#34;, len(buf.String()))
+			fmt.Errorf("Length should be 9 but %d", len(buf.String()))
 		}
 	}()
 
 	func() {
-		slice := []string{&#34;1&#34;, &#34;2&#34;, &#34;3&#34;}
+		slice := []string{"1", "2", "3"}
 		rs := permuteStrings(slice)
 		// var buf bytes.Buffer
 		buf := new(bytes.Buffer)
@@ -47,19 +47,19 @@ func main() {
 			for _, elem2 := range elem1 {
 				buf.WriteString(elem2)
 			}
-			buf.WriteString(&#34;---&#34;)
+			buf.WriteString("---")
 		}
 		rStr := buf.String()
 		if len(rStr) != 36 {
-			fmt.Errorf(&#34;Length should be 600 but %s&#34;, rStr)
+			fmt.Errorf("Length should be 600 but %s", rStr)
 		}
-		if !strings.Contains(rStr, &#34;123&#34;) ||
-			!strings.Contains(rStr, &#34;132&#34;) ||
-			!strings.Contains(rStr, &#34;213&#34;) ||
-			!strings.Contains(rStr, &#34;231&#34;) ||
-			!strings.Contains(rStr, &#34;312&#34;) ||
-			!strings.Contains(rStr, &#34;321&#34;) {
-			fmt.Errorf(&#34;Missing a permutation %s&#34;, rStr)
+		if !strings.Contains(rStr, "123") ||
+			!strings.Contains(rStr, "132") ||
+			!strings.Contains(rStr, "213") ||
+			!strings.Contains(rStr, "231") ||
+			!strings.Contains(rStr, "312") ||
+			!strings.Contains(rStr, "321") {
+			fmt.Errorf("Missing a permutation %s", rStr)
 		}
 	}()
 }
@@ -73,17 +73,17 @@ func first(data sort.Interface) {
 func next(data sort.Interface) bool {
 	var k, l int
 	for k = data.Len() - 2; ; k-- {
-		if k &lt; 0 {
+		if k < 0 {
 			return false
 		}
-		if data.Less(k, k&#43;1) {
+		if data.Less(k, k+1) {
 			break
 		}
 	}
 	for l = data.Len() - 1; !data.Less(k, l); l-- {
 	}
 	data.Swap(k, l)
-	for i, j := k&#43;1, data.Len()-1; i &lt; j; i&#43;&#43; {
+	for i, j := k+1, data.Len()-1; i < j; i++ {
 		data.Swap(i, j)
 		j--
 	}
@@ -118,11 +118,11 @@ func permuteStrings(slice []string) [][]string {
 	}
 
 	combNum := 1
-	for i := 0; i &lt; len(slice); i&#43;&#43; {
-		combNum *= i &#43; 1
+	for i := 0; i < len(slice); i++ {
+		combNum *= i + 1
 	}
 	if len(result) != combNum {
-		fmt.Printf(&#34;Expected %d combinations but %&#43;v because of duplicate elements&#34;, combNum, result)
+		fmt.Printf("Expected %d combinations but %+v because of duplicate elements", combNum, result)
 	}
 
 	return result

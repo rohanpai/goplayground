@@ -8,10 +8,10 @@
 package main
 
 import (
-	dhcp &#34;github.com/krolaw/dhcp4&#34;
-	&#34;math/rand&#34;
-	&#34;net&#34;
-	&#34;time&#34;
+	dhcp "github.com/krolaw/dhcp4"
+	"math/rand"
+	"net"
+	"time"
 )
 
 type DHCPServer struct {
@@ -24,12 +24,12 @@ type DHCPServer struct {
 }
 
 type lease struct {
-	nic    string    // Client&#39;s CHAddr
+	nic    string    // Client's CHAddr
 	expiry time.Time // When the lease expires
 }
 
 func main() {
-	server := &amp;DHCPServer{
+	server := &DHCPServer{
 		ip:            net.IP{172, 30, 0, 1},
 		leaseDuration: 2 * time.Hour,
 		start:         net.IP{172, 30, 0, 2},
@@ -42,7 +42,7 @@ func main() {
 		dhcp.OptionDomainNameServer: []byte(server.ip), // Presuming Server is also your DNS server
 	}
 	//panic(dhcp.ListenAndServe(server).Error())
-	panic((&amp;dhcp.Server{Handler: server, ServerIP: server.ip}).ListenAndServe().Error())
+	panic((&dhcp.Server{Handler: server, ServerIP: server.ip}).ListenAndServe().Error())
 }
 
 func (s *DHCPServer) ServeDHCP(p dhcp.Packet, msgType dhcp.MessageType, options dhcp.Options) (d dhcp.Packet) {
@@ -62,11 +62,11 @@ func (s *DHCPServer) ServeDHCP(p dhcp.Packet, msgType dhcp.MessageType, options 
 		return dhcp.ReplyPacket(p, dhcp.Offer, s.ip, dhcp.IPAdd(s.start, free), s.leaseDuration,
 			s.options.SelectOrderOrAll(options[dhcp.OptionParameterRequestList]))
 	case dhcp.Request:
-		if server, ok := options[dhcp.OptionServerIdentifier]; ok &amp;&amp; !net.IP(server).Equal(s.ip) {
+		if server, ok := options[dhcp.OptionServerIdentifier]; ok && !net.IP(server).Equal(s.ip) {
 			return nil // Message not for this dhcp server
 		}
 		if reqIP := net.IP(options[dhcp.OptionRequestedIPAddress]); len(reqIP) == 4 {
-			if leaseNum := dhcp.IPRange(s.start, reqIP) - 1; leaseNum &gt;= 0 &amp;&amp; leaseNum &lt; s.leaseRange {
+			if leaseNum := dhcp.IPRange(s.start, reqIP) - 1; leaseNum >= 0 && leaseNum < s.leaseRange {
 				if l, exists := s.leases[leaseNum]; !exists || l.nic == p.CHAddr().String() {
 					s.leases[leaseNum] = lease{nic: p.CHAddr().String(), expiry: time.Now().Add(s.leaseDuration)}
 					return dhcp.ReplyPacket(p, dhcp.ACK, s.ip, net.IP(options[dhcp.OptionRequestedIPAddress]), s.leaseDuration,
@@ -91,7 +91,7 @@ func (s *DHCPServer) freeLease() int {
 	now := time.Now()
 	b := rand.Intn(s.leaseRange) // Try random first
 	for _, v := range [][]int{[]int{b, s.leaseRange}, []int{0, b}} {
-		for i := v[0]; i &lt; v[1]; i&#43;&#43; {
+		for i := v[0]; i < v[1]; i++ {
 			if l, ok := s.leases[i]; !ok || l.expiry.Before(now) {
 				return i
 			}

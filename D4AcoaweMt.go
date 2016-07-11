@@ -1,17 +1,17 @@
 package main
 
 import (
-	&#34;bufio&#34;
-	&#34;fmt&#34;
-	&#34;log&#34;
-	&#34;os&#34;
-	&#34;os/exec&#34;
-	&#34;time&#34;
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+	"os/exec"
+	"time"
 )
 
 func RunTraceroute(host string) {
 	errch := make(chan error, 1)
-	cmd := exec.Command(&#34;/usr/bin/traceroute&#34;, host)
+	cmd := exec.Command("/usr/bin/traceroute", host)
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -21,23 +21,23 @@ func RunTraceroute(host string) {
 		log.Fatal(err)
 	}
 	go func() {
-		errch &lt;- cmd.Wait()
+		errch <- cmd.Wait()
 	}()
 	select {
-	case &lt;-time.After(time.Second * 2):
-		log.Println(&#34;Timeout hit..&#34;)
+	case <-time.After(time.Second * 2):
+		log.Println("Timeout hit..")
 		return
-	case err := &lt;-errch:
+	case err := <-errch:
 		if err != nil {
-			log.Println(&#34;traceroute failed:&#34;, err)
+			log.Println("traceroute failed:", err)
 		}
 	default:
-		for _, char := range &#34;|/-\\&#34; {
-			fmt.Printf(&#34;\r%s...%c&#34;, &#34;Running traceroute&#34;, char)
+		for _, char := range "|/-\\" {
+			fmt.Printf("\r%s...%c", "Running traceroute", char)
 			time.Sleep(100 * time.Millisecond)
 		}
 		scanner := bufio.NewScanner(stdout)
-		fmt.Println(&#34;&#34;)
+		fmt.Println("")
 		for scanner.Scan() {
 			line := scanner.Text()
 			log.Println(line)

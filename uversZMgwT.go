@@ -1,9 +1,9 @@
 package main
  
 import (
-	&#34;fmt&#34;
-	&#34;reflect&#34;
-	&#34;sync&#34;
+	"fmt"
+	"reflect"
+	"sync"
 )
  
 type EventBus struct {
@@ -12,7 +12,7 @@ type EventBus struct {
 }
  
 func New() *EventBus {
-	return &amp;EventBus{
+	return &EventBus{
 		make(map[reflect.Type][]reflect.Value),
 		sync.RWMutex{},
 	}
@@ -34,7 +34,7 @@ func (bus *EventBus) RegisterHandler(fn interface{}, forTypes ...interface{}) {
  
 	// the message handler must have a single parameter
 	if def.NumIn() != 1 {
-		panic(&#34;Handler must have a single argument&#34;)
+		panic("Handler must have a single argument")
 	}
 	// find out the handler argument type
 	argument := def.In(0)
@@ -43,12 +43,12 @@ func (bus *EventBus) RegisterHandler(fn interface{}, forTypes ...interface{}) {
 	for _, typ := range forTypes {
 		t := reflect.TypeOf(typ)
 		if !t.ConvertibleTo(argument) {
-			panic(fmt.Sprintf(&#34;Handler argument %v is not compatible with type %v&#34;, argument, t))
+			panic(fmt.Sprintf("Handler argument %v is not compatible with type %v", argument, t))
 		}
 		bus.addHandler(t, v)
 	}
  
-	// if we aren&#39;t specific, we just handle the specified message
+	// if we aren't specific, we just handle the specified message
 	if len(forTypes) == 0 {
 		bus.addHandler(argument, v)
 	}
@@ -80,12 +80,12 @@ type SomeEvent struct {
 }
  
 func SomeEventHandler(ev SomeEvent) {
-  fmt.Printf(&#34;%s =&gt; %s\n&#34;, ev.A, ev.B)
+  fmt.Printf("%s => %s\n", ev.A, ev.B)
 }
  
 func main(){
   bus := New()
   bus.RegisterHandler(SomeEventHandler)
-  bus.Publish(SomeEvent{&#34;A&#34;, &#34;B&#34;})
+  bus.Publish(SomeEvent{"A", "B"})
 }
 

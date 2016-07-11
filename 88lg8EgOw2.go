@@ -1,9 +1,9 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;database/sql&#34;
-	&#34;encoding/json&#34;
+	"fmt"
+	"database/sql"
+	"encoding/json"
 )
 
 type Customer struct {
@@ -12,14 +12,14 @@ type Customer struct {
 }
 
 func main() {
-	cc := &amp;Customer{5,sql.NullString{&#34;&#34;,true}}
+	cc := &Customer{5,sql.NullString{"",true}}
 	buf,err := json.Marshal(cc)
 	if err != nil{
 		panic(err)
 	}
 	fmt.Println(string(buf))
 	
-	cc = &amp;Customer{5,sql.NullString{&#34;pizza&#34;,false}}
+	cc = &Customer{5,sql.NullString{"pizza",false}}
 	buf,err = json.Marshal(cc)
 	if err != nil{
 		panic(err)

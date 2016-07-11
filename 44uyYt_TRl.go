@@ -5,8 +5,8 @@
 
 package main
 
-import &#34;os&#34;
-import &#34;fmt&#34;
+import "os"
+import "fmt"
 
 func main() {
 

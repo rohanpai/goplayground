@@ -1,10 +1,10 @@
 package main
 
 import (
-	&#34;log&#34;
-	&#34;os&#34;
-	&#34;sync&#34;
-	&#34;time&#34;
+	"log"
+	"os"
+	"sync"
+	"time"
 )
 
 type Config struct {
@@ -21,7 +21,7 @@ func NewWatcher(filename string) (*Watcher, error) {
 		return nil, err
 	}
 	c.serial = 0
-	w := &amp;Watcher{current: c, broadcast: make(chan struct{})}
+	w := &Watcher{current: c, broadcast: make(chan struct{})}
 	go w.watch(filename)
 	return w, nil
 }
@@ -44,16 +44,16 @@ func (w *Watcher) Config() *Config {
 
 // Wait returns a channel on which it will send
 // a Config newer than the provided Config.
-func (w *Watcher) Wait(c *Config) &lt;-chan *Config {
+func (w *Watcher) Wait(c *Config) <-chan *Config {
 	ch := make(chan *Config, 1)
 	go func() {
 		w.mu.Lock()
-		if w.current.serial &lt; c.serial {
-			panic(&#34;provided config newer than current!&#34;) // shouldn&#39;t happen
+		if w.current.serial < c.serial {
+			panic("provided config newer than current!") // shouldn't happen
 		}
-		if w.current.serial &gt; c.serial {
+		if w.current.serial > c.serial {
 			// we have a newer config, deliver immediately
-			ch &lt;- w.current
+			ch <- w.current
 			w.mu.Unlock()
 			return
 		}
@@ -61,10 +61,10 @@ func (w *Watcher) Wait(c *Config) &lt;-chan *Config {
 		w.mu.Unlock()
 
 		// waiter has current config, wait for update
-		&lt;-bc
+		<-bc
 
 		w.mu.Lock()
-		ch &lt;- w.current // deliver new config
+		ch <- w.current // deliver new config
 		w.mu.Unlock()
 	}()
 	return ch
@@ -79,7 +79,7 @@ func (w *Watcher) watch(filename string) {
 			time.Sleep(pollInterval)
 			fi, err := os.Stat(filename)
 			if err != nil {
-				log.Printf(&#34;Statting config file %v: %v&#34;, filename, err)
+				log.Printf("Statting config file %v: %v", filename, err)
 				continue
 			}
 			if mtime := fi.ModTime(); last.IsZero() || mtime.After(last) {
@@ -89,7 +89,7 @@ func (w *Watcher) watch(filename string) {
 		}
 		c, err := readConfig(filename)
 		if err != nil {
-			log.Printf(&#34;Reading config file %v: %v&#34;, filename, err)
+			log.Printf("Reading config file %v: %v", filename, err)
 			continue
 		}
 		w.update(c)
@@ -100,19 +100,19 @@ func (w *Watcher) update(c *Config) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 
-	c.serial = w.current.serial &#43; 1   // increment serial of new config
+	c.serial = w.current.serial + 1   // increment serial of new config
 	w.current = c                     // replace config
 	close(w.broadcast)                // tell any watchers that the config has been updated
 	w.broadcast = make(chan struct{}) // create new broadcast channel
 }
 
 func readConfig(filename string) (*Config, error) {
-	panic(&#34;not implemented&#34;)
+	panic("not implemented")
 }
 
 func main() {
 	// Create one Watcher for your entire process.
-	w, err := NewWatcher(&#34;config.json&#34;)
+	w, err := NewWatcher("config.json")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -131,9 +131,9 @@ func worker(w *Watcher) {
 	for {
 		// At some convenient point, check whether a new config is available.
 		select {
-		case cfg = &lt;-next:
+		case cfg = <-next:
 			// A new config has been updated,
-			// make the necessary changes to the worker&#39;s state.
+			// make the necessary changes to the worker's state.
 
 			// Set up a waiter channel for the next config.
 			next = w.Wait(cfg)

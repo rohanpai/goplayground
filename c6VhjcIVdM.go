@@ -26,7 +26,7 @@ func main() {
 	i = s.T
 	i = s
 
-	var ps = &amp;s
+	var ps = &s
 	ps.mS()
 	ps.T.mT()
 	ps.mT() // == ps.T.mT()

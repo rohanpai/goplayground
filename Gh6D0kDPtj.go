@@ -1,23 +1,23 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;log&#34;
-	&#34;reflect&#34;
+	"fmt"
+	"log"
+	"reflect"
 )
 
 func shouldEscape(c byte) bool {
 	switch c {
-	case &#39; &#39;, &#39;?&#39;, &#39;&amp;&#39;, &#39;=&#39;, &#39;#&#39;, &#39;&#43;&#39;, &#39;%&#39;:
+	case ' ', '?', '&', '=', '#', '+', '%':
 		return true
 	}
 	return false
 }
 
 func main() {
-	fmt.Println(shouldEscape([]byte(&#34;?&#34;)[0]))     // true
-	fmt.Println(shouldEscape([]byte(&#34;abcd#&#34;)[4])) // true
-	fmt.Println(shouldEscape([]byte(&#34;abcd#&#34;)[0])) // false
+	fmt.Println(shouldEscape([]byte("?")[0]))     // true
+	fmt.Println(shouldEscape([]byte("abcd#")[4])) // true
+	fmt.Println(shouldEscape([]byte("abcd#")[0])) // false
 
 	num := 2
 	switch num {
@@ -28,24 +28,24 @@ func main() {
 	case 3:
 		fmt.Println(3)
 	default:
-		panic(&#34;what&#39;s the number?&#34;)
+		panic("what's the number?")
 	}
 	// 2
 
-	st := &#34;b&#34;
+	st := "b"
 	switch {
-	case st == &#34;a&#34;:
-		fmt.Println(&#34;a&#34;)
-	case st == &#34;b&#34;:
-		fmt.Println(&#34;b&#34;)
-	case st == &#34;c&#34;:
-		fmt.Println(&#34;c&#34;)
+	case st == "a":
+		fmt.Println("a")
+	case st == "b":
+		fmt.Println("b")
+	case st == "c":
+		fmt.Println("c")
 	default:
-		panic(&#34;what&#39;s the character?&#34;)
+		panic("what's the character?")
 	}
 	// b
 
-	ts := []interface{}{true, 1, 1.5, &#34;A&#34;}
+	ts := []interface{}{true, 1, 1.5, "A"}
 	for _, t := range ts {
 		eval(t)
 	}
@@ -66,14 +66,14 @@ func main() {
 func eval(t interface{}) {
 	switch typedValue := t.(type) {
 	default:
-		log.Fatalf(&#34;%v is %v&#34;, typedValue, reflect.TypeOf(typedValue))
+		log.Fatalf("%v is %v", typedValue, reflect.TypeOf(typedValue))
 	case bool:
-		fmt.Println(&#34;bool:&#34;, typedValue, &#34;is&#34;, reflect.TypeOf(typedValue))
+		fmt.Println("bool:", typedValue, "is", reflect.TypeOf(typedValue))
 	case int:
-		fmt.Println(&#34;int:&#34;, typedValue, &#34;is&#34;, reflect.TypeOf(typedValue))
+		fmt.Println("int:", typedValue, "is", reflect.TypeOf(typedValue))
 	case float64:
-		fmt.Println(&#34;float64:&#34;, typedValue, &#34;is&#34;, reflect.TypeOf(typedValue))
+		fmt.Println("float64:", typedValue, "is", reflect.TypeOf(typedValue))
 	case string:
-		fmt.Println(&#34;string:&#34;, typedValue, &#34;is&#34;, reflect.TypeOf(typedValue))
+		fmt.Println("string:", typedValue, "is", reflect.TypeOf(typedValue))
 	}
 }

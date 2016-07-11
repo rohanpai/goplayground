@@ -1,16 +1,16 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;regexp&#34;
-	&#34;strings&#34;
+	"fmt"
+	"regexp"
+	"strings"
 )
 
 var pattern = `^TID:`
 var negate = true
 
 var content = `TID: [0] [BAM] [2015-11-27 23:51:19,549] ERROR {org.wso2.carbon.hadoop.hive.jdbc.storage.db.DBOperation} -  Failed to write data to database {org.wso2.carbon.hadoop.hive.jdbc.storage.db.DBOperation}
-org.h2.jdbc.JdbcSQLException: NULL not allowed for column &#34;CONSUMERKEY&#34;; SQL statement:
+org.h2.jdbc.JdbcSQLException: NULL not allowed for column "CONSUMERKEY"; SQL statement:
 INSERT INTO API_RESPONSE_SUMMARY_DAY (time,resourcepath,context,servicetime,total_response_count,version,tzoffset,consumerkey,epoch,userid,apipublisher,api) VALUES (?,?,?,?,?,?,?,?,?,?,?,?) [90006-140]
         at org.h2.message.DbException.getJdbcSQLException(DbException.java:327)
         at org.h2.message.DbException.get(DbException.java:167)
@@ -27,17 +27,17 @@ INSERT INTO API_RESPONSE_SUMMARY_DAY (time,resourcepath,context,servicetime,tota
 func main() {
 	regex, err := regexp.CompilePOSIX(pattern)
 	if err != nil {
-		fmt.Println(&#34;Failed to compile pattern: &#34;, err)
+		fmt.Println("Failed to compile pattern: ", err)
 		return
 	}
 
-	lines := strings.Split(content, &#34;\n&#34;)
-	fmt.Printf(&#34;matches\tline\n&#34;)
+	lines := strings.Split(content, "\n")
+	fmt.Printf("matches\tline\n")
 	for _, line := range lines {
 		matches := regex.MatchString(line)
 		if negate {
 			matches = !matches
 		}
-		fmt.Printf(&#34;%v\t%v\n&#34;, matches, line)
+		fmt.Printf("%v\t%v\n", matches, line)
 	}
 }

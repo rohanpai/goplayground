@@ -1,12 +1,12 @@
 package main
 
 import (
-	&#34;bufio&#34;
-	&#34;fmt&#34;
-	&#34;io&#34;
-	&#34;net/http&#34;
-	&#34;os&#34;
-	&#34;time&#34;
+	"bufio"
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"time"
 )
 
 const chanbuf = 1000
@@ -16,7 +16,7 @@ func main() {
 	var done = make(chan struct{}, chanbuf)
 	var proc = 0
 	if len(os.Args) != 2 {
-		perror(&#34;Usage: &#34; &#43; os.Args[0] &#43; &#34; &lt;file name&gt;&#34;)
+		perror("Usage: " + os.Args[0] + " <file name>")
 		os.Exit(1)
 	}
 	f, err := os.Open(os.Args[1])
@@ -28,11 +28,11 @@ func main() {
 
 	go read(urls, f)
 	for url := range urls {
-		proc&#43;&#43;
+		proc++
 		go check(done, url)
 	}
-	for i := 0; i &lt; proc; i&#43;&#43; {
-		&lt;-done
+	for i := 0; i < proc; i++ {
+		<-done
 	}
 }
 
@@ -44,7 +44,7 @@ func read(out chan string, r io.Reader) {
 	scanner := bufio.NewScanner(r)
 	scanner.Split(bufio.ScanLines)
 	for scanner.Scan() {
-		out &lt;- scanner.Text()
+		out <- scanner.Text()
 	}
 	close(out)
 	if scanner.Err() != nil {
@@ -57,6 +57,6 @@ func check(done chan struct{}, url string) {
 	if err != nil {
 		perror(err.Error())
 	}
-	fmt.Print(fmt.Sprintf(&#34;%v:%s:%d\r\n&#34;, time.Now(), url, resp.StatusCode))
-	done &lt;- struct{}{}
+	fmt.Print(fmt.Sprintf("%v:%s:%d\r\n", time.Now(), url, resp.StatusCode))
+	done <- struct{}{}
 }

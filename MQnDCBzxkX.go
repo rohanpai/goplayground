@@ -1,20 +1,20 @@
 package main
 
 import (
-	&#34;database/sql&#34;
-	&#34;errors&#34;
-	&#34;fmt&#34;
-	_ &#34;github.com/mattn/go-sqlite3&#34; // init() only
-	&#34;log&#34;
-	&#34;os&#34;
+	"database/sql"
+	"errors"
+	"fmt"
+	_ "github.com/mattn/go-sqlite3" // init() only
+	"log"
+	"os"
 )
 
 func main() {
-	const database = &#34;/tmp/db_test.db&#34;
+	const database = "/tmp/db_test.db"
 
 	os.Remove(database)
 
-	db, err := sql.Open(&#34;sqlite3&#34;, database)
+	db, err := sql.Open("sqlite3", database)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -37,7 +37,7 @@ func main() {
 		log.Fatal(err)
 	}
 	sql = `insert into user(name) values(?)`
-	for _, name := range []string{&#34;taro&#34;, &#34;jiro&#34;, &#34;saburo&#34;} {
+	for _, name := range []string{"taro", "jiro", "saburo"} {
 		_, err = db.Exec(sql, name)
 		if err != nil {
 			log.Fatal(err)
@@ -54,8 +54,8 @@ func main() {
 	for rows.Next() {
 		var id int
 		var name, dummy string
-		rows.Scan(&amp;id, &amp;name, &amp;dummy)
-		fmt.Printf(&#34;id: %d, name: %s, dummy: %s\n&#34;, id, name, dummy)
+		rows.Scan(&id, &name, &dummy)
+		fmt.Printf("id: %d, name: %s, dummy: %s\n", id, name, dummy)
 	}
 	fmt.Println()
 
@@ -64,7 +64,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf(&#34;%#&#43;v\n&#34;, users)
+	fmt.Printf("%#+v\n", users)
 	fmt.Println()
 
 	var id = 2
@@ -73,14 +73,14 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if len(users) &gt; 0 {
-		fmt.Printf(`user(id:%d) is &#34;%s&#34;`, id, users[0][&#34;name&#34;].([]byte))
+	if len(users) > 0 {
+		fmt.Printf(`user(id:%d) is "%s"`, id, users[0]["name"].([]byte))
 	}
 }
 
 func query(db *sql.DB, query string, args ...interface{}) ([]map[string]interface{}, error) {
 	if db == nil {
-		return nil, errors.New(&#34;db is nil&#34;)
+		return nil, errors.New("db is nil")
 	}
 
 	rows, err := db.Query(query, args...)
@@ -100,7 +100,7 @@ func query(db *sql.DB, query string, args ...interface{}) ([]map[string]interfac
 		container := make([]interface{}, len(cols))
 		dest := make([]interface{}, len(cols))
 		for i, _ := range container {
-			dest[i] = &amp;container[i]
+			dest[i] = &container[i]
 		}
 		rows.Scan(dest...)
 		r := make(map[string]interface{})

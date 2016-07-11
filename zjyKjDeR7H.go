@@ -1,10 +1,10 @@
 package dist
 
 import (
-	&#34;math&#34;
+	"math"
 
-	&#34;github.com/gonum/floats&#34;
-	&#34;github.com/gonum/matrix/mat64&#34;
+	"github.com/gonum/floats"
+	"github.com/gonum/matrix/mat64"
 )
 
 // MVNormal represents a multivariate normal distribution with the given mean and
@@ -27,17 +27,17 @@ func NewNormal(mu []float64, sigma *mat64.Dense) *Normal {
 	// and can be used with Cholesky.
 	r, c := sigma.Dims()
 	if r != c {
-		panic(&#34;mvnormal: covariance matrix must be square&#34;)
+		panic("mvnormal: covariance matrix must be square")
 	}
 	if len(m) != r {
-		panic(&#34;mvnormal: length of mu must match size of covariance matrix&#34;)
+		panic("mvnormal: length of mu must match size of covariance matrix")
 	}
 
 	m := make([]float64, len(mu))
 	copy(m, mu)
-	s := &amp;mat64.Dense{}
+	s := &mat64.Dense{}
 	s.Clone(sigma)
-	n := &amp;Normal{
+	n := &Normal{
 		mu:    mu,
 		sigma: sigma,
 	}
@@ -49,12 +49,12 @@ func NewNormal(mu []float64, sigma *mat64.Dense) *Normal {
 func (n *MVNormal) init() {
 	cf := mat64.Cholesky(n.Sigma)
 
-	// Cholesky decomposition doesn&#39;t change the determinant. The determinant
+	// Cholesky decomposition doesn't change the determinant. The determinant
 	// of a cholesky matrix is the product of the diagonal values.
 	rows, _ := cf.L.Dims()
 	var logsqrtdet float64
-	for i := 0; i &lt; rows; i&#43;&#43; {
-		logsqrtdet &#43;= math.Log(cf.L.At(i, i))
+	for i := 0; i < rows; i++ {
+		logsqrtdet += math.Log(cf.L.At(i, i))
 	}
 	n.logsqrtdet = 0.5 * logsqrtdet
 	n.cholfac = cf
@@ -69,7 +69,7 @@ func (n *MVNormal) LogProb(x []float64) float64 {
 	dim := len(n.mu)
 	c := -0.5*float64(dim)*math.Log(2*math.Pi) - n.logsqrtdet
 
-	// Now need to compute (x-mu)&#39;Sigma^-1 (x-mu)
+	// Now need to compute (x-mu)'Sigma^-1 (x-mu)
 	xMinusMu := make([]float64, dim)
 	floats.SubTo(xMinusMu, x, n.Mu)
 	d := mat64.NewDense(dim, 1, xMinusMu)
@@ -78,7 +78,7 @@ func (n *MVNormal) LogProb(x []float64) float64 {
 	var sumsq float64
 	l := d.RawMatrix().Data
 	for i := range l {
-		sumsq &#43;= l[i] * l[i]
+		sumsq += l[i] * l[i]
 	}
 	return c - 0.5*sumsq
 }

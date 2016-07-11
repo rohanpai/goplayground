@@ -8,8 +8,8 @@ package pcap
 #cgo darwin LDFLAGS: -lpcap
 #cgo windows CFLAGS: -I C:/WpdPack/Include
 #cgo windows LDFLAGS: -L C:/WpdPack/Lib -lwpcap
-#include &lt;stdlib.h&gt;
-#include &lt;pcap.h&gt;
+#include <stdlib.h>
+#include <pcap.h>
 
 // Workaround for not knowing how to cast to const u_char**
 int hack_pcap_next_ex(pcap_t *p, struct pcap_pkthdr **pkt_header,
@@ -17,4 +17,4 @@ int hack_pcap_next_ex(pcap_t *p, struct pcap_pkthdr **pkt_header,
     return pcap_next_ex(p, pkt_header, (const u_char **)pkt_data);
 }
 */
-import &#34;C&#34;
+import "C"

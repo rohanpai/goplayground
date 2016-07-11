@@ -3,9 +3,9 @@
 // satisfy a given predicate or mapping all items to a new
 // collection with a custom function.
 
-// In some languages it&#39;s idiomatic to use [generic](http://en.wikipedia.org/wiki/Generic_programming)
+// In some languages it's idiomatic to use [generic](http://en.wikipedia.org/wiki/Generic_programming)
 // data structures and algorithms. Go does not support
-// generics; in Go it&#39;s common to provide collection
+// generics; in Go it's common to provide collection
 // functions if and when they are specifically needed for
 // your program and data types.
 
@@ -18,8 +18,8 @@
 
 package main
 
-import &#34;strings&#34;
-import &#34;fmt&#34;
+import "strings"
+import "fmt"
 
 // Returns the first index of the target string `t`, or
 // -1 if no match is found.
@@ -35,7 +35,7 @@ func Index(vs []string, t string) int {
 // Returns `true` if the target string t is in the
 // slice.
 func Include(vs []string, t string) bool {
-    return Index(vs, t) &gt;= 0
+    return Index(vs, t) >= 0
 }
 
 // Returns `true` if one of the strings in the slice
@@ -85,22 +85,22 @@ func Map(vs []string, f func(string) string) []string {
 func main() {
 
     // Here we try out our various collection functions.
-    var strs = []string{&#34;peach&#34;, &#34;apple&#34;, &#34;pear&#34;, &#34;plum&#34;}
+    var strs = []string{"peach", "apple", "pear", "plum"}
 
-    fmt.Println(Index(strs, &#34;pear&#34;))
+    fmt.Println(Index(strs, "pear"))
 
-    fmt.Println(Include(strs, &#34;grape&#34;))
+    fmt.Println(Include(strs, "grape"))
 
     fmt.Println(Any(strs, func(v string) bool {
-        return strings.HasPrefix(v, &#34;p&#34;)
+        return strings.HasPrefix(v, "p")
     }))
 
     fmt.Println(All(strs, func(v string) bool {
-        return strings.HasPrefix(v, &#34;p&#34;)
+        return strings.HasPrefix(v, "p")
     }))
 
     fmt.Println(Filter(strs, func(v string) bool {
-        return strings.Contains(v, &#34;e&#34;)
+        return strings.Contains(v, "e")
     }))
 
     // The above examples all used anonymous functions,

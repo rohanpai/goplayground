@@ -6,9 +6,9 @@
 package main
 
 import (
-	&#34;fmt&#34;
+	"fmt"
 
-	&#34;github.com/ardanlabs/gotraining/topics/exporting/example3/counters&#34;
+	"github.com/ardanlabs/gotraining/topics/exporting/example3/counters"
 )
 
 func main() {
@@ -17,5 +17,5 @@ func main() {
 	// New function from the package counters.
 	counter := counters.New(10)
 
-	fmt.Printf(&#34;Counter: %d\n&#34;, counter)
+	fmt.Printf("Counter: %d\n", counter)
 }

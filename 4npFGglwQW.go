@@ -32,7 +32,7 @@ func (ip IP) To16() IP {
 // reference type.
 func ipEmptyString(ip IP) string {
 	if len(ip) == 0 {
-		return &#34;&#34;
+		return ""
 	}
 	return ip.String()
 }
@@ -49,7 +49,7 @@ func (ip *IP) UnmarshalText(text []byte) error {
 	s := string(text)
 	x := ParseIP(s)
 	if x == nil {
-		return &amp;ParseError{&#34;IP address&#34;, s}
+		return &ParseError{"IP address", s}
 	}
 	*ip = x
 	return nil

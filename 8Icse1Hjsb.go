@@ -1,26 +1,26 @@
 package main
 
-import &#34;fmt&#34;
-import &#34;strings&#34;
+import "fmt"
+import "strings"
 
 func main() {
-	var str = &#34;1234567890&#34;
+	var str = "1234567890"
 	fmt.Println(str)
-	fmt.Println(&#34;leftPad(str, \&#34;*\&#34;, 3) &#34;, leftPad(str, &#34;*&#34;, 3))
-	fmt.Println(&#34;leftPad2Len(str, \&#34;*-\&#34;, 13) &#34;, leftPad2Len(str, &#34;*-&#34;, 13))
-	fmt.Println(&#34;leftPad2Len(str, \&#34;*-\&#34;, 14) &#34;, leftPad2Len(str, &#34;*-&#34;, 14))
-	fmt.Println(&#34;leftPad2Len(str, \&#34;*\&#34;, 14) &#34;, leftPad2Len(str, &#34;*&#34;, 14))
-	fmt.Println(&#34;leftPad2Len(str, \&#34;*-x\&#34;, 14) &#34;, leftPad2Len(str, &#34;*-x&#34;, 14))
-	fmt.Println(&#34;leftPad2Len(str, \&#34;ABCDE\&#34;, 14) &#34;, leftPad2Len(str, &#34;ABCDE&#34;, 14))
-	fmt.Println(&#34;leftPad2Len(str, \&#34;ABCDE\&#34;, 4) &#34;, leftPad2Len(str, &#34;ABCDE&#34;, 4))
-	fmt.Println(&#34;rightPad(str, \&#34;*\&#34;, 3) &#34;, rightPad(str, &#34;*&#34;, 3))
-	fmt.Println(&#34;rightPad(str, \&#34;*!\&#34;, 3) &#34;, rightPad(str, &#34;*!&#34;, 3))
-	fmt.Println(&#34;rightPad2Len(str, \&#34;*-\&#34;, 13) &#34;, rightPad2Len(str, &#34;*-&#34;, 13))
-	fmt.Println(&#34;rightPad2Len(str, \&#34;*-\&#34;, 14) &#34;, rightPad2Len(str, &#34;*-&#34;, 14))
-	fmt.Println(&#34;rightPad2Len(str, \&#34;*\&#34;, 14) &#34;, rightPad2Len(str, &#34;*&#34;, 14))
-	fmt.Println(&#34;rightPad2Len(str, \&#34;*-x\&#34;, 14) &#34;, rightPad2Len(str, &#34;*-x&#34;, 14))
-	fmt.Println(&#34;rightPad2Len(str, \&#34;ABCDE\&#34;, 14) &#34;, rightPad2Len(str, &#34;ABCDE&#34;, 14))
-	fmt.Println(&#34;rightPad2Len(str, \&#34;ABCDE\&#34;, 4) &#34;, rightPad2Len(str, &#34;ABCDE&#34;, 4))
+	fmt.Println("leftPad(str, \"*\", 3) ", leftPad(str, "*", 3))
+	fmt.Println("leftPad2Len(str, \"*-\", 13) ", leftPad2Len(str, "*-", 13))
+	fmt.Println("leftPad2Len(str, \"*-\", 14) ", leftPad2Len(str, "*-", 14))
+	fmt.Println("leftPad2Len(str, \"*\", 14) ", leftPad2Len(str, "*", 14))
+	fmt.Println("leftPad2Len(str, \"*-x\", 14) ", leftPad2Len(str, "*-x", 14))
+	fmt.Println("leftPad2Len(str, \"ABCDE\", 14) ", leftPad2Len(str, "ABCDE", 14))
+	fmt.Println("leftPad2Len(str, \"ABCDE\", 4) ", leftPad2Len(str, "ABCDE", 4))
+	fmt.Println("rightPad(str, \"*\", 3) ", rightPad(str, "*", 3))
+	fmt.Println("rightPad(str, \"*!\", 3) ", rightPad(str, "*!", 3))
+	fmt.Println("rightPad2Len(str, \"*-\", 13) ", rightPad2Len(str, "*-", 13))
+	fmt.Println("rightPad2Len(str, \"*-\", 14) ", rightPad2Len(str, "*-", 14))
+	fmt.Println("rightPad2Len(str, \"*\", 14) ", rightPad2Len(str, "*", 14))
+	fmt.Println("rightPad2Len(str, \"*-x\", 14) ", rightPad2Len(str, "*-x", 14))
+	fmt.Println("rightPad2Len(str, \"ABCDE\", 14) ", rightPad2Len(str, "ABCDE", 14))
+	fmt.Println("rightPad2Len(str, \"ABCDE\", 4) ", rightPad2Len(str, "ABCDE", 4))
 }
 
 //TODO convert these into a
@@ -30,10 +30,10 @@ func main() {
 *
  */
 func leftPad(s string, padStr string, pLen int) string {
-	return strings.Repeat(padStr, pLen) &#43; s
+	return strings.Repeat(padStr, pLen) + s
 }
 func rightPad(s string, padStr string, pLen int) string {
-	return s &#43; strings.Repeat(padStr, pLen)
+	return s + strings.Repeat(padStr, pLen)
 }
 
 /* the Pad2Len functions are generally assumed to be padded with short sequences of strings
@@ -53,13 +53,13 @@ func rightPad(s string, padStr string, pLen int) string {
  */
 func rightPad2Len(s string, padStr string, overallLen int) string {
 	var padCountInt int
-	padCountInt = 1 &#43; ((overallLen - len(padStr)) / len(padStr))
-	var retStr = s &#43; strings.Repeat(padStr, padCountInt)
+	padCountInt = 1 + ((overallLen - len(padStr)) / len(padStr))
+	var retStr = s + strings.Repeat(padStr, padCountInt)
 	return retStr[:overallLen]
 }
 func leftPad2Len(s string, padStr string, overallLen int) string {
 	var padCountInt int
-	padCountInt = 1 &#43; ((overallLen - len(padStr)) / len(padStr))
-	var retStr = strings.Repeat(padStr, padCountInt) &#43; s
+	padCountInt = 1 + ((overallLen - len(padStr)) / len(padStr))
+	var retStr = strings.Repeat(padStr, padCountInt) + s
 	return retStr[(len(retStr) - overallLen):]
 }

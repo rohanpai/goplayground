@@ -1,10 +1,10 @@
 package main
 
 import (
-	&#34;log&#34;
-	&#34;math/rand&#34;
-	&#34;sync&#34;
-	&#34;time&#34;
+	"log"
+	"math/rand"
+	"sync"
+	"time"
 )
 
 // fanIn takes zero or more channels and merges the received data to a
@@ -13,15 +13,15 @@ import (
 // other.
 func fanIn(inputs []chan []byte, output chan []byte, exit chan bool, timeout time.Duration) {
 	if len(inputs) == 0 {
-		log.Println(&#34;zero inputs&#34;)
+		log.Println("zero inputs")
 		return
 	}
 
-	defer log.Println(&#34;cleaning up fanIn&#34;)
+	defer log.Println("cleaning up fanIn")
 
 	// Always signal the exit
 	defer func() {
-		exit &lt;- true
+		exit <- true
 	}()
 
 	// Used to signal goroutines to exit
@@ -33,11 +33,11 @@ func fanIn(inputs []chan []byte, output chan []byte, exit chan bool, timeout tim
 
 	// Spawn goroutines for each input channel
 	for i, input := range inputs {
-		log.Println(&#34;spawning input&#34;, i)
+		log.Println("spawning input", i)
 
 		// Spawn go routine for each input
 		go func(input chan []byte, i int) {
-			defer log.Println(&#34;closing input&#34;, i)
+			defer log.Println("closing input", i)
 			defer wg.Done()
 
 			open := true
@@ -46,16 +46,16 @@ func fanIn(inputs []chan []byte, output chan []byte, exit chan bool, timeout tim
 			// to exit
 			for open {
 				select {
-				case value, open := &lt;-input:
+				case value, open := <-input:
 					// Input is closed, break
 					if !open {
-						log.Println(&#34;(closed) input&#34;, i)
+						log.Println("(closed) input", i)
 						break
 					}
-					output &lt;- value
-					log.Printf(&#34;input %d -&gt; %d\n&#34;, i, value)
-				case &lt;-signal:
-					log.Println(&#34;(signaled) input&#34;, i)
+					output <- value
+					log.Printf("input %d -> %d\n", i, value)
+				case <-signal:
+					log.Println("(signaled) input", i)
 					open = false
 				default:
 					open = false
@@ -67,17 +67,17 @@ func fanIn(inputs []chan []byte, output chan []byte, exit chan bool, timeout tim
 	// The exit channel is expected to send a true value and wait
 	// until it receives a response, however if it is closed,
 	// immediately signal the goroutines.
-	if _, ok := &lt;-exit; !ok {
-		log.Println(&#34;exit channel closed&#34;)
+	if _, ok := <-exit; !ok {
+		log.Println("exit channel closed")
 		close(signal)
-	} else if timeout &gt; 0 {
-		log.Println(&#34;timeout of&#34;, timeout, &#34;started&#34;)
-		&lt;-time.After(timeout)
+	} else if timeout > 0 {
+		log.Println("timeout of", timeout, "started")
+		<-time.After(timeout)
 		close(signal)
 	}
 
 	// Wait until all routines are done and exit
-	log.Println(&#34;waiting for goroutines to finish&#34;)
+	log.Println("waiting for goroutines to finish")
 	wg.Wait()
 }
 
@@ -97,12 +97,12 @@ func testFanIn(n int, timeout time.Duration) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	// Initialize and populate buffered input channels with a few messages
-	for i := 0; i &lt; n; i&#43;&#43; {
+	for i := 0; i < n; i++ {
 		inputs[i] = make(chan []byte, n)
 
 		go func(i int) {
-			for j := 0; j &lt; n; j&#43;&#43; {
-				inputs[i] &lt;- []byte{byte(r.Intn(20))}
+			for j := 0; j < n; j++ {
+				inputs[i] <- []byte{byte(r.Intn(20))}
 			}
 		}(i)
 	}
@@ -114,21 +114,21 @@ func testFanIn(n int, timeout time.Duration) {
 	// as they are received.
 	go func() {
 		for m := range output {
-			log.Println(&#34;output &lt;-&#34;, m)
+			log.Println("output <-", m)
 		}
 	}()
 
 	// Request exit
-	log.Println(&#34;exit signaled&#34;)
-	if timeout &lt; 0 {
+	log.Println("exit signaled")
+	if timeout < 0 {
 		close(exit)
 	} else {
-		exit &lt;- true
+		exit <- true
 	}
 
 	// Wait for response from fanIn
-	&lt;-exit
-	log.Println(&#34;exit confirmed&#34;)
+	<-exit
+	log.Println("exit confirmed")
 }
 
 func main() {

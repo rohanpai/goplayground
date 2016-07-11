@@ -1,33 +1,33 @@
 package main
 
 import (
-	breaker &#34;.&#34;
-	&#34;fmt&#34;
-	&#34;time&#34;
+	breaker "."
+	"fmt"
+	"time"
 )
 
 // RemoteService is a fictitious interface to an encapsulation of some
 // unreliable subsystem that is outside of our domain of control.  It should
 // be treated for this example as merely a recording of behavior.
 type RemoteService struct {
-	// The subsystem&#39;s circuit breaker.
+	// The subsystem's circuit breaker.
 	Breaker breaker.Consecutive
 	// The pre-recorded success or failure results that are used to drive
 	// the behavior of this example.
 	Results []bool
 }
 
-// ConductRequest is the supposed interface point for user&#39;s of this subsystem.
+// ConductRequest is the supposed interface point for user's of this subsystem.
 // They call it as necessary to perform whatever work to yield the result they
 // want.
 func (s *RemoteService) ConductRequest() {
 	// For purposes of not convoluting the example, we use real sleep operations
 	// here.
-	time.Sleep(time.Second/2 &#43; time.Second/4)
+	time.Sleep(time.Second/2 + time.Second/4)
 
 	// If the circuit is broken, merely bail.
 	if s.Breaker.Open() {
-		fmt.Println(&#34;Unavailable; Trying Again Later...&#34;)
+		fmt.Println("Unavailable; Trying Again Later...")
 
 		return
 	}
@@ -37,10 +37,10 @@ func (s *RemoteService) ConductRequest() {
 	// WARNING: We make an implicit assumption that any err value is retryable
 	// and not a permanent error.
 	if err != nil {
-		fmt.Println(&#34;Operation Failed&#34;)
+		fmt.Println("Operation Failed")
 		s.Breaker.Fail()
 	} else {
-		fmt.Println(&#34;Operation Succeeded&#34;)
+		fmt.Println("Operation Succeeded")
 		s.Breaker.Succeed()
 	}
 }
@@ -52,14 +52,14 @@ func (s *RemoteService) performRequest() error {
 	s.Results = s.Results[1:]
 
 	if !result {
-		return fmt.Errorf(&#34;Temporary Unavailable&#34;)
+		return fmt.Errorf("Temporary Unavailable")
 	}
 
 	return nil
 }
 
 func main() {
-	subsystem := &amp;RemoteService{
+	subsystem := &RemoteService{
 		Breaker: breaker.Consecutive{
 			FailureAllowance: 2,
 			RetryTimeout:     time.Second,
@@ -71,7 +71,7 @@ func main() {
 			true,  // This success negates past failures.
 			false, // String of contiguous failures to create open circuit.
 			false, // Open.  :-(
-			false, // Open; however, we&#39;ve timed out.
+			false, // Open; however, we've timed out.
 			true,  // We have a success here.
 		},
 	}

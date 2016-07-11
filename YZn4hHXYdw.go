@@ -1,9 +1,9 @@
 package main
 
 import (
-	&#34;encoding/json&#34;
-	&#34;fmt&#34;
-	&#34;time&#34;
+	"encoding/json"
+	"fmt"
+	"time"
 )
 
 type Prefix struct {
@@ -23,16 +23,16 @@ func main() {
 func valueStruct() {
 	// struct as a value
 	var nw Prefix
-	nw.Network = &#34;10.1.1.0&#34;
+	nw.Network = "10.1.1.0"
 	nw.Mask = 24
-	fmt.Println(&#34;### struct as a pointer ###&#34;)
-	PrettyPrint(&amp;nw)
+	fmt.Println("### struct as a pointer ###")
+	PrettyPrint(&nw)
 }
 
 func literalStruct() {
 	// literal structs are the shortest LOC
-	nw2 := &amp;Prefix{&#34;10.1.2.0&#34;, 30}
-	fmt.Println(&#34;### struct as a literal ###&#34;)
+	nw2 := &Prefix{"10.1.2.0", 30}
+	fmt.Println("### struct as a literal ###")
 	PrettyPrint(nw2)
 }
 
@@ -40,10 +40,10 @@ func pointerStruct() {
 	// struct as a pointer
 	nw3 := new(Prefix)
 	// very similar to setters/getters in OOP
-	nw3.Network = &#34;10.1.1.0&#34;
+	nw3.Network = "10.1.1.0"
 	// or even like so
 	(*nw3).Mask = 28
-	fmt.Println(&#34;### struct as a pointer ###&#34;)
+	fmt.Println("### struct as a pointer ###")
 	PrettyPrint(nw3)
 }
 
@@ -51,10 +51,10 @@ func pointerStruct() {
 func PrettyPrint(data interface{}) {
 	var p []byte
 	//    var err := error
-	p, err := json.MarshalIndent(data, &#34;&#34;, &#34;\t&#34;)
+	p, err := json.MarshalIndent(data, "", "\t")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	fmt.Printf(&#34;%s \n&#34;, p)
+	fmt.Printf("%s \n", p)
 }

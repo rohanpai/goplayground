@@ -1,12 +1,12 @@
 package user
 
 import (
-	&#34;bytes&#34;
-	&#34;crypto/rand&#34;
-	&#34;crypto/sha512&#34;
-	&#34;dasa.cc/dae/context&#34;
-	&#34;dasa.cc/dae/datastore&#34;
-	&#34;labix.org/v2/mgo/bson&#34;
+	"bytes"
+	"crypto/rand"
+	"crypto/sha512"
+	"dasa.cc/dae/context"
+	"dasa.cc/dae/datastore"
+	"labix.org/v2/mgo/bson"
 )
 
 type User struct {
@@ -56,13 +56,13 @@ func Encrypt(password, salt []byte) []byte {
 	return h.Sum([]byte{})
 }
 
-// Validate checks the given password against the user&#39;s current password.
+// Validate checks the given password against the user's current password.
 func (user *User) Validate(password string) bool {
 	p := Encrypt([]byte(password), user.Salt)
 	return bytes.Equal(p, user.Password)
 }
 
-// SetPassword updates the user&#39;s password on the struct, but does not save the changes automatically.
+// SetPassword updates the user's password on the struct, but does not save the changes automatically.
 func (user *User) SetPassword(newPass string) {
 	salt := GetSalt()
 	pass := Encrypt([]byte(newPass), salt)
@@ -72,7 +72,7 @@ func (user *User) SetPassword(newPass string) {
 }
 
 func Current(c *context.Context, db *datastore.DB) *User {
-	email := c.Session().Values[&#34;email&#34;].(string)
+	email := c.Session().Values["email"].(string)
 	u, err := FindEmail(db, email)
 	if err != nil {
 		panic(err)
@@ -81,18 +81,18 @@ func Current(c *context.Context, db *datastore.DB) *User {
 }
 
 func SetCurrent(c *context.Context, u *User) {
-	c.Session().Values[&#34;auth&#34;] = true
-	c.Session().Values[&#34;email&#34;] = u.Email
+	c.Session().Values["auth"] = true
+	c.Session().Values["email"] = u.Email
 }
 
 func DelCurrent(c *context.Context) {
-	delete(c.Session().Values, &#34;auth&#34;)
-	delete(c.Session().Values, &#34;email&#34;)
+	delete(c.Session().Values, "auth")
+	delete(c.Session().Values, "email")
 }
 
 func FindEmail(db *datastore.DB, email string) (u *User, err error) {
-	q := bson.M{&#34;email&#34;: email}
-	if err := db.C(&#34;users&#34;).Find(q).One(&amp;u); err != nil {
+	q := bson.M{"email": email}
+	if err := db.C("users").Find(q).One(&u); err != nil {
 		return nil, err
 	}
 	return u, nil

@@ -1,14 +1,14 @@
 package main
 
 import (
-	&#34;fmt&#34;
+	"fmt"
 )
 
 func fibonacci(n int, c chan int) {
 	x, y := 0, 1
-	for i := 0; i &lt; n; i&#43;&#43; {
-		c &lt;- x
-		x, y = y, x&#43;y
+	for i := 0; i < n; i++ {
+		c <- x
+		x, y = y, x+y
 	}
 	close(c)
 }

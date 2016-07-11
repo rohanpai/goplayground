@@ -1,8 +1,8 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;time&#34;
+	"fmt"
+	"time"
 )
 
 type Stopwatch struct {
@@ -17,7 +17,7 @@ type Stopwatch struct {
 func New(offset time.Duration, active bool) *Stopwatch {
 	var sw Stopwatch
 	sw.Reset(offset, active)
-	return &amp;sw
+	return &sw
 }
 
 // Reset allows the re-use of a Stopwatch instead of creating
@@ -88,22 +88,22 @@ func main() {
 	s := New(-5*time.Second, false)
 	t1 := time.Tick(time.Second)
 	t2 := time.After(time.Second * 25 / 10)
-	var t3 &lt;-chan time.Time
+	var t3 <-chan time.Time
 
-	for i := 0; i &lt; 20; i&#43;&#43; {
+	for i := 0; i < 20; i++ {
 		// at first time instance after start, run lap ticker
-		if s.ElapsedTime() &gt;= 0 &amp;&amp; t3 == nil {
-			fmt.Println(&#34;Starting lap ticker @&#34;, s.ElapsedTime())
+		if s.ElapsedTime() >= 0 && t3 == nil {
+			fmt.Println("Starting lap ticker @", s.ElapsedTime())
 			t3 = time.Tick(time.Second * 175 / 100)
 		}
 		select {
-		case &lt;-t1:
-			fmt.Printf(&#34;Elapsed: %s, Lap: %s, Laps: %s\n&#34;, s.ElapsedTime(), s.LapTime(), s.Laps())
-		case &lt;-t2:
-			fmt.Println(&#34;Starting Stopwatch&#34;)
+		case <-t1:
+			fmt.Printf("Elapsed: %s, Lap: %s, Laps: %s\n", s.ElapsedTime(), s.LapTime(), s.Laps())
+		case <-t2:
+			fmt.Println("Starting Stopwatch")
 			s.Start()
-		case &lt;-t3:
-			fmt.Printf(&#34;Lap complete at %s, Lap was %s\n&#34;, s.ElapsedTime(), s.Lap())
+		case <-t3:
+			fmt.Printf("Lap complete at %s, Lap was %s\n", s.ElapsedTime(), s.Lap())
 		}
 	}
 }

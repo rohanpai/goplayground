@@ -1,16 +1,16 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;log&#34;
-	&#34;syscall&#34;
-	&#34;unsafe&#34;
+	"fmt"
+	"log"
+	"syscall"
+	"unsafe"
 )
 
 var (
-	user32             = syscall.MustLoadDLL(&#34;user32.dll&#34;)
-	procEnumWindows    = user32.MustFindProc(&#34;EnumWindows&#34;)
-	procGetWindowTextW = user32.MustFindProc(&#34;GetWindowTextW&#34;)
+	user32             = syscall.MustLoadDLL("user32.dll")
+	procEnumWindows    = user32.MustFindProc("EnumWindows")
+	procGetWindowTextW = user32.MustFindProc("GetWindowTextW")
 )
 
 func EnumWindows(enumFunc uintptr, lparam uintptr) (err error) {
@@ -42,7 +42,7 @@ func FindWindow(title string) (syscall.Handle, error) {
 	var hwnd syscall.Handle
 	cb := syscall.NewCallback(func(h syscall.Handle, p uintptr) uintptr {
 		b := make([]uint16, 200)
-		_, err := GetWindowText(h, &amp;b[0], int32(len(b)))
+		_, err := GetWindowText(h, &b[0], int32(len(b)))
 		if err != nil {
 			// ignore the error
 			return 1 // continue enumeration
@@ -56,16 +56,16 @@ func FindWindow(title string) (syscall.Handle, error) {
 	})
 	EnumWindows(cb, 0)
 	if hwnd == 0 {
-		return 0, fmt.Errorf(&#34;No window with title &#39;%s&#39; found&#34;, title)
+		return 0, fmt.Errorf("No window with title '%s' found", title)
 	}
 	return hwnd, nil
 }
 
 func main() {
-	const title = &#34;Game&#34;
+	const title = "Game"
 	h, err := FindWindow(title)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf(&#34;Found &#39;%s&#39; window: handle=0x%x\n&#34;, title, h)
+	fmt.Printf("Found '%s' window: handle=0x%x\n", title, h)
 }

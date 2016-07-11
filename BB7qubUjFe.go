@@ -3,11 +3,11 @@ package xxx
 
 
 import (
-	//	&#34;fmt&#34;
-	&#34;math&#34;
-	&#34;math/rand&#34;
+	//	"fmt"
+	"math"
+	"math/rand"
 
-//	&#34;time&#34;
+//	"time"
 )
 
 type GenFn func(p IntVector)        // Generates a new solution from an old one
@@ -21,8 +21,8 @@ func cool(x float64) float64 {
 
 // SimAnn minimizes a loss function using simulated annealing (Kirkpatrick et al., 1983)
 func SimAnn(a Matrix64, loss ObjFn, isLoss bool, proposePerm GenFn, cool CoolFn) (bestEnergy float64, bestSolution IntVector) {
-	//    Kirkpatrick, S., Gelatt, C.D., &amp; Vecchi, M.P. (1983). Optimization by Simulated Annealing. Science, 220: 671-680.
-	//    Based on &#34;anneal.m&#34; code by Joachim Vandekerckhove joachim.vandekerckhove@psy.kuleuven.be
+	//    Kirkpatrick, S., Gelatt, C.D., & Vecchi, M.P. (1983). Optimization by Simulated Annealing. Science, 220: 671-680.
+	//    Based on "anneal.m" code by Joachim Vandekerckhove joachim.vandekerckhove@psy.kuleuven.be
 	//    http://www.mathworks.com/matlabcentral/fileexchange/10548-general-simulated-annealing-algorithm/content/anneal.m
 
 	var (
@@ -67,18 +67,18 @@ func SimAnn(a Matrix64, loss ObjFn, isLoss bool, proposePerm GenFn, cool CoolFn)
 	r := rand.New(rand.NewSource(seed))
 
 	for !finished {
-		try&#43;&#43; // just an iteration counter
+		try++ // just an iteration counter
 		newSolution.CopyFrom(bestSolution)
 
 		//  Stop / decrement temp criteria
-		if try &gt;= maxTries || success &gt;= maxSuccess {
-			if temp &lt; minT || consec &gt;= maxConsRej {
+		if try >= maxTries || success >= maxSuccess {
+			if temp < minT || consec >= maxConsRej {
 				finished = true
-				total = total &#43; try
+				total = total + try
 				break
 			} else {
 				temp = cool(temp) // decrease temp according to cooling schedule
-				total = total &#43; try
+				total = total + try
 				try = 1
 				success = 1
 			}
@@ -90,24 +90,24 @@ func SimAnn(a Matrix64, loss ObjFn, isLoss bool, proposePerm GenFn, cool CoolFn)
 		} else {
 			newEnergy = -loss(a, newSolution)
 		}
-		if newEnergy &lt; stopVal {
+		if newEnergy < stopVal {
 			bestSolution.CopyFrom(newSolution)
 			bestEnergy = newEnergy
 			break
 		}
 
-		if bestEnergy-newEnergy &gt; 1e-6 {
+		if bestEnergy-newEnergy > 1e-6 {
 			bestSolution.CopyFrom(newSolution)
 			bestEnergy = newEnergy
-			success&#43;&#43;
+			success++
 			consec = 0
 		} else {
-			if r.Float64() &lt; math.Exp((bestEnergy-newEnergy)/(k*temp)) {
+			if r.Float64() < math.Exp((bestEnergy-newEnergy)/(k*temp)) {
 				bestSolution.CopyFrom(newSolution)
 				bestEnergy = newEnergy
-				success&#43;&#43;
+				success++
 			} else {
-				consec&#43;&#43;
+				consec++
 			}
 		}
 	}
@@ -124,8 +124,8 @@ func RobSA(a Matrix64, objFn ObjFn, isLoss bool) (bestEnergy float64, bestSoluti
 
 // SimAnn2 minimizes a loss function using simulated annealing (Kirkpatrick et al., 1983)
 func SimAnn2(a Matrix64, initialSolution IntVector, loss ObjFn, isLoss bool, proposePerm GenFn, cool CoolFn) (bestEnergy float64, bestSolution IntVector) {
-	//    Kirkpatrick, S., Gelatt, C.D., &amp; Vecchi, M.P. (1983). Optimization by Simulated Annealing. Science, 220: 671-680.
-	//    Based on &#34;anneal.m&#34; code by Joachim Vandekerckhove joachim.vandekerckhove@psy.kuleuven.be
+	//    Kirkpatrick, S., Gelatt, C.D., & Vecchi, M.P. (1983). Optimization by Simulated Annealing. Science, 220: 671-680.
+	//    Based on "anneal.m" code by Joachim Vandekerckhove joachim.vandekerckhove@psy.kuleuven.be
 	//    http://www.mathworks.com/matlabcentral/fileexchange/10548-general-simulated-annealing-algorithm/content/anneal.m
 
 	var (
@@ -168,18 +168,18 @@ func SimAnn2(a Matrix64, initialSolution IntVector, loss ObjFn, isLoss bool, pro
 	r := rand.New(rand.NewSource(seed))
 
 	for !finished {
-		try&#43;&#43; // just an iteration counter
+		try++ // just an iteration counter
 		newSolution.CopyFrom(bestSolution)
 
 		//  Stop / decrement temp criteria
-		if try &gt;= maxTries || success &gt;= maxSuccess {
-			if temp &lt; minT || consec &gt;= maxConsRej {
+		if try >= maxTries || success >= maxSuccess {
+			if temp < minT || consec >= maxConsRej {
 				finished = true
-				total = total &#43; try
+				total = total + try
 				break
 			} else {
 				temp = cool(temp) // decrease temp according to cooling schedule
-				total = total &#43; try
+				total = total + try
 				try = 1
 				success = 1
 			}
@@ -191,24 +191,24 @@ func SimAnn2(a Matrix64, initialSolution IntVector, loss ObjFn, isLoss bool, pro
 		} else {
 			newEnergy = -loss(a, newSolution)
 		}
-		if newEnergy &lt; stopVal {
+		if newEnergy < stopVal {
 			bestSolution.CopyFrom(newSolution)
 			bestEnergy = newEnergy
 			break
 		}
 
-		if bestEnergy-newEnergy &gt; 1e-6 {
+		if bestEnergy-newEnergy > 1e-6 {
 			bestSolution.CopyFrom(newSolution)
 			bestEnergy = newEnergy
-			success&#43;&#43;
+			success++
 			consec = 0
 		} else {
-			if r.Float64() &lt; math.Exp((bestEnergy-newEnergy)/(k*temp)) {
+			if r.Float64() < math.Exp((bestEnergy-newEnergy)/(k*temp)) {
 				bestSolution.CopyFrom(newSolution)
 				bestEnergy = newEnergy
-				success&#43;&#43;
+				success++
 			} else {
-				consec&#43;&#43;
+				consec++
 			}
 		}
 	}
@@ -225,8 +225,8 @@ func RobSA2(a Matrix64, p IntVector, objFn ObjFn, isLoss bool) (bestEnergy float
 
 // SimAnn3 minimizes a loss function using simulated annealing (Kirkpatrick et al., 1983)
 func SimAnn3(a Matrix64, p IntVector, loss ObjFn, isLoss bool, proposePerm GenFn, cool CoolFn) (bestEnergy float64) {
-	//    Kirkpatrick, S., Gelatt, C.D., &amp; Vecchi, M.P. (1983). Optimization by Simulated Annealing. Science, 220: 671-680.
-	//    Based on &#34;anneal.m&#34; code by Joachim Vandekerckhove joachim.vandekerckhove@psy.kuleuven.be
+	//    Kirkpatrick, S., Gelatt, C.D., & Vecchi, M.P. (1983). Optimization by Simulated Annealing. Science, 220: 671-680.
+	//    Based on "anneal.m" code by Joachim Vandekerckhove joachim.vandekerckhove@psy.kuleuven.be
 	//    http://www.mathworks.com/matlabcentral/fileexchange/10548-general-simulated-annealing-algorithm/content/anneal.m
 
 	var (
@@ -268,18 +268,18 @@ func SimAnn3(a Matrix64, p IntVector, loss ObjFn, isLoss bool, proposePerm GenFn
 	r := rand.New(rand.NewSource(seed))
 
 	for !finished {
-		try&#43;&#43; // just an iteration counter
+		try++ // just an iteration counter
 		newSolution.CopyFrom(p)
 
 		//  Stop / decrement temp criteria
-		if try &gt;= maxTries || success &gt;= maxSuccess {
-			if temp &lt; minT || consec &gt;= maxConsRej {
+		if try >= maxTries || success >= maxSuccess {
+			if temp < minT || consec >= maxConsRej {
 				finished = true
-				total = total &#43; try
+				total = total + try
 				break
 			} else {
 				temp = cool(temp) // decrease temp according to cooling schedule
-				total = total &#43; try
+				total = total + try
 				try = 1
 				success = 1
 			}
@@ -291,24 +291,24 @@ func SimAnn3(a Matrix64, p IntVector, loss ObjFn, isLoss bool, proposePerm GenFn
 		} else {
 			newEnergy = -loss(a, newSolution)
 		}
-		if newEnergy &lt; stopVal {
+		if newEnergy < stopVal {
 			p.CopyFrom(newSolution)
 			bestEnergy = newEnergy
 			break
 		}
 
-		if bestEnergy-newEnergy &gt; 1e-6 {
+		if bestEnergy-newEnergy > 1e-6 {
 			p.CopyFrom(newSolution)
 			bestEnergy = newEnergy
-			success&#43;&#43;
+			success++
 			consec = 0
 		} else {
-			if r.Float64() &lt; math.Exp((bestEnergy-newEnergy)/(k*temp)) {
+			if r.Float64() < math.Exp((bestEnergy-newEnergy)/(k*temp)) {
 				p.CopyFrom(newSolution)
 				bestEnergy = newEnergy
-				success&#43;&#43;
+				success++
 			} else {
-				consec&#43;&#43;
+				consec++
 			}
 		}
 	}

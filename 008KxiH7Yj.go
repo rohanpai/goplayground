@@ -11,10 +11,10 @@ flags:  The flag argument defines the logging properties.
 package main
 
 import (
-	&#34;io&#34;
-	&#34;io/ioutil&#34;
-	&#34;log&#34;
-	&#34;os&#34;
+	"io"
+	"io/ioutil"
+	"log"
+	"os"
 )
 
 var (
@@ -34,16 +34,16 @@ var (
 // main is the entry point for the application.
 func main() {
 	// Open a file for warnings.
-	warnings, err := os.OpenFile(&#34;warnings.log&#34;, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	warnings, err := os.OpenFile("warnings.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
-		log.Fatalln(&#34;Failed to open warning log file&#34;)
+		log.Fatalln("Failed to open warning log file")
 	}
 	defer warnings.Close()
 
 	// Open a file for errors.
-	errors, err := os.OpenFile(&#34;errors.log&#34;, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	errors, err := os.OpenFile("errors.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
-		log.Fatalln(&#34;Failed to open errors log file&#34;)
+		log.Fatalln("Failed to open errors log file")
 	}
 	defer errors.Close()
 
@@ -54,27 +54,27 @@ func main() {
 	initLog(ioutil.Discard, os.Stdout, warnings, multi)
 
 	// Test each log type.
-	Trace.Println(&#34;I have something standard to say.&#34;)
-	Info.Println(&#34;Important Information.&#34;)
-	Warning.Println(&#34;There is something you need to know about.&#34;)
-	Error.Println(&#34;Something has failed.&#34;)
+	Trace.Println("I have something standard to say.")
+	Info.Println("Important Information.")
+	Warning.Println("There is something you need to know about.")
+	Error.Println("Something has failed.")
 }
 
 // initLog sets the devices for each log type.
 func initLog(traceHandle io.Writer, infoHandle io.Writer, warningHandle io.Writer, errorHandle io.Writer) {
 	Trace = log.New(traceHandle,
-		&#34;TRACE: &#34;,
+		"TRACE: ",
 		log.Ldate|log.Ltime|log.Lshortfile)
 
 	Info = log.New(infoHandle,
-		&#34;INFO: &#34;,
+		"INFO: ",
 		log.Ldate|log.Ltime|log.Lshortfile)
 
 	Warning = log.New(warningHandle,
-		&#34;WARNING: &#34;,
+		"WARNING: ",
 		log.Ldate|log.Ltime|log.Lshortfile)
 
 	Error = log.New(errorHandle,
-		&#34;ERROR: &#34;,
+		"ERROR: ",
 		log.Ldate|log.Ltime|log.Lshortfile)
 }

@@ -1,18 +1,18 @@
 package main
 
-import &#34;github.com/tapir/glfw3-go&#34;
+import "github.com/tapir/glfw3-go"
 
-import gl &#34;github.com/chsc/gogl/gl21&#34;
-import &#34;runtime&#34;
+import gl "github.com/chsc/gogl/gl21"
+import "runtime"
 
 func main() {
 	runtime.LockOSThread()
 	if !glfw.Init() {
-		println(&#34;glfw init failure&#34;)
+		println("glfw init failure")
 	}
 	defer glfw.Terminate()
 	//glfw.SetErrorCallback(func(err int, desc string) { panic(desc) })
-	window := glfw.CreateWindow(500, 500, &#34;egles&#34;, nil, nil)
+	window := glfw.CreateWindow(500, 500, "egles", nil, nil)
 	defer window.Destroy()
 
 	window.MakeContextCurrent()

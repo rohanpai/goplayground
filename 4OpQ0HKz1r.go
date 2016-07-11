@@ -1,47 +1,47 @@
 package main
 
 import (
-	&#34;bufio&#34;
-	&#34;flag&#34;
-	&#34;fmt&#34;
-	&#34;io&#34;
-	&#34;net/url&#34;
-	&#34;os&#34;
-	&#34;regexp&#34;
-	&#34;strings&#34;
+	"bufio"
+	"flag"
+	"fmt"
+	"io"
+	"net/url"
+	"os"
+	"regexp"
+	"strings"
 )
 
-var inputFile = flag.String(&#34;infile&#34;, &#34;freebase-rdf&#34;, &#34;Input file path&#34;)
-var filter, _ = regexp.Compile(&#34;^file:.*|^talk:.*|^special:.*|^wikipedia:.*|^wiktionary:.*|^user:.*|^user_talk:.*&#34;)
+var inputFile = flag.String("infile", "freebase-rdf", "Input file path")
+var filter, _ = regexp.Compile("^file:.*|^talk:.*|^special:.*|^wikipedia:.*|^wiktionary:.*|^user:.*|^user_talk:.*")
 
 type Redirect struct {
-	Title string `xml:&#34;title,attr&#34;`
+	Title string `xml:"title,attr"`
 }
 
 type Page struct {
-	Title    string `xml:&#34;title&#34;`
-	Abstract string `xml:&#34;&#34;`
+	Title    string `xml:"title"`
+	Abstract string `xml:""`
 }
 
 func CanonicaliseTitle(title string) string {
 	can := strings.ToLower(title)
-	can = strings.Replace(can, &#34; &#34;, &#34;_&#34;, -1)
+	can = strings.Replace(can, " ", "_", -1)
 	can = url.QueryEscape(can)
 	return can
 }
 
 func convertFreebaseId(uri string) string {
-	if strings.HasPrefix(uri, &#34;&lt;&#34;) &amp;&amp; strings.HasSuffix(uri, &#34;&gt;&#34;) {
+	if strings.HasPrefix(uri, "<") && strings.HasSuffix(uri, ">") {
 		var id = uri[1 : len(uri)-1]
-		id = strings.Replace(id, &#34;http://rdf.freebase.com/ns&#34;, &#34;&#34;, -1)
-		id = strings.Replace(id, &#34;.&#34;, &#34;/&#34;, -1)
+		id = strings.Replace(id, "http://rdf.freebase.com/ns", "", -1)
+		id = strings.Replace(id, ".", "/", -1)
 		return id
 	}
 	return uri
 }
 
 func parseTriple(line string) (string, string, string) {
-	var parts = strings.Split(line, &#34;\t&#34;)
+	var parts = strings.Split(line, "\t")
 	subject := convertFreebaseId(parts[0])
 	predicate := convertFreebaseId(parts[1])
 	object := convertFreebaseId(parts[2])
@@ -49,22 +49,22 @@ func parseTriple(line string) (string, string, string) {
 }
 
 func processTopic(id string, properties map[string][]string, file io.Writer) {
-	fmt.Fprint(file, &#34;&lt;card&gt;\n&#34;)
-	fmt.Fprintf(file, `&lt;title&gt;&#34;%s&#34;&lt;/title&gt;\n`, properties[&#34;/type/object/name&#34;])
-	fmt.Fprintf(file, `&lt;image&gt;&#34;%s&#34;&lt;/image&gt;\n`, &#34;https://usercontent.googleapis.com/freebase/v1/image&#34;, id)
-	fmt.Fprintf(file, `&lt;text&gt;&#34;%s&#34;&lt;/text&gt;\n`, properties[&#34;/common/document/text&#34;])
-	fmt.Fprintf(file, &#34;&lt;facts&gt;&#34;)
+	fmt.Fprint(file, "<card>\n")
+	fmt.Fprintf(file, `<title>"%s"</title>\n`, properties["/type/object/name"])
+	fmt.Fprintf(file, `<image>"%s"</image>\n`, "https://usercontent.googleapis.com/freebase/v1/image", id)
+	fmt.Fprintf(file, `<text>"%s"</text>\n`, properties["/common/document/text"])
+	fmt.Fprintf(file, "<facts>")
 	for k, v := range properties {
 		for _, value := range v {
-			fmt.Fprintf(file, &#34;&lt;fact property=\&#34;%s\&#34;&gt;%s&lt;/fact&gt;\n&#34;, k, value)
+			fmt.Fprintf(file, "<fact property=\"%s\">%s</fact>\n", k, value)
 		}
 	}
-	fmt.Fprintf(file, &#34;&lt;/facts&gt;\n&#34;)
-	fmt.Fprintf(file, &#34;&lt;/card&gt;\n&#34;)
+	fmt.Fprintf(file, "</facts>\n")
+	fmt.Fprintf(file, "</card>\n")
 }
 
 func main() {
-	var current_mid = &#34;&#34;
+	var current_mid = ""
 	current_topic := make(map[string][]string)
 	f, err := os.Open(*inputFile)
 	if err != nil {
@@ -72,18 +72,18 @@ func main() {
 		return
 	}
 	r := bufio.NewReader(f)
-	xmlFile, _ := os.Create(&#34;freebase.xml&#34;)
-	line, err := r.ReadString(&#39;\n&#39;)
+	xmlFile, _ := os.Create("freebase.xml")
+	line, err := r.ReadString('\n')
 	for err == nil {
 		subject, predicate, object := parseTriple(line)
 		if subject == current_mid {
 			current_topic[predicate] = append(current_topic[predicate], object)
-		} else if len(current_mid) &gt; 0 {
+		} else if len(current_mid) > 0 {
 			processTopic(current_mid, current_topic, xmlFile)
 			current_topic = make(map[string][]string)
 		}
 		current_mid = subject
-		line, err = r.ReadString(&#39;\n&#39;)
+		line, err = r.ReadString('\n')
 	}
 	processTopic(current_mid, current_topic, xmlFile)
 	if err != io.EOF {

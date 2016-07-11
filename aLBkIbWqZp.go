@@ -1,9 +1,9 @@
 package main
 
 import (
-	&#34;bytes&#34;
-	&#34;fmt&#34;
-	&#34;io&#34;
+	"bytes"
+	"fmt"
+	"io"
 )
 
 // buffer is just here to make bytes.Buffer an io.ReadWriteCloser.
@@ -23,14 +23,14 @@ func main() {
 	var rwc io.ReadWriteCloser
 
 	// Make the io.ReadWriteCloser actually do something.
-	rwc = &amp;buffer{}
+	rwc = &buffer{}
 
 	// Write some bytes to the buffer. We could also do this by:
-	//  n, err := rwc.Write([]byte(&#34;hello&#34;)
+	//  n, err := rwc.Write([]byte("hello")
 	// where n is the number of bytes successfully written and
 	// err is any error that happened during the write (fmt.Fprint
 	// will give these too if you want).
-	fmt.Fprint(rwc, &#34;hello&#34;)
+	fmt.Fprint(rwc, "hello")
 
 	// This is a byte slice we will fill with the read.
 	// It is longer that the contents of the buffer.
@@ -44,12 +44,12 @@ func main() {
 	// and the byte slice that is being filled.
 	for {
 		n, err := rwc.Read(buf)
-		fmt.Printf(&#34;read %d bytes %q got a %v error (total buffer is %v)\n&#34;, n, buf[:n], err, buf)
+		fmt.Printf("read %d bytes %q got a %v error (total buffer is %v)\n", n, buf[:n], err, buf)
 		if err != nil {
 			break
 		}
 	}
 
-	// Close the buffer. This could have been defer&#39;d above.
+	// Close the buffer. This could have been defer'd above.
 	rwc.Close()
 }

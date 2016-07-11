@@ -1,9 +1,9 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;sync/atomic&#34;
-	&#34;unsafe&#34;
+	"fmt"
+	"sync/atomic"
+	"unsafe"
 )
 
 type Struct struct {
@@ -13,14 +13,14 @@ type Struct struct {
 func main() {
 	data := 1
 
-	info := Struct{p: unsafe.Pointer(&amp;data)}
+	info := Struct{p: unsafe.Pointer(&data)}
 
-	fmt.Printf(&#34;info is %d\n&#34;, *(*int)(info.p))
+	fmt.Printf("info is %d\n", *(*int)(info.p))
 
 	otherData := 2
 
-	atomic.StorePointer(&amp;info.p, unsafe.Pointer(&amp;otherData))
+	atomic.StorePointer(&info.p, unsafe.Pointer(&otherData))
 
-	fmt.Printf(&#34;info is %d\n&#34;, *(*int)(info.p))
+	fmt.Printf("info is %d\n", *(*int)(info.p))
 
 }

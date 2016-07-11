@@ -1,17 +1,17 @@
 package main
 
 import (
-	&#34;encoding/json&#34;
-	&#34;fmt&#34;
-	&#34;net/http&#34;
-	&#34;net/url&#34;
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"net/url"
 )
 
 const (
-	GET    = &#34;GET&#34;
-	POST   = &#34;POST&#34;
-	PUT    = &#34;PUT&#34;
-	DELETE = &#34;DELETE&#34;
+	GET    = "GET"
+	POST   = "POST"
+	PUT    = "PUT"
+	DELETE = "DELETE"
 )
 
 type Resource interface {
@@ -24,19 +24,19 @@ type Resource interface {
 type ResourceBase struct{}
 
 func (ResourceBase) Get(values url.Values) (int, interface{}) {
-	return http.StatusMethodNotAllowed, &#34;&#34;
+	return http.StatusMethodNotAllowed, ""
 }
 
 func (ResourceBase) Post(values url.Values) (int, interface{}) {
-	return http.StatusMethodNotAllowed, &#34;&#34;
+	return http.StatusMethodNotAllowed, ""
 }
 
 func (ResourceBase) Put(values url.Values) (int, interface{}) {
-	return http.StatusMethodNotAllowed, &#34;&#34;
+	return http.StatusMethodNotAllowed, ""
 }
 
 func (ResourceBase) Delete(values url.Values) (int, interface{}) {
-	return http.StatusMethodNotAllowed, &#34;&#34;
+	return http.StatusMethodNotAllowed, ""
 }
 
 func requestHandler(resource Resource) http.HandlerFunc {
@@ -79,7 +79,7 @@ func AddResource(resource Resource, path string) {
 }
 
 func Start(port int) {
-	portString := fmt.Sprintf(&#34;:%d&#34;, port)
+	portString := fmt.Sprintf(":%d", port)
 	http.ListenAndServe(portString, nil)
 }
 
@@ -92,11 +92,11 @@ type Test struct {
 
 // Override the Get method
 func (t Test) Get(values url.Values) (int, interface{}) {
-	return http.StatusOK, &#34;YAY&#34;
+	return http.StatusOK, "YAY"
 }
 
 func main() {
 	var a Test
-	AddResource(a, &#34;/&#34;)
+	AddResource(a, "/")
 	Start(4000)
 }

@@ -1,16 +1,16 @@
 package main
 
-import &#34;fmt&#34;
+import "fmt"
 
 func main() {
 	b := NewBag()
-	b.Set(&#34;a&#34;, 1)
-	b.Set(&#34;b&#34;, 2)
-	b.Set(&#34;c&#34;, 3)
+	b.Set("a", 1)
+	b.Set("b", 2)
+	b.Set("c", 3)
 
 	it := b.Iter()
 	for it.Next() {
-		fmt.Println(it.Key, &#34;=&#34;, it.Value)
+		fmt.Println(it.Key, "=", it.Value)
 	}
 }
 
@@ -19,7 +19,7 @@ type Bag struct {
 }
 
 func NewBag() *Bag {
-	return &amp;Bag{make(map[string]interface{})}
+	return &Bag{make(map[string]interface{})}
 }
 
 func (b *Bag) Set(key string, value interface{}) {
@@ -27,11 +27,11 @@ func (b *Bag) Set(key string, value interface{}) {
 }
 
 func (b *Bag) Iter() *Iter {
-	it := &amp;Iter{b: b, l: make([]string, len(b.m))}
+	it := &Iter{b: b, l: make([]string, len(b.m))}
 	n := 0
 	for k := range b.m {
 		it.l[n] = k
-		n&#43;&#43;
+		n++
 	}
 	return it
 }
@@ -51,6 +51,6 @@ func (it *Iter) Next() bool {
 	}
 	it.Key = it.l[it.n]
 	it.Value = it.b.m[it.Key]
-	it.n&#43;&#43;
+	it.n++
 	return true
 }

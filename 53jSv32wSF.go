@@ -4,10 +4,10 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;log&#34;
-	&#34;os&#34;
-	&#34;strconv&#34;
+	"fmt"
+	"log"
+	"os"
+	"strconv"
 )
 
 //getTrailingBytes opens a file and reads the last n bytes
@@ -45,15 +45,15 @@ type mp3ID3v1 []byte
 //http://en.wikipedia.org/wiki/ID3#Layout
 func (mp3 mp3ID3v1) Parse() map[string]interface{} {
 	m := make(map[string]interface{}, 8)
-	if string(mp3[:3]) != &#34;TAG&#34; {
+	if string(mp3[:3]) != "TAG" {
 		return nil
 	}
-	m[&#34;title&#34;] = string(mp3[3:33])
-	m[&#34;artist&#34;] = string(mp3[33:63])
-	m[&#34;album&#34;] = string(mp3[63:93])
-	m[&#34;year&#34;], _ = strconv.Atoi(string(mp3[93:97]))
-	m[&#34;comment&#34;] = string(mp3[97:126])
-	m[&#34;genre&#34;] = int(mp3[127])
+	m["title"] = string(mp3[3:33])
+	m["artist"] = string(mp3[33:63])
+	m["album"] = string(mp3[63:93])
+	m["year"], _ = strconv.Atoi(string(mp3[93:97]))
+	m["comment"] = string(mp3[97:126])
+	m["genre"] = int(mp3[127])
 	return m
 }
 
@@ -64,22 +64,22 @@ func (mp3 mp3ID3v1) String() string {
 }
 
 func keyEqualsValue(m map[string]interface{}, s string) string {
-	return fmt.Sprintf(&#34;%s=%v\n&#34;, s, m[s])
+	return fmt.Sprintf("%s=%v\n", s, m[s])
 }
 
 //defaultFormat should display the tag information like the example
 func defaultFormat(m map[string]interface{}) (s string) {
-	s &#43;= keyEqualsValue(m, &#34;album&#34;)
-	s &#43;= keyEqualsValue(m, &#34;artist&#34;)
-	s &#43;= keyEqualsValue(m, &#34;title&#34;)
-	s &#43;= keyEqualsValue(m, &#34;genre&#34;)
-	s &#43;= keyEqualsValue(m, &#34;year&#34;)
-	s &#43;= keyEqualsValue(m, &#34;comment&#34;)
+	s += keyEqualsValue(m, "album")
+	s += keyEqualsValue(m, "artist")
+	s += keyEqualsValue(m, "title")
+	s += keyEqualsValue(m, "genre")
+	s += keyEqualsValue(m, "year")
+	s += keyEqualsValue(m, "comment")
 	return
 }
 
 func main() {
-	b, err := getTrailingBytes(&#34;sample.mp3&#34;, 128)
+	b, err := getTrailingBytes("sample.mp3", 128)
 	if err != nil {
 		log.Fatal(err)
 	}

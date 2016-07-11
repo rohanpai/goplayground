@@ -1,10 +1,10 @@
 package main
 
 import (
-	&#34;database/sql&#34;
-	&#34;fmt&#34;
-	//_ &#34;github.com/gwenn/gosqlite&#34;
-	_ &#34;code.google.com/p/go-sqlite/go1/sqlite3&#34;
+	"database/sql"
+	"fmt"
+	//_ "github.com/gwenn/gosqlite"
+	_ "code.google.com/p/go-sqlite/go1/sqlite3"
 )
 
 type Test struct {
@@ -39,7 +39,7 @@ LEFT OUTER JOIN test_data d ON d.test_id = t.id
 
 func findTests(db *sql.DB) []Test {
 	rows, err := db.Query(query)
-	checkNoError(err, &#34;error querying tests: %s&#34;)
+	checkNoError(err, "error querying tests: %s")
 	defer checkSqlRowsClose(rows)
 
 	tests := make([]Test, 0, 20)
@@ -47,26 +47,26 @@ func findTests(db *sql.DB) []Test {
 	for rows.Next() {
 		var id int64
 		var dummy float64
-		//err = rows.Scan(&amp;id) // expected 2 destination arguments in Scan, not 1
-		err = rows.Scan(&amp;id, &amp;dummy)
-		checkNoError(err, &#34;error scanning: %s&#34;)
+		//err = rows.Scan(&id) // expected 2 destination arguments in Scan, not 1
+		err = rows.Scan(&id, &dummy)
+		checkNoError(err, "error scanning: %s")
 		index, ok := indexById[id]
 		if !ok {
 			index = len(tests)
 			tests = append(tests, Test{})
 			indexById[id] = index
 		}
-		test := &amp;tests[index]
+		test := &tests[index]
 
 		var data sql.NullFloat64
 		if ok {
-			//err = rows.Scan(&amp;_ /*, &amp;_... */, &amp;data) // cannot use _ as value
-			//err = rows.Scan(nil /*, nil...*/, &amp;data) // Scan error on column index 1: destination not a pointer
-			err = rows.Scan(&amp;dummy /*, &amp;dummy*/, &amp;data)
-			checkNoError(err, &#34;error scanning: %s&#34;)
+			//err = rows.Scan(&_ /*, &_... */, &data) // cannot use _ as value
+			//err = rows.Scan(nil /*, nil...*/, &data) // Scan error on column index 1: destination not a pointer
+			err = rows.Scan(&dummy /*, &dummy*/, &data)
+			checkNoError(err, "error scanning: %s")
 		} else {
-			err = rows.Scan(&amp;test.Id /*, &amp;test...other fields */, &amp;data)
-			checkNoError(err, &#34;error scanning: %s&#34;)
+			err = rows.Scan(&test.Id /*, &test...other fields */, &data)
+			checkNoError(err, "error scanning: %s")
 		}
 		if data.Valid {
 			if test.Data == nil {
@@ -79,15 +79,15 @@ func findTests(db *sql.DB) []Test {
 }
 
 func main() {
-	db, err := sql.Open(&#34;sqlite3&#34;, &#34;:memory:&#34;)
-	checkNoError(err, &#34;error opening connection: %s&#34;)
+	db, err := sql.Open("sqlite3", ":memory:")
+	checkNoError(err, "error opening connection: %s")
 	defer checkSqlDbClose(db)
 
 	_, err = db.Exec(schema)
-	checkNoError(err, &#34;error creating table: %s&#34;)
+	checkNoError(err, "error creating table: %s")
 	tests := findTests(db)
 	for i, test := range tests {
-		fmt.Printf(&#34;&gt; Tests[%d]: %v\n&#34;, i, test)
+		fmt.Printf("> Tests[%d]: %v\n", i, test)
 	}
 }
 
@@ -97,8 +97,8 @@ func checkNoError(err error, format string) {
 	}
 }
 func checkSqlDbClose(db *sql.DB) {
-	checkNoError(db.Close(), &#34;error closing connection: %s&#34;)
+	checkNoError(db.Close(), "error closing connection: %s")
 }
 func checkSqlRowsClose(rows *sql.Rows) {
-	checkNoError(rows.Close(), &#34;error closing rows: %s&#34;)
+	checkNoError(rows.Close(), "error closing rows: %s")
 }

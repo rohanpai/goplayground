@@ -1,12 +1,12 @@
 package main
 
 import (
-	&#34;database/sql&#34;
-	&#34;fmt&#34;
+	"database/sql"
+	"fmt"
 
-	_ &#34;github.com/lib/pq&#34;
+	_ "github.com/lib/pq"
 
-	&#34;time&#34;
+	"time"
 )
 
 func main() {
@@ -17,10 +17,10 @@ func main() {
 	 *
 	 * Table looks like:
 	 *
-	 * CREATE TABLE &#34;public&#34;.&#34;time&#34; (&#34;t&#34; timestamp(6) WITH TIME ZONE)
+	 * CREATE TABLE "public"."time" ("t" timestamp(6) WITH TIME ZONE)
 	 */
 
-	db, err := sql.Open(&#34;postgres&#34;, &#34;dbname=postgres host=localhost sslmode=disable&#34;)
+	db, err := sql.Open("postgres", "dbname=postgres host=localhost sslmode=disable")
 	if err != nil {
 		panic(err)
 	}
@@ -31,19 +31,19 @@ func main() {
 
 	tin := time.Date(2013, 5, 4, 3, 2, 1, 0, time.UTC)
 
-	if _, err := db.Exec(`INSERT into time (&#34;t&#34;) VALUES ($1)`, tin); err != nil {
+	if _, err := db.Exec(`INSERT into time ("t") VALUES ($1)`, tin); err != nil {
 		panic(err)
 	}
 
 	var tout time.Time
-	if err := db.QueryRow(`SELECT t FROM time`).Scan(&amp;tout); err != nil {
+	if err := db.QueryRow(`SELECT t FROM time`).Scan(&tout); err != nil {
 		// we expect a row since we just put it in...
 		panic(err)
 	}
 
-	fmt.Printf(&#34;In %T %v\nOut %T %v&#34;, tin, tin, tout, tout)
+	fmt.Printf("In %T %v\nOut %T %v", tin, tin, tout, tout)
 
 	// Output:
-	// In time.Time 2013-05-04 03:02:01 &#43;0000 UTC
-	// Out time.Time 2013-05-04 03:02:01 &#43;0000 &#43;0000
+	// In time.Time 2013-05-04 03:02:01 +0000 UTC
+	// Out time.Time 2013-05-04 03:02:01 +0000 +0000
 }

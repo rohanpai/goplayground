@@ -1,42 +1,42 @@
 package main
 
 import (
-	&#34;crypto/rand&#34;
-	&#34;encoding/json&#34;
-	&#34;fmt&#34;
-	&#34;io&#34;
-	&#34;strings&#34;
+	"crypto/rand"
+	"encoding/json"
+	"fmt"
+	"io"
+	"strings"
 )
 
 type UUID []byte
 
 func (uuid UUID) String() string {
 	if uuid == nil || len(uuid) != 16 {
-		return &#34;&#34;
+		return ""
 	}
 	b := []byte(uuid)
-	return fmt.Sprintf(&#34;%08x-%04x-%04x-%04x-%012x&#34;,
+	return fmt.Sprintf("%08x-%04x-%04x-%04x-%012x",
 		b[:4], b[4:6], b[6:8], b[8:10], b[10:])
 }
 
 func NewRandom() UUID {
 	uuid := make([]byte, 16)
 	randomBits([]byte(uuid))
-	uuid[6] = (uuid[6] &amp; 0x0f) | 0x40 // Version 4
-	uuid[8] = (uuid[8] &amp; 0x3f) | 0x80 // Variant is 10
+	uuid[6] = (uuid[6] & 0x0f) | 0x40 // Version 4
+	uuid[8] = (uuid[8] & 0x3f) | 0x80 // Variant is 10
 	return uuid
 }
 
 func Parse(s string) UUID {
-	if len(s) == 36&#43;9 {
-		if strings.ToLower(s[:9]) != &#34;urn:uuid:&#34; {
+	if len(s) == 36+9 {
+		if strings.ToLower(s[:9]) != "urn:uuid:" {
 			return nil
 		}
 		s = s[9:]
 	} else if len(s) != 36 {
 		return nil
 	}
-	if s[8] != &#39;-&#39; || s[13] != &#39;-&#39; || s[18] != &#39;-&#39; || s[23] != &#39;-&#39; {
+	if s[8] != '-' || s[13] != '-' || s[18] != '-' || s[23] != '-' {
 		return nil
 	}
 	uuid := make([]byte, 16)
@@ -85,7 +85,7 @@ var xvalues = []byte{
 func xtob(x string) (byte, bool) {
 	b1 := xvalues[x[0]]
 	b2 := xvalues[x[1]]
-	return (b1 &lt;&lt; 4) | b2, b1 != 255 &amp;&amp; b2 != 255
+	return (b1 << 4) | b2, b1 != 255 && b2 != 255
 }
 
 var rander = rand.Reader // random function
@@ -96,7 +96,7 @@ func (uuid UUID) MarshalJSON() ([]byte, error) {
 
 func (uuid *UUID) UnmarshalJSON(in []byte) error {
 	var str string
-	err := json.Unmarshal(in, &amp;str)
+	err := json.Unmarshal(in, &str)
 	if err != nil {
 		return err
 	}
@@ -112,16 +112,16 @@ func (uuid *UUID) UnmarshalJSON(in []byte) error {
 
 func main() {
 	id := NewRandom()
-	fmt.Println(&#34;First ID:&#34;, id)
+	fmt.Println("First ID:", id)
 	b, err := json.Marshal(id)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(&#34;JSON:&#34;, string(b))
+	fmt.Println("JSON:", string(b))
 	var newId UUID
-	err = json.Unmarshal(b, &amp;newId)
+	err = json.Unmarshal(b, &newId)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(&#34;Second ID:&#34;, newId)
+	fmt.Println("Second ID:", newId)
 }

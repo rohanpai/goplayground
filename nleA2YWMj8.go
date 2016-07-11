@@ -1,8 +1,8 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;reflect&#34;
+	"fmt"
+	"reflect"
 )
 
 type Z struct {
@@ -20,9 +20,9 @@ type T struct {
 }
 
 func InspectStructV(val reflect.Value) {
-	if val.Kind() == reflect.Interface &amp;&amp; !val.IsNil() {
+	if val.Kind() == reflect.Interface && !val.IsNil() {
 		elm := val.Elem()
-		if elm.Kind() == reflect.Ptr &amp;&amp; !elm.IsNil() &amp;&amp; elm.Elem().Kind() == reflect.Ptr {
+		if elm.Kind() == reflect.Ptr && !elm.IsNil() && elm.Elem().Kind() == reflect.Ptr {
 			val = elm
 		}
 	}
@@ -30,14 +30,14 @@ func InspectStructV(val reflect.Value) {
 		val = val.Elem()
 	}
 
-	for i := 0; i &lt; val.NumField(); i&#43;&#43; {
+	for i := 0; i < val.NumField(); i++ {
 		valueField := val.Field(i)
 		typeField := val.Type().Field(i)
-		address := &#34;not-addressable&#34;
+		address := "not-addressable"
 
-		if valueField.Kind() == reflect.Interface &amp;&amp; !valueField.IsNil() {
+		if valueField.Kind() == reflect.Interface && !valueField.IsNil() {
 			elm := valueField.Elem()
-			if elm.Kind() == reflect.Ptr &amp;&amp; !elm.IsNil() &amp;&amp; elm.Elem().Kind() == reflect.Ptr {
+			if elm.Kind() == reflect.Ptr && !elm.IsNil() && elm.Elem().Kind() == reflect.Ptr {
 				valueField = elm
 			}
 		}
@@ -47,10 +47,10 @@ func InspectStructV(val reflect.Value) {
 
 		}
 		if valueField.CanAddr() {
-			address = fmt.Sprintf(&#34;0x%X&#34;, valueField.Addr().Pointer())
+			address = fmt.Sprintf("0x%X", valueField.Addr().Pointer())
 		}
 
-		fmt.Printf(&#34;Field Name: %s,\t Field Value: %v,\t Address: %v\t, Field type: %v\t, Field kind: %v\n&#34;, typeField.Name,
+		fmt.Printf("Field Name: %s,\t Field Value: %v,\t Address: %v\t, Field type: %v\t, Field kind: %v\n", typeField.Name,
 			valueField.Interface(), address, typeField.Type, valueField.Kind())
 
 		if valueField.Kind() == reflect.Struct {

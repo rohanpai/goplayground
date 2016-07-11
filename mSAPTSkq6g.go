@@ -1,9 +1,9 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;github.com/mikespook/gearman-go/worker&#34;
-	&#34;sync&#34;
+	"fmt"
+	"github.com/mikespook/gearman-go/worker"
+	"sync"
 )
 
 func main() {
@@ -11,7 +11,7 @@ func main() {
 	w := worker.New(worker.Unlimited)
 	defer w.Close()
 	// Add a gearman job server
-	if err := w.AddServer(worker.Network, &#34;127.0.0.1:4730&#34;); err != nil {
+	if err := w.AddServer(worker.Network, "127.0.0.1:4730"); err != nil {
 		fmt.Println(err)
 		return
 	}
@@ -21,7 +21,7 @@ func main() {
 		return nil, nil
 	}
 	// Add the function to worker
-	if err := w.AddFunc(&#34;foobar&#34;, foobar, 0); err != nil {
+	if err := w.AddFunc("foobar", foobar, 0); err != nil {
 		fmt.Println(err)
 		return
 	}
@@ -36,12 +36,12 @@ func main() {
 		wg.Done()
 		return nil
 	}
-	// An error handler for handling worker&#39;s internal errors.
+	// An error handler for handling worker's internal errors.
 	w.ErrorHandler = func(e error) {
 		fmt.Println(e)
 		// Ignore the error or shutdown the worker
 	}
-	// Tell Gearman job server: I&#39;m ready!
+	// Tell Gearman job server: I'm ready!
 	if err := w.Ready(); err != nil {
 		fmt.Println(err)
 		return
@@ -50,7 +50,7 @@ func main() {
 	go w.Work()
 	wg.Add(1)
 	// calling Echo
-	w.Echo([]byte(&#34;Hello&#34;))
+	w.Echo([]byte("Hello"))
 	// Waiting results
 	wg.Wait()
 }

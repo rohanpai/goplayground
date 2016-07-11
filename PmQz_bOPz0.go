@@ -19,14 +19,14 @@
 //
 //	Associated Files:
 //		GoNetCDF Package from http://www.unidata.ucar.edu/software/netcdf/docs/netcdf-c/
-//		GaryBoone&#39;s &#34;GoStats&#34; Statistics Package from https://github.com/GaryBoone/GoStats
+//		GaryBoone's "GoStats" Statistics Package from https://github.com/GaryBoone/GoStats
 //		csvdata/folder/GeographicalLocationXX.csv 
 //		csvdata/folder/GeoTemporalMeasurementXX.csv
-//			(where &#34;folder&#34; = pollutant type (Ozone, PM2.5)
-//			(where &#34;XX&#34; represents the region desired; 01-10 and 25. 
+//			(where "folder" = pollutant type (Ozone, PM2.5)
+//			(where "XX" represents the region desired; 01-10 and 25. 
 //			       11 per pollutant)
 //
-//		Pollutant Types: &#34;Ozone&#34;, &#34;PM2.5&#34;
+//		Pollutant Types: "Ozone", "PM2.5"
 //
 //		Region Identifiers:
 //		        01 Boston
@@ -39,7 +39,7 @@
 //		        08 Denver
 //		        09 San Fransisco
 //		        10 Seattle
-//		        25 Mexico &amp; Canada
+//		        25 Mexico & Canada
 //
 //	Version:	2012.06.25
 //
@@ -50,10 +50,10 @@
 //			University of Minnesota
 //			roste025@umn.edu
 //
-//	References:	1. The constants, the function &#34;AQMcompare&#34;, and everything below that 
+//	References:	1. The constants, the function "AQMcompare", and everything below that 
 //				function was written by Chris Tessum PhDc and modified 
 //				by Steven Roste.
-//			2. The &#34;GoStats&#34; Package was written by Gary Boone and is available at:
+//			2. The "GoStats" Package was written by Gary Boone and is available at:
 //				https://github.com/GaryBoone/GoStats
 //			3. GoNetCDF Package from 
 //				http://www.unidata.ucar.edu/software/netcdf/docs/netcdf-c/
@@ -70,16 +70,16 @@
 package main
 
 import(
-	&#34;os&#34;
-	&#34;log&#34;
-	&#34;fmt&#34;
-	&#34;encoding/csv&#34;
-	&#34;strconv&#34;
-	&#34;bitbucket.org/ctessum/gonetcdf&#34;
-	&#34;errors&#34;
-	&#34;math&#34;
-	&#34;../GoStats&#34;
-	&#34;time&#34;
+	"os"
+	"log"
+	"fmt"
+	"encoding/csv"
+	"strconv"
+	"bitbucket.org/ctessum/gonetcdf"
+	"errors"
+	"math"
+	"../GoStats"
+	"time"
 )
 
 //  some information about the projection
@@ -96,28 +96,28 @@ const (
 	nx     = 444
 	ny     = 336
 	g      = 9.8 // m/s2
-	dateFormat = &#34;2006-01-02&#34;
+	dateFormat = "2006-01-02"
 )
 
 func main() {
 
 	// Which Pollutant to evaluate
 	var polntyp string
-	fmt.Println(&#34;Enter the Pollution Type (Ozone or PM2.5): &#34;)
-	fmt.Scan(&amp;polntyp)
+	fmt.Println("Enter the Pollution Type (Ozone or PM2.5): ")
+	fmt.Scan(&polntyp)
 
 	// Coordinates
 	var SD string  // Start Date in YYYY-MM-DD
 	var ED string  // End Date in YYYY-MM-DD
-	fmt.Println(&#34;Enter the Start Date (YYYY-MM-DD): &#34;)
-	fmt.Scan(&amp;SD)
-	fmt.Println(&#34;Enter the Longitude Coordinate (YYYY-MM-DD): &#34;)
-	fmt.Scan(&amp;ED)
+	fmt.Println("Enter the Start Date (YYYY-MM-DD): ")
+	fmt.Scan(&SD)
+	fmt.Println("Enter the Longitude Coordinate (YYYY-MM-DD): ")
+	fmt.Scan(&ED)
 
 	// Aquire Data
-	fmt.Println(&#34;Aquiring measured EPA data...&#34;)
+	fmt.Println("Aquiring measured EPA data...")
 	valuDAT, locs := CSVreader(SD, ED, polntyp)
-	fmt.Println(&#34;Aquiring modeled data...&#34;)
+	fmt.Println("Aquiring modeled data...")
 	valuMOD := AQMcompare(SD, ED, polntyp, locs)
 
 	// Process measured data
@@ -146,27 +146,27 @@ func main() {
 	
 
 	// Print Stats to screen
-	fmt.Println(&#34;                                            &#34;)
-	fmt.Println(&#34;     Pollutant      Start Date     End Date&#34;)
-	fmt.Println(&#34;     &#34;, polntyp, &#34;      &#34;, SD, &#34;  &#34;, ED)
-	fmt.Println(&#34;                                            &#34;)
-	fmt.Println(&#34;            Measured                   Modeled&#34;)
-	fmt.Println(&#34;Mean:     &#34;, meanDAT, &#34;       &#34;, meanMOD)
-	fmt.Println(&#34;Min:      &#34;, minDAT, &#34;                   &#34;, minMOD)
-	fmt.Println(&#34;Max:      &#34;, maxDAT, &#34;                   &#34;, maxMOD)
-	fmt.Println(&#34;Count:    &#34;, countDAT, &#34;                        &#34;,countMOD)
-	fmt.Println(&#34;StdDev:   &#34;, stdDAT, &#34;        &#34;, stdMOD)
-	fmt.Println(&#34;Variance: &#34;, varDAT, &#34;        &#34;, varMOD)
-	fmt.Println(&#34;Skew:     &#34;, skewDAT, &#34;        &#34;, skewMOD)
-	fmt.Println(&#34;                                            &#34;)
-	fmt.Println(&#34;	  Error and Bias Statistics:&#34;)
-	fmt.Println(&#34;Error:    &#34;, e)
-	fmt.Println(&#34;Abs Err:  &#34;, eabs)
-	fmt.Println(&#34;Bias:     &#34;, bias)
-	fmt.Println(&#34;Abs Bias: &#34;, biasabs)
-	fmt.Println(&#34;                                            &#34;)
+	fmt.Println("                                            ")
+	fmt.Println("     Pollutant      Start Date     End Date")
+	fmt.Println("     ", polntyp, "      ", SD, "  ", ED)
+	fmt.Println("                                            ")
+	fmt.Println("            Measured                   Modeled")
+	fmt.Println("Mean:     ", meanDAT, "       ", meanMOD)
+	fmt.Println("Min:      ", minDAT, "                   ", minMOD)
+	fmt.Println("Max:      ", maxDAT, "                   ", maxMOD)
+	fmt.Println("Count:    ", countDAT, "                        ",countMOD)
+	fmt.Println("StdDev:   ", stdDAT, "        ", stdMOD)
+	fmt.Println("Variance: ", varDAT, "        ", varMOD)
+	fmt.Println("Skew:     ", skewDAT, "        ", skewMOD)
+	fmt.Println("                                            ")
+	fmt.Println("	  Error and Bias Statistics:")
+	fmt.Println("Error:    ", e)
+	fmt.Println("Abs Err:  ", eabs)
+	fmt.Println("Bias:     ", bias)
+	fmt.Println("Abs Bias: ", biasabs)
+	fmt.Println("                                            ")
 
-	Results(data) // &#34;data&#34; must be in [][]string format with all headers and data contained
+	Results(data) // "data" must be in [][]string format with all headers and data contained
 }
 
 fun Results(results [][]string) {
@@ -176,18 +176,18 @@ fun Results(results [][]string) {
 	// not overwritten.
 
 	var fn string
-	fn = &#34;Results&#34;
+	fn = "Results"
 	datetime := time.Now()
-	filename := fmt.Sprint(fn, datetime.String(), &#34;.csv&#34;) 
+	filename := fmt.Sprint(fn, datetime.String(), ".csv") 
 
-	fmt.Println(&#34;Creating File: &#34;, filename, &#34;...&#34;)
+	fmt.Println("Creating File: ", filename, "...")
 	file, err := os.Create(filename)
 	if err != nil { 
 		panic(err) 
 	}
 	defer file.Close()
 	f := csv.NewWriter(file)
-	fmt.Println(&#34;Writing Results to file...&#34;)
+	fmt.Println("Writing Results to file...")
 	f.WriteAll(results)
 }
 
@@ -208,7 +208,7 @@ func CSVreader(SD string, ED string, polntyp string) []float64, [][]float64 {
 	EDf := EDt.AddDate(0,0,1)
 
 	//Cycle through all Location and Data files
-	for i := 1; i &lt; 11; i&#43;&#43; {
+	for i := 1; i < 11; i++ {
 	    filenum := i
 
 	    ////////////////////////////////////////////////////////////////////////////////////
@@ -221,84 +221,84 @@ func CSVreader(SD string, ED string, polntyp string) []float64, [][]float64 {
 	    var filedat string
 
 	    switch {
-	    case polntyp == &#34;Ozone&#34;:
+	    case polntyp == "Ozone":
 		    switch {
 			    case filenum == 1:
-				 fileloc = &#34;csvdata/Ozone/GeographicalLocation01.csv&#34;
-				 filedat = &#34;csvdata/Ozone/GeoTemporalMeasurement01.csv&#34;
+				 fileloc = "csvdata/Ozone/GeographicalLocation01.csv"
+				 filedat = "csvdata/Ozone/GeoTemporalMeasurement01.csv"
 			    case filenum == 2:
-				 fileloc = &#34;csvdata/Ozone/GeographicalLocation02.csv&#34;
-				 filedat = &#34;csvdata/Ozone/GeoTemporalMeasurement02.csv&#34;
+				 fileloc = "csvdata/Ozone/GeographicalLocation02.csv"
+				 filedat = "csvdata/Ozone/GeoTemporalMeasurement02.csv"
 			    case filenum == 3:
-				 fileloc = &#34;csvdata/Ozone/GeographicalLocation03.csv&#34;
-				 filedat = &#34;csvdata/Ozone/GeoTemporalMeasurement03.csv&#34;
+				 fileloc = "csvdata/Ozone/GeographicalLocation03.csv"
+				 filedat = "csvdata/Ozone/GeoTemporalMeasurement03.csv"
 			    case filenum == 4:
-				 fileloc = &#34;csvdata/Ozone/GeographicalLocation04.csv&#34;
-				 filedat = &#34;csvdata/Ozone/GeoTemporalMeasurement04.csv&#34;
+				 fileloc = "csvdata/Ozone/GeographicalLocation04.csv"
+				 filedat = "csvdata/Ozone/GeoTemporalMeasurement04.csv"
 			    case filenum == 5:
-				 fileloc = &#34;csvdata/Ozone/GeographicalLocation05.csv&#34;
-				 filedat = &#34;csvdata/Ozone/GeoTemporalMeasurement05.csv&#34;
+				 fileloc = "csvdata/Ozone/GeographicalLocation05.csv"
+				 filedat = "csvdata/Ozone/GeoTemporalMeasurement05.csv"
 			    case filenum == 6:
-				 fileloc = &#34;csvdata/Ozone/GeographicalLocation06.csv&#34;
-				 filedat = &#34;csvdata/Ozone/GeoTemporalMeasurement06.csv&#34;
+				 fileloc = "csvdata/Ozone/GeographicalLocation06.csv"
+				 filedat = "csvdata/Ozone/GeoTemporalMeasurement06.csv"
 			    case filenum == 7:
-				 fileloc = &#34;csvdata/Ozone/GeographicalLocation07.csv&#34;
-				 filedat = &#34;csvdata/Ozone/GeoTemporalMeasurement07.csv&#34;
+				 fileloc = "csvdata/Ozone/GeographicalLocation07.csv"
+				 filedat = "csvdata/Ozone/GeoTemporalMeasurement07.csv"
 			    case filenum == 8:
-				 fileloc = &#34;csvdata/Ozone/GeographicalLocation08.csv&#34;
-				 filedat = &#34;csvdata/Ozone/GeoTemporalMeasurement08.csv&#34;
+				 fileloc = "csvdata/Ozone/GeographicalLocation08.csv"
+				 filedat = "csvdata/Ozone/GeoTemporalMeasurement08.csv"
 			    case filenum == 9:
-				 fileloc = &#34;csvdata/Ozone/GeographicalLocation09.csv&#34;
-				 filedat = &#34;csvdata/Ozone/GeoTemporalMeasurement09.csv&#34;
+				 fileloc = "csvdata/Ozone/GeographicalLocation09.csv"
+				 filedat = "csvdata/Ozone/GeoTemporalMeasurement09.csv"
 			    case filenum == 10:
-				 fileloc = &#34;csvdata/Ozone/GeographicalLocation10.csv&#34;
-				 filedat = &#34;csvdata/Ozone/GeoTemporalMeasurement10.csv&#34;
+				 fileloc = "csvdata/Ozone/GeographicalLocation10.csv"
+				 filedat = "csvdata/Ozone/GeoTemporalMeasurement10.csv"
 			    case filenum == 11:
-				 fileloc = &#34;csvdata/Ozone/GeographicalLocation25.csv&#34;
-				 filedat = &#34;csvdata/Ozone/GeoTemporalMeasurement25.csv&#34;
+				 fileloc = "csvdata/Ozone/GeographicalLocation25.csv"
+				 filedat = "csvdata/Ozone/GeoTemporalMeasurement25.csv"
 			    default: 
-				 panic(&#34;No file found.&#34;)
+				 panic("No file found.")
 		    }
-	    case polntyp == &#34;PM2.5&#34;:
+	    case polntyp == "PM2.5":
 		    switch {
 			    case filenum == 1:
-				 fileloc = &#34;csvdata/PM2.5/GeographicalLocation01.csv&#34;
-				 filedat = &#34;csvdata/PM2.5/GeoTemporalMeasurement01.csv&#34;
+				 fileloc = "csvdata/PM2.5/GeographicalLocation01.csv"
+				 filedat = "csvdata/PM2.5/GeoTemporalMeasurement01.csv"
 			    case filenum == 2:
-				 fileloc = &#34;csvdata/PM2.5/GeographicalLocation02.csv&#34;
-				 filedat = &#34;csvdata/PM2.5/GeoTemporalMeasurement02.csv&#34;
+				 fileloc = "csvdata/PM2.5/GeographicalLocation02.csv"
+				 filedat = "csvdata/PM2.5/GeoTemporalMeasurement02.csv"
 			    case filenum == 3:
-				 fileloc = &#34;csvdata/PM2.5/GeographicalLocation03.csv&#34;
-				 filedat = &#34;csvdata/PM2.5/GeoTemporalMeasurement03.csv&#34;
+				 fileloc = "csvdata/PM2.5/GeographicalLocation03.csv"
+				 filedat = "csvdata/PM2.5/GeoTemporalMeasurement03.csv"
 			    case filenum == 4:
-				 fileloc = &#34;csvdata/PM2.5/GeographicalLocation04.csv&#34;
-				 filedat = &#34;csvdata/PM2.5/GeoTemporalMeasurement04.csv&#34;
+				 fileloc = "csvdata/PM2.5/GeographicalLocation04.csv"
+				 filedat = "csvdata/PM2.5/GeoTemporalMeasurement04.csv"
 			    case filenum == 5:
-				 fileloc = &#34;csvdata/PM2.5/GeographicalLocation05.csv&#34;
-				 filedat = &#34;csvdata/PM2.5/GeoTemporalMeasurement05.csv&#34;
+				 fileloc = "csvdata/PM2.5/GeographicalLocation05.csv"
+				 filedat = "csvdata/PM2.5/GeoTemporalMeasurement05.csv"
 			    case filenum == 6:
-				 fileloc = &#34;csvdata/PM2.5/GeographicalLocation06.csv&#34;
-				 filedat = &#34;csvdata/PM2.5/GeoTemporalMeasurement06.csv&#34;
+				 fileloc = "csvdata/PM2.5/GeographicalLocation06.csv"
+				 filedat = "csvdata/PM2.5/GeoTemporalMeasurement06.csv"
 			    case filenum == 7:
-				 fileloc = &#34;csvdata/PM2.5/GeographicalLocation07.csv&#34;
-				 filedat = &#34;csvdata/PM2.5/GeoTemporalMeasurement07.csv&#34;
+				 fileloc = "csvdata/PM2.5/GeographicalLocation07.csv"
+				 filedat = "csvdata/PM2.5/GeoTemporalMeasurement07.csv"
 			    case filenum == 8:
-				 fileloc = &#34;csvdata/PM2.5/GeographicalLocation08.csv&#34;
-				 filedat = &#34;csvdata/PM2.5/GeoTemporalMeasurement08.csv&#34;
+				 fileloc = "csvdata/PM2.5/GeographicalLocation08.csv"
+				 filedat = "csvdata/PM2.5/GeoTemporalMeasurement08.csv"
 			    case filenum == 9:
-				 fileloc = &#34;csvdata/PM2.5/GeographicalLocation09.csv&#34;
-				 filedat = &#34;csvdata/PM2.5/GeoTemporalMeasurement09.csv&#34;
+				 fileloc = "csvdata/PM2.5/GeographicalLocation09.csv"
+				 filedat = "csvdata/PM2.5/GeoTemporalMeasurement09.csv"
 			    case filenum == 10:
-				 fileloc = &#34;csvdata/PM2.5/GeographicalLocation10.csv&#34;
-				 filedat = &#34;csvdata/PM2.5/GeoTemporalMeasurement10.csv&#34;
+				 fileloc = "csvdata/PM2.5/GeographicalLocation10.csv"
+				 filedat = "csvdata/PM2.5/GeoTemporalMeasurement10.csv"
 			    case filenum == 11:
-				 fileloc = &#34;csvdata/PM2.5/GeographicalLocation25.csv&#34;
-				 filedat = &#34;csvdata/PM2.5/GeoTemporalMeasurement25.csv&#34;
+				 fileloc = "csvdata/PM2.5/GeographicalLocation25.csv"
+				 filedat = "csvdata/PM2.5/GeoTemporalMeasurement25.csv"
 			    default: 
-				 panic(&#34;No file found.&#34;)
+				 panic("No file found.")
 		    }
 	    default:
-		 panic(&#34;Pollutant data not found.&#34;)
+		 panic("Pollutant data not found.")
 	    }	
 
 	    ////////////////////////////////////////////////////////////////////////////////////
@@ -363,7 +363,7 @@ func CSVreader(SD string, ED string, polntyp string) []float64, [][]float64 {
 	    r2 := csv.NewReader(filename2) 
 	    lines2, err := r2.ReadAll() // Read to EOF and store in lines2
 	    if err != nil {
-		    log.Fatalf(&#34;error reading all lines: %v&#34;, err)
+		    log.Fatalf("error reading all lines: %v", err)
 	    }
 
 	    // define data variables to be extracted
@@ -414,16 +414,16 @@ func CSVreader(SD string, ED string, polntyp string) []float64, [][]float64 {
 
 		// display all extracted data
 		fmt.Println(fileloc, filedat)
-		fmt.Println(&#34;[ID Tag]&#34;, label1, label2, label3, label4, label5, label6, label7, label8, label9)
-		for w := 0; w &lt; len(idtag)-2; w&#43;&#43; { // loop through all data
-			if SDt &lt;= time.Parse(dateFormat, date[w]) &amp;&amp; EDt &gt;= time.Parse(dateFormat, date[w]) {
-				fmt.Println(&#34; &#34;, idtag[w], &#34;     &#34;, lats[w], &#34;         &#34;, lngs[w], &#34;      &#34;, poln[w], &#34; &#34;, date[w], &#34; &#34;, time[w], &#34; &#34;, zone[w], &#34; &#34;, valu[w], &#34; &#34;, unit[w], &#34; &#34;, resl[w]) // print to screen data table
+		fmt.Println("[ID Tag]", label1, label2, label3, label4, label5, label6, label7, label8, label9)
+		for w := 0; w < len(idtag)-2; w++ { // loop through all data
+			if SDt <= time.Parse(dateFormat, date[w]) && EDt >= time.Parse(dateFormat, date[w]) {
+				fmt.Println(" ", idtag[w], "     ", lats[w], "         ", lngs[w], "      ", poln[w], " ", date[w], " ", time[w], " ", zone[w], " ", valu[w], " ", unit[w], " ", resl[w]) // print to screen data table
 				if count == 0 {
 					valuOUT[count] = valu[w]
 				} else {
 					valuOUT = append(valuOUT, valu[w])
 				}
-				count = count &#43; 1
+				count = count + 1
 			}
 		}
 	}
@@ -440,7 +440,7 @@ func CSVreader(SD string, ED string, polntyp string) []float64, [][]float64 {
 func AQMcompare(SD string, ED string, polntyp string, locs [][]float64) []float64 {
 
 	flag := 0 // 0 for Ozone, 1 for PM2.5
-	if polntyp == &#34;PM2.5&#34; {
+	if polntyp == "PM2.5" {
 		flag = 1
 	}
 	count := 0
@@ -448,7 +448,7 @@ func AQMcompare(SD string, ED string, polntyp string, locs [][]float64) []float6
 	var SDt time.Time
 	var EDt time.Time
 
-	pols := [...]string{&#34;PM2_5_DRY&#34;, &#34;o3&#34;}
+	pols := [...]string{"PM2_5_DRY", "o3"}
 
 	SDt, err = time.Parse(dateFormat, SD)
 	if err != nil {
@@ -463,38 +463,38 @@ func AQMcompare(SD string, ED string, polntyp string, locs [][]float64) []float6
 
 	for i := SDt; i != EDf;  {
 
-		fn := &#34;wrfout/wrfout_d01_&#34;
+		fn := "wrfout/wrfout_d01_"
 		cdate := i.Format(dateFormat)
-		filename := fmt.Sprint(fn, cdate, &#34;_00_00_00&#34;)
+		filename := fmt.Sprint(fn, cdate, "_00_00_00")
 	
 		// Open WRF file, handle any errors
-		f, e := gonetcdf.Open(filename, &#34;nowrite&#34;)
+		f, e := gonetcdf.Open(filename, "nowrite")
 		if e != nil {
-			fmt.Println(&#34;No wrf file available for: &#34;, cdate)
+			fmt.Println("No wrf file available for: ", cdate)
 			continue
 		}
 
 		// get the necessary data for calculating layer heights
-		fmt.Println(&#34;Getting the base state geopotential...&#34;)
-		PHB, e := NewWRFarray(f, &#34;PHB&#34;)
+		fmt.Println("Getting the base state geopotential...")
+		PHB, e := NewWRFarray(f, "PHB")
 		if e != nil {
 			panic(e)
 		}
-		fmt.Println(&#34;Getting the perturbation geopotential...&#34;)
-		PH, e := NewWRFarray(f, &#34;PH&#34;)
+		fmt.Println("Getting the perturbation geopotential...")
+		PH, e := NewWRFarray(f, "PH")
 		if e != nil {
 			panic(e)
 		}
 
 		for _, pol := range pols {
-			fmt.Printf(&#34;Getting data for %v...\n&#34;, pol)
+			fmt.Printf("Getting data for %v...\n", pol)
 			data, e := NewWRFarray(f, pol)
 			if e != nil {
 				panic(e)
 			}
-			for i := 0; i &lt; len(locs)-1; i&#43;&#43; { 		
+			for i := 0; i < len(locs)-1; i++ { 		
 				lat, lon := locs(i)
-				for h := 0; h &lt; 24; h&#43;&#43; {
+				for h := 0; h < 24; h++ {
 					height := 50. // meters
 
 					/////////////////////////////////////////////////////
@@ -505,13 +505,13 @@ func AQMcompare(SD string, ED string, polntyp string, locs [][]float64) []float6
 						panic(e)
 					}
 
-					layer, e := LayerHeight(height, ycell, xcell, h, &amp;PH, &amp;PHB)
+					layer, e := LayerHeight(height, ycell, xcell, h, &PH, &PHB)
 
 					index := []int{h, layer, ycell, xcell}
 					conc := data.GetVal(index)
 
 					// Which values to store
-					if flag == 0 &amp;&amp; pol == &#34;o3&#34; {
+					if flag == 0 && pol == "o3" {
 						// store Ozone values
 						if count == 0 {
 							valuOUT[h] = conc
@@ -519,10 +519,10 @@ func AQMcompare(SD string, ED string, polntyp string, locs [][]float64) []float6
 							valuOUT = append(valuOUT, conc)
 						}
 						// print the result
-						fmt.Printf(&#34;The value for pollutant %v at %v, %v for hour %v in layer %v is %v\n&#34;,
+						fmt.Printf("The value for pollutant %v at %v, %v for hour %v in layer %v is %v\n",
 						pol, lon, lat, h, layer, conc)
-						count = count &#43; 1
-					} else if flag == 1 &amp;&amp; pol == &#34;PM2_5_DRY&#34; {
+						count = count + 1
+					} else if flag == 1 && pol == "PM2_5_DRY" {
 						//store PM2.5 values
 						if count == 0 {
 							valuOUT[h] = conc
@@ -530,9 +530,9 @@ func AQMcompare(SD string, ED string, polntyp string, locs [][]float64) []float6
 							valuOUT = append(valuOUT, conc)
 						}
 						// print the result
-						fmt.Printf(&#34;The value for pollutant %v at %v, %v for hour %v in layer %v is %v\n&#34;,
+						fmt.Printf("The value for pollutant %v at %v, %v for hour %v in layer %v is %v\n",
 						pol, lon, lat, h, layer, conc)
-						count = count &#43; 1
+						count = count + 1
 					}
 				}
 			}
@@ -566,12 +566,12 @@ type WRFarray struct {
 // calculates the 1D-array index, and returns the corresponding value.
 func (d *WRFarray) GetVal(index []int) (val float64) {
 	index1d := 0
-	for i := 0; i &lt; len(index); i&#43;&#43; {
+	for i := 0; i < len(index); i++ {
 		mul := 1
-		for j := i &#43; 1; j &lt; len(index); j&#43;&#43; {
+		for j := i + 1; j < len(index); j++ {
 			mul = mul * d.Dims[j]
 		}
-		index1d = index1d &#43; index[i]*mul
+		index1d = index1d + index[i]*mul
 	}
 	return d.Data[index1d]
 }
@@ -599,15 +599,15 @@ func Lambert(lat float64, lon float64, reflat float64, reflon float64,
 	phi2 = phi2 * math.Pi / 180.
 
 	n := math.Log(math.Cos(phi1)/math.Cos(phi2)) /
-		math.Log(math.Tan(0.25*math.Pi&#43;0.5*phi2)/
-			math.Tan(0.25*math.Pi&#43;0.5*phi1))
+		math.Log(math.Tan(0.25*math.Pi+0.5*phi2)/
+			math.Tan(0.25*math.Pi+0.5*phi1))
 
 	F := math.Cos(phi1) * math.Pow(
-		math.Tan(0.25*math.Pi&#43;0.5*phi1), n) / n
+		math.Tan(0.25*math.Pi+0.5*phi1), n) / n
 
-	rho := F * math.Pow((1./math.Tan(0.25*math.Pi&#43;0.5*lat)), n)
+	rho := F * math.Pow((1./math.Tan(0.25*math.Pi+0.5*lat)), n)
 
-	rho_o := F * math.Pow(1./math.Tan(0.25*math.Pi&#43;0.5*reflat), n)
+	rho_o := F * math.Pow(1./math.Tan(0.25*math.Pi+0.5*reflat), n)
 
 	x := rho * math.Sin(n*(lon-reflon)) * R
 	y := (rho_o - rho*math.Cos(n*(lon-reflon))) * R
@@ -615,10 +615,10 @@ func Lambert(lat float64, lon float64, reflat float64, reflon float64,
 	xcell = int(math.Floor((x - x_o) / dx))
 	ycell = int(math.Floor((y - y_o) / dy))
 
-	if xcell &gt;= nx || ycell &gt;= ny || xcell &lt; 0 || ycell &lt; 0 {
+	if xcell >= nx || ycell >= ny || xcell < 0 || ycell < 0 {
 		fmt.Println(xcell)
 		fmt.Println(ycell)
-		err = errors.New(&#34;Cell number out of bounds&#34;)
+		err = errors.New("Cell number out of bounds")
 	}
 
 	return
@@ -626,16 +626,16 @@ func Lambert(lat float64, lon float64, reflat float64, reflon float64,
 
 func LayerHeight(height float64, ycell int, xcell int, hour int,
 	PH *WRFarray, PHB *WRFarray) (layer int, err error) {
-	for k := 1; k &lt; PH.Dims[1]; k&#43;&#43; {
+	for k := 1; k < PH.Dims[1]; k++ {
 		PHi := []int{hour, k, ycell, xcell}
 		PHBi := []int{hour, k , ycell, xcell}
-		layerHeight := (PH.GetVal(PHi) &#43; PHB.GetVal(PHBi)) / g
-		if layerHeight &lt; height {
+		layerHeight := (PH.GetVal(PHi) + PHB.GetVal(PHBi)) / g
+		if layerHeight < height {
 			layer = k - 1
 		} else {
 			return
 		}
 	}
-	errors.New(&#34;Height is above top layer&#34;)
+	errors.New("Height is above top layer")
 	return
 }

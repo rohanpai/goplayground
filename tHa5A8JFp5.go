@@ -1,12 +1,12 @@
 package main
 
 import (
-	&#34;encoding/xml&#34;
-	&#34;io&#34;
-	&#34;strconv&#34;
-	&#34;strings&#34;
-	&#34;time&#34;
-	&#34;fmt&#34;
+	"encoding/xml"
+	"io"
+	"strconv"
+	"strings"
+	"time"
+	"fmt"
 )
 
 type Message struct {
@@ -17,15 +17,15 @@ type Message struct {
 }
 
 func main() {
-	x := `&lt;message from=&#34;01234567890@s.whatsapp.net&#34;
-         id=&#34;1339831077-7&#34;
-         type=&#34;chat&#34;
-         timestamp=&#34;1339848755&#34;&gt;
-    &lt;notify xmlns=&#34;urn:xmpp:whatsapp&#34;
-            name=&#34;Koen&#34; /&gt;
-    &lt;request xmlns=&#34;urn:xmpp:receipts&#34; /&gt;
-    &lt;body&gt;Hello&lt;/body&gt;
-&lt;/message&gt;`
+	x := `<message from="01234567890@s.whatsapp.net"
+         id="1339831077-7"
+         type="chat"
+         timestamp="1339848755">
+    <notify xmlns="urn:xmpp:whatsapp"
+            name="Koen" />
+    <request xmlns="urn:xmpp:receipts" />
+    <body>Hello</body>
+</message>`
 
 	d := xml.NewDecoder(strings.NewReader(x))
 	
@@ -44,24 +44,24 @@ func main() {
 		switch t := token.(type) {
 		case xml.StartElement:
 			switch t.Name.Local {
-			case &#34;message&#34;:
-				current = &amp;Message{}
+			case "message":
+				current = &Message{}
 				for _, attr := range t.Attr {
 					switch attr.Name.Local {
-					case &#34;id&#34;:
+					case "id":
 						current.Id = attr.Value
-					case &#34;type&#34;:
+					case "type":
 						current.Type = attr.Value
-					case &#34;timestamp&#34;:
+					case "timestamp":
 						i, _ := strconv.Atoi(attr.Value)
 						current.Timestamp = time.Unix(int64(i), 0)
 					}
 				}
 				messages = append(messages, current)
-			case &#34;notify&#34;:
+			case "notify":
 				for _, attr := range t.Attr {
 					switch attr.Name.Local {
-					case &#34;name&#34;:
+					case "name":
 						current.Notify = append(current.Notify, attr.Value)
 					}
 				}

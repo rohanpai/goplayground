@@ -1,8 +1,8 @@
 package main
 
 import (
-	&#34;image&#34;
-	&#34;image/draw&#34;
+	"image"
+	"image/draw"
 )
 
 type Mouse struct {
@@ -13,17 +13,17 @@ type Mouse struct {
 // Context represents the context for a GUI client.
 type Context struct {
 	// W receives an value when the window changes.
-	W	&lt;-chan *Window
+	W	<-chan *Window
 
 	// K receives an value when a key a pressed.
-	K	&lt;-chan rune
+	K	<-chan rune
 
 	// M receives an value when the mouse moves.
-	M	&lt;-chan Mouse
+	M	<-chan Mouse
 
 	// Dragging receives a value when another window
 	// is dragging something into this context.
-	Dragging	&lt;-chan DragEvent
+	Dragging	<-chan DragEvent
 }
 
 type DragEventKind int
@@ -47,7 +47,7 @@ type DragEvent struct {
 	// On a DragDrop event, Reply will be non-nil
 	// and must be used to indicate whether the dropped
 	// object has been accepted.
-	Reply	chan&lt;- bool
+	Reply	chan<- bool
 }
 
 // Window represents a GUI window.
@@ -103,32 +103,32 @@ type Slot struct {
 }
 
 func NewContext() *Context {
-	return &amp;Context{
+	return &Context{
 	// TODO
 	}
 }
 
 func (c *SomeClient) Run() {
 	ctxt := NewContext()
-	win := &lt;-ctxt.W
+	win := <-ctxt.W
 	for {
 		select {
-		case win = &lt;-ctxt.W:
+		case win = <-ctxt.W:
 			// window replaced.
-		case m := &lt;-ctxt.M:
-			if slot := c.SlotAtPoint(m.Loc); slot != nil &amp;&amp; slot.content != nil {
+		case m := <-ctxt.M:
+			if slot := c.SlotAtPoint(m.Loc); slot != nil && slot.content != nil {
 				if win.Drag(slot.content, slot.content.image(), m.Loc) {
 					c.UpdateSlot(slot, nil)
 				}
 			}
-		case e := &lt;-ctxt.Dragging:
+		case e := <-ctxt.Dragging:
 			// Some other window is dragging an object into this one.
 			c.dragging(e, ctxt.Dragging)
 		}
 	}
 }
 
-func (c *SomeClient) dragging(e DragEvent, dragc &lt;-chan DragEvent) {
+func (c *SomeClient) dragging(e DragEvent, dragc <-chan DragEvent) {
 	var hover *Slot	// slot the drag is currently hovering over.
 	for {
 		content, _ := e.Data.(*Content)
@@ -154,15 +154,15 @@ func (c *SomeClient) dragging(e DragEvent, dragc &lt;-chan DragEvent) {
 				c.ShowWilling(hover, false)
 			}
 			if content == nil || slot == nil {
-				e.Reply &lt;- false
+				e.Reply <- false
 				return
 			}
 			// Accept the drop and complete the drag-and-drop action.
 			c.UpdateSlot(slot, content)
-			e.Reply &lt;- true
+			e.Reply <- true
 			return
 		}
-		e = &lt;-dragc
+		e = <-dragc
 	}
 }
 

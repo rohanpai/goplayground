@@ -1,10 +1,10 @@
 package main
 
 import(
-	&#34;fmt&#34;
-	&#34;os&#34;
-	&#34;time&#34;
-	&#34;syscall&#34;
+	"fmt"
+	"os"
+	"time"
+	"syscall"
 )
 
 type FileTime struct {
@@ -17,9 +17,9 @@ func main(){
 
 	file, err := FTime(os.TempDir())
 	if err == nil {
-		fmt.Println(&#34;Mo Time&#34;, file.MTime)
-		fmt.Println(&#34;Ac Time&#34;, file.ATime)
-		fmt.Println(&#34;Cr Time&#34;, file.CTime)
+		fmt.Println("Mo Time", file.MTime)
+		fmt.Println("Ac Time", file.ATime)
+		fmt.Println("Cr Time", file.CTime)
 	}
 }
 

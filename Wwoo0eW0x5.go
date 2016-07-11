@@ -1,13 +1,13 @@
 package main
 
 import (
-	&#34;github.com/Sirupsen/logrus&#34;
+	"github.com/Sirupsen/logrus"
 )
 
 type Hook struct{}
 
 func (h Hook) Fire(e *logrus.Entry) error {
-	e.Data[&#34;test&#34;] = &#34;changed&#34;
+	e.Data["test"] = "changed"
 	return nil
 }
 
@@ -20,5 +20,5 @@ func (h Hook) Levels() []logrus.Level {
 func main() {
 	l := logrus.New()
 	l.Hooks.Add(Hook{})
-	l.WithField(&#34;test&#34;, &#34;test&#34;).Error(&#34;test&#34;)
+	l.WithField("test", "test").Error("test")
 }

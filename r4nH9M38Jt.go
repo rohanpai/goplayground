@@ -1,58 +1,58 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;math/rand&#34;
-	&#34;time&#34;
+	"fmt"
+	"math/rand"
+	"time"
 )
 
 type Event int
 
 func NewEvent() Event                   { return 0 }
-func (e Event) Merge(other Event) Event { return e &#43; other }
+func (e Event) Merge(other Event) Event { return e + other }
 
-func produce(out chan&lt;- Event) {
+func produce(out chan<- Event) {
 	for {
-		delay := time.Duration(rand.Intn(5)&#43;1) * time.Second
-		nMessages := rand.Intn(10) &#43; 1
+		delay := time.Duration(rand.Intn(5)+1) * time.Second
+		nMessages := rand.Intn(10) + 1
 		time.Sleep(delay)
-		for i := 0; i &lt; nMessages; i&#43;&#43; {
+		for i := 0; i < nMessages; i++ {
 			e := Event(rand.Intn(10))
-			fmt.Println(&#34;Producing:&#34;, e)
-			out &lt;- e
+			fmt.Println("Producing:", e)
+			out <- e
 		}
 	}
 }
 
-func coalesce(in &lt;-chan Event, out chan&lt;- Event) {
+func coalesce(in <-chan Event, out chan<- Event) {
 	event := NewEvent()
 	timer := time.NewTimer(0)
 
-	var timerCh &lt;-chan time.Time
-	var outCh chan&lt;- Event
+	var timerCh <-chan time.Time
+	var outCh chan<- Event
 
 	for {
 		select {
-		case e := &lt;-in:
+		case e := <-in:
 			event = event.Merge(e)
 			if timerCh == nil {
 				timer.Reset(500 * time.Millisecond)
 				timerCh = timer.C
 			}
-		case &lt;-timerCh:
+		case <-timerCh:
 			outCh = out
 			timerCh = nil
-		case outCh &lt;- event:
+		case outCh <- event:
 			event = NewEvent()
 			outCh = nil
 		}
 	}
 }
 
-func slowReceive(in &lt;-chan Event) {
+func slowReceive(in <-chan Event) {
 	for {
 		time.Sleep(1500 * time.Millisecond)
-		fmt.Println(&#34;Received:&#34;, &lt;-in)
+		fmt.Println("Received:", <-in)
 	}
 }
 

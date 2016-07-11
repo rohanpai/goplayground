@@ -1,6 +1,6 @@
 package main
 
-import &#34;fmt&#34;
+import "fmt"
 
 type Publisher interface {
     Publish(value interface{})
@@ -39,18 +39,18 @@ func (f *Field) Set(v int64){
 }
 
 func Listen(value interface{}){
-	fmt.Printf(&#34;new value 1: %v\n&#34;, value)
+	fmt.Printf("new value 1: %v\n", value)
 }
 
 func Listen2(value interface{}){
-	fmt.Printf(&#34;new value 2: %v\n&#34;, value)
+	fmt.Printf("new value 2: %v\n", value)
 }
 
 func main() {
-	v := &amp;Field{}
+	v := &Field{}
 	v.AddObserver(ObserverFunc(Listen))
 	v.AddObserver(ObserverFunc(Listen2))
 	v.Set(105)
 	
-	fmt.Println(&#34;Hello, playground&#34;)
+	fmt.Println("Hello, playground")
 }

@@ -1,9 +1,9 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;reflect&#34;
-	&#34;strings&#34;
+	"fmt"
+	"reflect"
+	"strings"
 )
 
 // Centralised Composite Tree
@@ -33,7 +33,7 @@ type Builder interface {
 
 // Create a new tree with a hidden root and return the root and the tree
 func NewTree() (Tree, Node) {
-	t := &amp;ctree{
+	t := &ctree{
 		make(map[Node][]Node),
 		make(map[Node]Node),
 		new(interface{}),
@@ -46,7 +46,7 @@ func NewTree() (Tree, Node) {
 // Creates a tree that allow non pointer node.
 // Client beware, do not mutate object or pass non keyable objects
 func NewTree_ImmutableNodes() (Tree, Node) {
-	t := &amp;ctree{
+	t := &ctree{
 		make(map[Node][]Node),
 		make(map[Node]Node),
 		new(interface{}),
@@ -64,52 +64,52 @@ type mys struct {
 
 func main() {
 	ct, r := NewTree()
-	a := mys{&#34;a&#34;}
-	ct.Add(r, &amp;a)
-	b := mys{&#34;b&#34;}
-	c := mys{&#34;c&#34;}
-	ct.Add(&amp;a, &amp;b)
-	ct.Add(&amp;a, &amp;c)
-	ct.Add(&amp;a, &amp;c)	// ignored as c already in the tree
+	a := mys{"a"}
+	ct.Add(r, &a)
+	b := mys{"b"}
+	c := mys{"c"}
+	ct.Add(&a, &b)
+	ct.Add(&a, &c)
+	ct.Add(&a, &c)	// ignored as c already in the tree
 	x := 1
-	ct.Add(r, &amp;x)
+	ct.Add(r, &x)
 	ct.Walk(p)
 
 	fmt.Println()
 
-	d := &#34;d&#34;
-	d2 := &#34;d&#34;
-	slice := &amp;[]int{1, 2, 3, 4}
+	d := "d"
+	d2 := "d"
+	slice := &[]int{1, 2, 3, 4}
 	BuildTree_ImmutableNodes().
-		Add(mys{&#34;a&#34;}).Down().
-		    Add(&amp;mys{&#34;b&#34;}).
-		    Add(mys{&#34;c&#34;}).
-		    Add(&amp;d2).
+		Add(mys{"a"}).Down().
+		    Add(&mys{"b"}).
+		    Add(mys{"c"}).
+		    Add(&d2).
 		    Add(d).
-		    Add(&#34;d&#34;).Up().
+		    Add("d").Up().
 		Add(slice).
 		Build().Walk(p)
 }
 
 // Function given to the walker for printing nodes
 func p(d int, n Node) {
-	s := strings.Repeat(&#34; &#34;, d)
+	s := strings.Repeat(" ", d)
 	//	fmt.Println( reflect.TypeOf( n ) )
 	switch v := n.(type) {
 	case *mys:
-		fmt.Printf(&#34;1)%s%v\n&#34;, s, v.s)
+		fmt.Printf("1)%s%v\n", s, v.s)
 	case mys:
-		fmt.Printf(&#34;2)%s%v\n&#34;, s, v.s)
+		fmt.Printf("2)%s%v\n", s, v.s)
 	case *string:
-		fmt.Printf(&#34;3)%s%v\n&#34;, s, v)
+		fmt.Printf("3)%s%v\n", s, v)
 	case string:
-		fmt.Printf(&#34;4)%s%v\n&#34;, s, v)
+		fmt.Printf("4)%s%v\n", s, v)
 	case *int:
-		fmt.Printf(&#34;5)%s%v\n&#34;, s, *v)
+		fmt.Printf("5)%s%v\n", s, *v)
 	case *[]int:
-		fmt.Printf(&#34;6)%s%v\n&#34;, s, *v)	
+		fmt.Printf("6)%s%v\n", s, *v)	
 	default:
-		fmt.Printf(&#34;*)%s%v - %T\n&#34;, s, n, n)
+		fmt.Printf("*)%s%v - %T\n", s, n, n)
 	}
 }
 // END TEST
@@ -131,10 +131,10 @@ type ctree struct {
 func (t *ctree) Add(p Node, c Node) (bool, Node) {
 	if t.ptrOnly {
 		if reflect.TypeOf(c).Kind() != reflect.Ptr {
-			panic(&#34;Child node is not a pointer&#34;)
+			panic("Child node is not a pointer")
 		}
 		if reflect.TypeOf(p).Kind() != reflect.Ptr {
-			panic(&#34;Parent node is not a pointer&#34;)
+			panic("Parent node is not a pointer")
 		}
 	}
 	if orginal, exist := t.c2[c]; exist {
@@ -159,7 +159,7 @@ func (t *ctree) Walk(f func(int, Node)) {
 func walk(t *ctree, node Node, depth int, f func(int, Node)) {
 	f(depth, node)
 	for _, o := range t.p2[node] {
-		walk(t, o, depth&#43;1, f)
+		walk(t, o, depth+1, f)
 	}
 }
 
@@ -168,7 +168,7 @@ func (t *ctree) Root() Node {
 	return t.root
 }
 
-// Builder&#39;s state
+// Builder's state
 type builder struct {
 	tree	Tree
 	curr	Node
@@ -177,12 +177,12 @@ type builder struct {
 
 func BuildTree() Builder {
 	t, r := NewTree()
-	b := &amp;builder{t, r, nil}
+	b := &builder{t, r, nil}
 	return b
 }
 func BuildTree_ImmutableNodes() Builder {
 	t, r := NewTree_ImmutableNodes()
-	b := &amp;builder{t, r, nil}
+	b := &builder{t, r, nil}
 	return b
 }
 func (b *builder) Add(n Node) Builder {

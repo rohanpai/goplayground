@@ -1,9 +1,9 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;github.com/karalabe/cookiejar/graph&#34;
-	&#34;github.com/karalabe/cookiejar/graph/dfs&#34;
+	"fmt"
+	"github.com/karalabe/cookiejar/graph"
+	"github.com/karalabe/cookiejar/graph/dfs"
 )
 
 func main() {
@@ -19,8 +19,8 @@ func main() {
 	d := dfs.New(g, 0)
 
 	// Get the path between #0 (source) and #2
-	fmt.Println(&#34;Path 0-&gt;5:&#34;, d.Path(5))
-	fmt.Println(&#34;Order:&#34;, d.Order())
-	fmt.Println(&#34;Reachable #4 #6:&#34;, d.Reachable(4), d.Reachable(6))
+	fmt.Println("Path 0->5:", d.Path(5))
+	fmt.Println("Order:", d.Order())
+	fmt.Println("Reachable #4 #6:", d.Reachable(4), d.Reachable(6))
 
 }

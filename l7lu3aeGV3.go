@@ -1,11 +1,11 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;strconv&#34;
-	&#34;net/http&#34;
-	&#34;github.com/julienschmidt/httprouter&#34;
-	&#34;golang.org/x/net/context&#34;
+	"fmt"
+	"strconv"
+	"net/http"
+	"github.com/julienschmidt/httprouter"
+	"golang.org/x/net/context"
 )
 
 // Unexported key type to prevent collision with context in other packages
@@ -25,8 +25,8 @@ type CtxHandle func(context.Context, http.ResponseWriter, *http.Request, httprou
 func HandleUser(ctx context.Context, w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	user := ctx.Value(UserIDKey).(*User)
 
-	fmt.Fprintln(w, &#34;User ID: &#34; &#43; strconv.Itoa(user.ID))
-	fmt.Fprintln(w, &#34;Email: &#34; &#43; user.Email)
+	fmt.Fprintln(w, "User ID: " + strconv.Itoa(user.ID))
+	fmt.Fprintln(w, "Email: " + user.Email)
 
 	// Update the user
 	user.ID = 5
@@ -37,14 +37,14 @@ func HandleUser(ctx context.Context, w http.ResponseWriter, r *http.Request, _ h
 
 func Middleware(next CtxHandle) CtxHandle {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-		user := &amp;User{ID: 3, Email: &#34;test@email.com&#34;}
+		user := &User{ID: 3, Email: "test@email.com"}
 
 		ctx = context.WithValue(ctx, UserIDKey, user)
 		next(ctx, w, r, ps)
 
 		// Print updated user value
 		user = ctx.Value(UserIDKey).(*User)
-		fmt.Fprintln(w, &#34;User ID: &#34; &#43; strconv.Itoa(user.ID))
+		fmt.Fprintln(w, "User ID: " + strconv.Itoa(user.ID))
 	}
 }
 
@@ -59,9 +59,9 @@ func Wrapper(lead CtxHandle) httprouter.Handle {
 func main() {
 	router := httprouter.New()
 
-	router.GET(&#34;/user&#34;, Wrapper(Middleware(HandleUser)))
+	router.GET("/user", Wrapper(Middleware(HandleUser)))
 
 	// Start the server
-	fmt.Println(&#34;Listening...&#34;)
-	http.ListenAndServe(&#34;:80&#34;, router)
+	fmt.Println("Listening...")
+	http.ListenAndServe(":80", router)
 }

@@ -1,19 +1,19 @@
 package main
 
 import (
-	&#34;crypto/aes&#34;
-	&#34;crypto/cipher&#34;
-	&#34;crypto/md5&#34;
-	&#34;encoding/base64&#34;
-	&#34;fmt&#34;
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/md5"
+	"encoding/base64"
+	"fmt"
 )
 
 func main(){
-	result, _ := DecryptString(`password`, `U2FsdGVkX1&#43;ywYxveBnekSnx6ZP25nyPsWHS3oqcuTo=`)
-	fmt.Printf(&#34;Decrypted string is: %s&#34;, result)
+	result, _ := DecryptString(`password`, `U2FsdGVkX1+ywYxveBnekSnx6ZP25nyPsWHS3oqcuTo=`)
+	fmt.Printf("Decrypted string is: %s", result)
 }
 
-var openSSLSaltHeader string = &#34;Salted_&#34; // OpenSSL salt is always this string &#43; 8 bytes of actual salt
+var openSSLSaltHeader string = "Salted_" // OpenSSL salt is always this string + 8 bytes of actual salt
 
 type OpenSSLCreds struct {
 	key []byte
@@ -28,7 +28,7 @@ func DecryptString(passphrase, encryptedBase64String string) ([]byte, error) {
 	}
 	saltHeader := data[:aes.BlockSize]
 	if string(saltHeader[:7]) != openSSLSaltHeader {
-		return nil, fmt.Errorf(&#34;Does not appear to have been encrypted with OpenSSL, salt header missing.&#34;)
+		return nil, fmt.Errorf("Does not appear to have been encrypted with OpenSSL, salt header missing.")
 	}
 	salt := saltHeader[8:]
 	creds, err := extractOpenSSLCreds([]byte(passphrase), salt)
@@ -40,7 +40,7 @@ func DecryptString(passphrase, encryptedBase64String string) ([]byte, error) {
 
 func decrypt(key, iv, data []byte) ([]byte, error) {
 	if len(data) == 0 || len(data)%aes.BlockSize != 0 {
-		return nil, fmt.Errorf(&#34;bad blocksize(%v), aes.BlockSize = %v\n&#34;, len(data), aes.BlockSize)
+		return nil, fmt.Errorf("bad blocksize(%v), aes.BlockSize = %v\n", len(data), aes.BlockSize)
 	}
 	c, err := aes.NewCipher(key)
 	if err != nil {
@@ -58,11 +58,11 @@ func decrypt(key, iv, data []byte) ([]byte, error) {
 // openSSLEvpBytesToKey follows the OpenSSL (undocumented?) convention for extracting the key and IV from passphrase.
 // It uses the EVP_BytesToKey() method which is basically:
 // D_i = HASH^count(D_(i-1) || password || salt) where || denotes concatentaion, until there are sufficient bytes available
-// 48 bytes since we&#39;re expecting to handle AES-256, 32bytes for a key and 16bytes for the IV
+// 48 bytes since we're expecting to handle AES-256, 32bytes for a key and 16bytes for the IV
 func extractOpenSSLCreds(password, salt []byte) (OpenSSLCreds, error) {
 	m := make([]byte, 48)
 	prev := []byte{}
-	for i := 0; i &lt; 3; i&#43;&#43; {
+	for i := 0; i < 3; i++ {
 		prev = hash(prev, password, salt)
 		copy(m[i*16:], prev)
 	}
@@ -70,10 +70,10 @@ func extractOpenSSLCreds(password, salt []byte) (OpenSSLCreds, error) {
 }
 
 func hash(prev, password, salt []byte) []byte {
-	a := make([]byte, len(prev)&#43;len(password)&#43;len(salt))
+	a := make([]byte, len(prev)+len(password)+len(salt))
 	copy(a, prev)
 	copy(a[len(prev):], password)
-	copy(a[len(prev)&#43;len(password):], salt)
+	copy(a[len(prev)+len(password):], salt)
 	return md5sum(a)
 }
 
@@ -85,20 +85,20 @@ func md5sum(data []byte) []byte {
 
 // pkcs7Unpad returns slice of the original data without padding.
 func pkcs7Unpad(data []byte, blocklen int) ([]byte, error) {
-	if blocklen &lt;= 0 {
-		return nil, fmt.Errorf(&#34;invalid blocklen %d&#34;, blocklen)
+	if blocklen <= 0 {
+		return nil, fmt.Errorf("invalid blocklen %d", blocklen)
 	}
 	if len(data)%blocklen != 0 || len(data) == 0 {
-		return nil, fmt.Errorf(&#34;invalid data len %d&#34;, len(data))
+		return nil, fmt.Errorf("invalid data len %d", len(data))
 	}
 	padlen := int(data[len(data)-1])
-	if padlen &gt; blocklen || padlen == 0 {
-		return nil, fmt.Errorf(&#34;invalid padding&#34;)
+	if padlen > blocklen || padlen == 0 {
+		return nil, fmt.Errorf("invalid padding")
 	}
 	pad := data[len(data)-padlen:]
-	for i := 0; i &lt; padlen; i&#43;&#43; {
+	for i := 0; i < padlen; i++ {
 		if pad[i] != byte(padlen) {
-			return nil, fmt.Errorf(&#34;invalid padding&#34;)
+			return nil, fmt.Errorf("invalid padding")
 		}
 	}
 	return data[:len(data)-padlen], nil

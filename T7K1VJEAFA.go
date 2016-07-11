@@ -1,8 +1,8 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;time&#34;
+	"fmt"
+	"time"
 )
 
 const Towers = 3
@@ -25,7 +25,7 @@ func (h *Hanoi) init(n int) {
 }
 
 func (h *Hanoi) move(n, a, b, c int) {
-	if n &lt;= 0 {
+	if n <= 0 {
 		return
 	}
 	h.move(n-1, a, c, b)
@@ -37,15 +37,15 @@ func (h *Hanoi) move(n, a, b, c int) {
 }
 
 func (h *Hanoi) print() {
-	fmt.Print(&#34;\f&#34;)
-	for i := Disks; i &gt;= 0; i-- {
-		for j := 0; j &lt; Towers; j&#43;&#43; {
+	fmt.Print("\f")
+	for i := Disks; i >= 0; i-- {
+		for j := 0; j < Towers; j++ {
 			if i == 0 {
-				fmt.Print(&#34;_/||\\_&#34;)
-			} else if len(h[j]) &gt;= i {
-				fmt.Printf(&#34;  %02d  &#34;, h[j][i-1])
+				fmt.Print("_/||\\_")
+			} else if len(h[j]) >= i {
+				fmt.Printf("  %02d  ", h[j][i-1])
 			} else {
-				fmt.Print(&#34;  ||  &#34;)
+				fmt.Print("  ||  ")
 			}
 		}
 		fmt.Println()

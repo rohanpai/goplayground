@@ -2,26 +2,26 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;sort&#34;
+	"fmt"
+	"sort"
 )
 
 func main() {
 	tr := New(3)
-	for i := Int(0); i &lt; 10; i&#43;&#43; {
+	for i := Int(0); i < 10; i++ {
 		tr.ReplaceOrInsert(i)
 	}
-	fmt.Println(&#34;len:       &#34;, tr.Len())
-	fmt.Println(&#34;get3:      &#34;, tr.Get(Int(3)))
-	fmt.Println(&#34;get100:    &#34;, tr.Get(Int(100)))
-	fmt.Println(&#34;replace5:  &#34;, tr.ReplaceOrInsert(Int(5)))
-	fmt.Println(&#34;replace100:&#34;, tr.ReplaceOrInsert(Int(100)))
+	fmt.Println("len:       ", tr.Len())
+	fmt.Println("get3:      ", tr.Get(Int(3)))
+	fmt.Println("get100:    ", tr.Get(Int(100)))
+	fmt.Println("replace5:  ", tr.ReplaceOrInsert(Int(5)))
+	fmt.Println("replace100:", tr.ReplaceOrInsert(Int(100)))
 	/*
 	   len:        10
 	   get3:       3
-	   get100:     &lt;nil&gt;
+	   get100:     <nil>
 	   replace5:   5
-	   replace100: &lt;nil&gt;
+	   replace100: <nil>
 	*/
 }
 
@@ -30,7 +30,7 @@ type Item interface {
 	// Less tests whether the current item is less than the given argument.
 	//
 	// This must provide a strict weak ordering.
-	// If !a.Less(b) &amp;&amp; !b.Less(a), we treat this to mean a == b (i.e. we can only
+	// If !a.Less(b) && !b.Less(a), we treat this to mean a == b (i.e. we can only
 	// hold one of either a or b in the tree).
 	Less(than Item) bool
 }
@@ -38,9 +38,9 @@ type Item interface {
 // Int implements the Item interface for integers.
 type Int int
 
-// Less returns true if int(a) &lt; int(b).
+// Less returns true if int(a) < int(b).
 func (a Int) Less(b Item) bool {
-	return a &lt; b.(Int)
+	return a < b.(Int)
 }
 
 //------------------------------------
@@ -51,7 +51,7 @@ func (a Int) Less(b Item) bool {
 //
 // It must at all times maintain the invariant that either
 //   * len(children) == 0, len(items) unconstrained
-//   * len(children) == len(items) &#43; 1
+//   * len(children) == len(items) + 1
 type node struct {
 	items    items
 	children children
@@ -64,11 +64,11 @@ type node struct {
 func (n *node) split(i int) (Item, *node) {
 	item := n.items[i]
 	next := n.t.newNode()
-	next.items = append(next.items, n.items[i&#43;1:]...)
+	next.items = append(next.items, n.items[i+1:]...)
 	n.items = n.items[:i]
-	if len(n.children) &gt; 0 {
-		next.children = append(next.children, n.children[i&#43;1:]...)
-		n.children = n.children[:i&#43;1]
+	if len(n.children) > 0 {
+		next.children = append(next.children, n.children[i+1:]...)
+		n.children = n.children[:i+1]
 	}
 	return item, next
 }
@@ -76,13 +76,13 @@ func (n *node) split(i int) (Item, *node) {
 // maybeSplitChild checks if a child should be split, and if so splits it.
 // Returns whether or not a split occurred.
 func (n *node) maybeSplitChild(i, maxItems int) bool {
-	if len(n.children[i].items) &lt; maxItems {
+	if len(n.children[i].items) < maxItems {
 		return false
 	}
 	first := n.children[i]
 	item, second := first.split(maxItems / 2)
 	n.items.insertAt(i, item)
-	n.children.insertAt(i&#43;1, second)
+	n.children.insertAt(i+1, second)
 	return true
 }
 
@@ -106,7 +106,7 @@ func (n *node) insert(item Item, maxItems int) Item {
 		case item.Less(inTree):
 			// no change, we want first split node
 		case inTree.Less(item):
-			i&#43;&#43; // we want second split node
+			i++ // we want second split node
 		default:
 			out := n.items[i]
 			n.items[i] = item
@@ -121,7 +121,7 @@ func (n *node) get(key Item) Item {
 	i, found := n.items.find(key)
 	if found {
 		return n.items[i]
-	} else if len(n.children) &gt; 0 {
+	} else if len(n.children) > 0 {
 		return n.children[i].get(key)
 	}
 	return nil
@@ -140,8 +140,8 @@ type items []Item
 // forward.
 func (s *items) insertAt(index int, item Item) {
 	*s = append(*s, nil)
-	if index &lt; len(*s) {
-		copy((*s)[index&#43;1:], (*s)[index:])
+	if index < len(*s) {
+		copy((*s)[index+1:], (*s)[index:])
 	}
 	(*s)[index] = item
 }
@@ -150,7 +150,7 @@ func (s *items) insertAt(index int, item Item) {
 // back.
 func (s *items) removeAt(index int) Item {
 	item := (*s)[index]
-	copy((*s)[index:], (*s)[index&#43;1:])
+	copy((*s)[index:], (*s)[index+1:])
 	*s = (*s)[:len(*s)-1]
 	return item
 }
@@ -163,13 +163,13 @@ func (s *items) pop() (out Item) {
 }
 
 // find returns the index where the given item should be inserted into this
-// list.  &#39;found&#39; is true if the item already exists in the list at the given
+// list.  'found' is true if the item already exists in the list at the given
 // index.
 func (s items) find(item Item) (index int, found bool) {
 	i := sort.Search(len(s), func(i int) bool {
 		return item.Less(s[i])
 	})
-	if i &gt; 0 &amp;&amp; !s[i-1].Less(item) {
+	if i > 0 && !s[i-1].Less(item) {
 		return i - 1, true
 	}
 	return i, false
@@ -188,8 +188,8 @@ type children []*node
 // forward.
 func (s *children) insertAt(index int, n *node) {
 	*s = append(*s, nil)
-	if index &lt; len(*s) {
-		copy((*s)[index&#43;1:], (*s)[index:])
+	if index < len(*s) {
+		copy((*s)[index+1:], (*s)[index:])
 	}
 	(*s)[index] = n
 }
@@ -198,7 +198,7 @@ func (s *children) insertAt(index int, n *node) {
 // back.
 func (s *children) removeAt(index int) *node {
 	n := (*s)[index]
-	copy((*s)[index:], (*s)[index&#43;1:])
+	copy((*s)[index:], (*s)[index+1:])
 	*s = (*s)[:len(*s)-1]
 	return n
 }
@@ -221,10 +221,10 @@ func (s *children) pop() (out *node) {
 // New(2), for example, will create a 2-3-4 tree (each node contains 1-3 items
 // and 2-4 children).
 func New(degree int) *BTree {
-	if degree &lt;= 1 {
-		panic(&#34;bad degree&#34;)
+	if degree <= 1 {
+		panic("bad degree")
 	}
-	return &amp;BTree{
+	return &BTree{
 		degree:   degree,
 		freelist: make([]*node, 0, 32),
 	}
@@ -257,15 +257,15 @@ func (t *BTree) minItems() int {
 
 func (t *BTree) newNode() (n *node) {
 	index := len(t.freelist) - 1
-	if index &lt; 0 {
-		return &amp;node{t: t}
+	if index < 0 {
+		return &node{t: t}
 	}
 	t.freelist, n = t.freelist[:index], t.freelist[index]
 	return
 }
 
 func (t *BTree) freeNode(n *node) {
-	if len(t.freelist) &lt; cap(t.freelist) {
+	if len(t.freelist) < cap(t.freelist) {
 		for i := range n.items {
 			n.items[i] = nil // clear to allow GC
 		}
@@ -285,14 +285,14 @@ func (t *BTree) freeNode(n *node) {
 // nil cannot be added to the tree (will panic).
 func (t *BTree) ReplaceOrInsert(item Item) Item {
 	if item == nil {
-		panic(&#34;nil item being added to BTree&#34;)
+		panic("nil item being added to BTree")
 	}
 	if t.root == nil {
 		t.root = t.newNode()
 		t.root.items = append(t.root.items, item)
-		t.length&#43;&#43;
+		t.length++
 		return nil
-	} else if len(t.root.items) &gt;= t.maxItems() {
+	} else if len(t.root.items) >= t.maxItems() {
 		item2, second := t.root.split(t.maxItems() / 2)
 		oldroot := t.root
 		t.root = t.newNode()
@@ -301,7 +301,7 @@ func (t *BTree) ReplaceOrInsert(item Item) Item {
 	}
 	out := t.root.insert(item, t.maxItems())
 	if out == nil {
-		t.length&#43;&#43;
+		t.length++
 	}
 	return out
 }

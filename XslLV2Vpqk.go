@@ -1,9 +1,9 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;runtime&#34;
-	&#34;unsafe&#34;
+	"fmt"
+	"runtime"
+	"unsafe"
 )
 
 func PtrOffset(offset int) unsafe.Pointer {
@@ -16,5 +16,5 @@ func main() {
 	ptr := PtrOffset(offset)
 
 	runtime.GC()
-	fmt.Println(&#34;Hello, playground&#34;, ptr)
+	fmt.Println("Hello, playground", ptr)
 }

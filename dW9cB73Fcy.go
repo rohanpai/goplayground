@@ -1,36 +1,36 @@
 package main
 
 import (
-	&#34;bytes&#34;
-	&#34;fmt&#34;
+	"bytes"
+	"fmt"
 
-	&#34;code.google.com/p/go.crypto/ssh&#34;
+	"code.google.com/p/go.crypto/ssh"
 )
 
 func getPass() (string, error) {
-	return &#34;super secret&#34;, nil
+	return "super secret", nil
 }
 
 func main() {
-	config := &amp;ssh.ClientConfig{
-		User: &#34;me&#34;,
+	config := &ssh.ClientConfig{
+		User: "me",
 		Auth: []ssh.AuthMethod{
 			ssh.PasswordCallback(getPass),
 		},
 	}
-	client, err := ssh.Dial(&#34;tcp&#34;, &#34;me.example.com:22&#34;, config)
+	client, err := ssh.Dial("tcp", "me.example.com:22", config)
 	if err != nil {
-		panic(&#34;Failed to dial: &#34; &#43; err.Error())
+		panic("Failed to dial: " + err.Error())
 	}
 	session, err := client.NewSession()
 	if err != nil {
-		panic(&#34;Failed to create session: &#34; &#43; err.Error())
+		panic("Failed to create session: " + err.Error())
 	}
 	defer session.Close()
 	var b bytes.Buffer
-	session.Stdout = &amp;b
-	if err := session.Run(&#34;uptime&#34;); err != nil {
-		panic(&#34;Failed to run: &#34; &#43; err.Error())
+	session.Stdout = &b
+	if err := session.Run("uptime"); err != nil {
+		panic("Failed to run: " + err.Error())
 	}
 	fmt.Println(b.String())
 }

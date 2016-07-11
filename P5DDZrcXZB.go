@@ -1,13 +1,13 @@
 package main
 
-import &#34;fmt&#34;
+import "fmt"
 
 type Monad interface {
 	Bind(func(interface{}, Monad) Monad) Monad
 	Return(interface{}) Monad
 }
 
-// First, let&#39;s do Maybe
+// First, let's do Maybe
 type Maybe struct {
 	val *interface{}
 }
@@ -15,7 +15,7 @@ type Maybe struct {
 var None = Maybe{nil}
 
 func Some(a interface{}) Monad {
-	return Maybe{&amp;a}
+	return Maybe{&a}
 }
 
 func (m Maybe) Bind(f func(interface{}, Monad) Monad) Monad {
@@ -31,12 +31,12 @@ func (m Maybe) Return(a interface{}) Monad {
 
 func (m Maybe) String() string {
 	if m == None {
-		return &#34;None&#34;
+		return "None"
 	}
-	return fmt.Sprintf(&#34;Some(%v)&#34;, *m.val)
+	return fmt.Sprintf("Some(%v)", *m.val)
 }
 
-// Let&#39;s do a slice of int!
+// Let's do a slice of int!
 type IntSliceMonad []int
 
 func (m IntSliceMonad) Bind(f func(interface{}, Monad) Monad) Monad {

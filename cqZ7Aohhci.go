@@ -1,20 +1,20 @@
 package main
 
 import (
-	&#34;os&#34;
+	"os"
 
-	&#34;github.com/mattn/go-gtk/gtk&#34;
+	"github.com/mattn/go-gtk/gtk"
 )
 
 var last int
 
 func main() {
-	gtk.Init(&amp;os.Args)
+	gtk.Init(&os.Args)
 
 	window := gtk.NewWindow(gtk.WINDOW_TOPLEVEL)
-	window.SetTitle(&#34;Notes&#34;)
-	window.SetIconName(&#34;gtk-about&#34;)
-	window.Connect(&#34;destroy&#34;, func() {
+	window.SetTitle("Notes")
+	window.SetIconName("gtk-about")
+	window.Connect("destroy", func() {
 		gtk.MainQuit()
 	})
 
@@ -22,7 +22,7 @@ func main() {
 	notebook.AppendPage(gtk.NewVBox(false, 1),
 		gtk.NewImageFromStock(gtk.STOCK_ADD, gtk.ICON_SIZE_MENU))
 
-	notebook.Connect(&#34;button-release-event&#34;, func() bool {
+	notebook.Connect("button-release-event", func() bool {
 		n := notebook.GetCurrentPage()
 		if n == last {
 			addPage(notebook)
@@ -39,16 +39,16 @@ func main() {
 
 func addPage(notebook *gtk.Notebook) {
 	dialog := gtk.NewDialog()
-	dialog.SetTitle(&#34;Title?&#34;)
+	dialog.SetTitle("Title?")
 	dVbox := dialog.GetVBox()
 
 	input := gtk.NewEntry()
 	input.SetEditable(true)
 	vbox := gtk.NewVBox(false, 1)
-	input.Connect(&#34;activate&#34;, func() {
+	input.Connect("activate", func() {
 		s := input.GetText()
-		if s != &#34;&#34; {
-			last = notebook.InsertPage(vbox, gtk.NewLabel(s), last) &#43; 1
+		if s != "" {
+			last = notebook.InsertPage(vbox, gtk.NewLabel(s), last) + 1
 			notebook.ShowAll()
 		}
 		notebook.PrevPage()
@@ -56,9 +56,9 @@ func addPage(notebook *gtk.Notebook) {
 	})
 
 	dVbox.Add(input)
-	button := gtk.NewButtonWithLabel(&#34;OK&#34;)
-	button.Connect(&#34;clicked&#34;, func() {
-		input.Emit(&#34;activate&#34;)
+	button := gtk.NewButtonWithLabel("OK")
+	button.Connect("clicked", func() {
+		input.Emit("activate")
 	})
 	dVbox.Add(button)
 	dialog.SetModal(true)
@@ -74,12 +74,12 @@ func addPage(notebook *gtk.Notebook) {
 	butIta := gtk.NewToolButtonFromStock(gtk.STOCK_ITALIC)
 
 	butFont := gtk.NewFontButton()
-	butFont.Connect(&#34;font-set&#34;, func() {
+	butFont.Connect("font-set", func() {
 		textview.ModifyFontEasy(butFont.GetFontName())
 	})
 
 	butClose := gtk.NewToolButtonFromStock(gtk.STOCK_DELETE)
-	butClose.Connect(&#34;clicked&#34;, func() {
+	butClose.Connect("clicked", func() {
 		n := notebook.GetCurrentPage()
 		notebook.RemovePage(notebook, n)
 		last--

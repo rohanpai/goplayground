@@ -1,11 +1,11 @@
 package main
 
-import &#34;fmt&#34;
+import "fmt"
 
 func PadRight(str, pad string, lenght int) string {
 	for {
-		str &#43;= pad
-		if len(str) &gt; lenght {
+		str += pad
+		if len(str) > lenght {
 			return str[0:lenght]
 		}
 	}
@@ -13,8 +13,8 @@ func PadRight(str, pad string, lenght int) string {
 
 func PadLeft(str, pad string, lenght int) string {
 	for {
-		str = pad &#43; str
-		if len(str) &gt; lenght {
+		str = pad + str
+		if len(str) > lenght {
 			return str[0:lenght]
 		}
 	}
@@ -22,9 +22,9 @@ func PadLeft(str, pad string, lenght int) string {
 
 func main() {
 
-	str := &#34;abc&#34;
-	fmt.Println(PadRight(str, &#34;x&#34;, 5))   // expects abcxx
-	fmt.Println(PadLeft(str, &#34;x&#34;, 5))    // expects xxabc
-	fmt.Println(PadRight(str, &#34;xyz&#34;, 5)) // expects abcxy
-	fmt.Println(PadLeft(str, &#34;xyz&#34;, 5))  // expects xyzab
+	str := "abc"
+	fmt.Println(PadRight(str, "x", 5))   // expects abcxx
+	fmt.Println(PadLeft(str, "x", 5))    // expects xxabc
+	fmt.Println(PadRight(str, "xyz", 5)) // expects abcxy
+	fmt.Println(PadLeft(str, "xyz", 5))  // expects xyzab
 }

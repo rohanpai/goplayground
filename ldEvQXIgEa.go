@@ -1,15 +1,15 @@
-// I&#39;m trying to write one function that encodes/decodes various types of Messages.
-// In OO languages, I would use type inheritance, but Go doesn&#39;t have this concept,
-// ref: http://golang.org/doc/faq#inheritance, so instead, here I&#39;m trying yo use
-// the &#34;marker interface&#34; style to leverage interface inheritance for this purpose instead.
+// I'm trying to write one function that encodes/decodes various types of Messages.
+// In OO languages, I would use type inheritance, but Go doesn't have this concept,
+// ref: http://golang.org/doc/faq#inheritance, so instead, here I'm trying yo use
+// the "marker interface" style to leverage interface inheritance for this purpose instead.
 
 package main
 
 import (
-    &#34;fmt&#34;
-	&#34;bytes&#34;
-	&#34;log&#34;
-	&#34;encoding/gob&#34;
+    "fmt"
+	"bytes"
+	"log"
+	"encoding/gob"
 )
 
 type Msger interface {
@@ -27,26 +27,26 @@ func (m ClientMsg) IsMsg() { }
 func (m ServerMsg) IsMsg() { }
 
 func encode(m Msger) (bb bytes.Buffer) {
-	enc := gob.NewEncoder(&amp;bb)
+	enc := gob.NewEncoder(&bb)
 	err := enc.Encode(m)
 	if err != nil {
-		log.Fatal(&#34;Cannot encode! err=&#34;, err)
+		log.Fatal("Cannot encode! err=", err)
 	}
 	return
 }
 
 func decode(m Msger, bb bytes.Buffer) {     // for A
 //func decode(m *Msger, bb bytes.Buffer) {  // for B, C
-	dec := gob.NewDecoder(&amp;bb)
-	err := dec.Decode(&amp;m)
+	dec := gob.NewDecoder(&bb)
+	err := dec.Decode(&m)
 	if err != nil {
-		log.Fatal(&#34;Cannot decode Msg! err=&#34;, err)
+		log.Fatal("Cannot decode Msg! err=", err)
 	}
 	return
 }
 
 func main() {
-    m1 := ClientMsg{&#34;id_1&#34;}
+    m1 := ClientMsg{"id_1"}
 	b1 := encode(m1)
 	p_bb := bytes.NewBuffer(b1.Bytes())
 
@@ -55,7 +55,7 @@ func main() {
 	decode(mDecoded, *p_bb)     // A: gives: Cannot decode Msg! err=gob: local interface type *main.Msger can only be decoded from remote interface type; received concrete type ClientMsg = struct { Id string; }
 
 	//decode(mDecoded, *p_bb)  // B: gives: cannot use mDecoded (type ClientMsg) as type *Msger in argument to decode: *Msger is pointer to interface, not interface
-	//decode(&amp;mDecoded, *p_bb) // C: gives: cannot use &amp;mDecoded (type *ClientMsg) as type *Msger in argument to decode: *Msger is pointer to interface, not interface
+	//decode(&mDecoded, *p_bb) // C: gives: cannot use &mDecoded (type *ClientMsg) as type *Msger in argument to decode: *Msger is pointer to interface, not interface
 
-	fmt.Printf(&#34;m1 Decoded=&#39;%v&#39;\n&#34;, mDecoded)
+	fmt.Printf("m1 Decoded='%v'\n", mDecoded)
 }

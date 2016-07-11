@@ -1,45 +1,45 @@
 package main
 
 import (
-	&#34;bytes&#34;
-	&#34;encoding/json&#34;
-	&#34;encoding/xml&#34;
-	&#34;errors&#34;
-	&#34;fmt&#34;
-	&#34;regexp&#34;
-	&#34;strconv&#34;
-	&#34;strings&#34;
+	"bytes"
+	"encoding/json"
+	"encoding/xml"
+	"errors"
+	"fmt"
+	"regexp"
+	"strconv"
+	"strings"
 )
 
 var testXML = `
-&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;
-&lt;data&gt;
-    &lt;netid&gt;
-        &lt;disable&gt;no&lt;/disable&gt;
-        &lt;text1&gt;default:text&lt;/text1&gt;
-        &lt;word1&gt;default:word&lt;/word1&gt;
-    &lt;/netid&gt;
-&lt;/data&gt;
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+    <netid>
+        <disable>no</disable>
+        <text1>default:text</text1>
+        <word1>default:word</word1>
+    </netid>
+</data>
 `
 
 var testXML2 = `
-&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;
-&lt;data&gt;
-    &lt;idnet&gt;
-        &lt;disable&gt;yes&lt;/disable&gt;
-        &lt;text1&gt;default:text2&lt;/text1&gt;
-        &lt;word1&gt;default:word2&lt;/word1&gt;
-    &lt;/idnet&gt;
-&lt;/data&gt;
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+    <idnet>
+        <disable>yes</disable>
+        <text1>default:text2</text1>
+        <word1>default:word2</word1>
+    </idnet>
+</data>
 `
 func main() {
 	var docs = []string{testXML,testXML2}
 	for _,doc := range docs {
-		v,_ := ValuesFromTagPath(doc,&#34;data.*.disable&#34;)
+		v,_ := ValuesFromTagPath(doc,"data.*.disable")
 		fmt.Println(v[0].(string))
-		v,_ = ValuesFromTagPath(doc,&#34;data.*.text1&#34;)
+		v,_ = ValuesFromTagPath(doc,"data.*.text1")
 		fmt.Println(v[0].(string))
-		v,_ = ValuesFromTagPath(doc,&#34;data.*.word1&#34;)
+		v,_ = ValuesFromTagPath(doc,"data.*.word1")
 		fmt.Println(v[0].(string))
 	}
 }
@@ -54,29 +54,29 @@ func main() {
 /*	
 	Unmarshal an arbitrary XML doc to a map[string]interface{} or a JSON string. 
 
-	DocToMap() returns an intermediate result with the XML doc unmarshal&#39;d to a map
-	of type map[string]interface{}. It is analogous to unmarshal&#39;ng a JSON string to
+	DocToMap() returns an intermediate result with the XML doc unmarshal'd to a map
+	of type map[string]interface{}. It is analogous to unmarshal'ng a JSON string to
 	a map using json.Unmarshal(). (This was the original purpose of this library.)
 
 	DocToTree()/WriteTree() let you examine the parsed XML doc.
 
-	XML values are all type &#39;string&#39;. The optional argument &#39;recast&#39; for DocToJson()
-	and DocToMap() will convert element values to JSON data types - &#39;float64&#39; and &#39;bool&#39; -
+	XML values are all type 'string'. The optional argument 'recast' for DocToJson()
+	and DocToMap() will convert element values to JSON data types - 'float64' and 'bool' -
 	if possible.  This, however, should be done with caution as it will recast ALL numeric
-	and boolean string values, even those that are meant to be of type &#39;string&#39;.
+	and boolean string values, even those that are meant to be of type 'string'.
  */
 /* 
 package x2j
 
 import (
-	&#34;bytes&#34;
-	&#34;encoding/json&#34;
-	&#34;encoding/xml&#34;
-	&#34;errors&#34;
-	&#34;fmt&#34;
-	&#34;regexp&#34;
-	&#34;strings&#34;
-	&#34;strconv&#34;
+	"bytes"
+	"encoding/json"
+	"encoding/xml"
+	"errors"
+	"fmt"
+	"regexp"
+	"strings"
+	"strconv"
 )
 */
 
@@ -89,7 +89,7 @@ type Node struct {
 }
 
 // DocToJson - return an XML doc as a JSON string.
-//	If the optional argument &#39;recast&#39; is &#39;true&#39;, then values will be converted to boolean or float64 if possible.
+//	If the optional argument 'recast' is 'true', then values will be converted to boolean or float64 if possible.
 func DocToJson(doc string,recast ...bool) (string,error) {
 	var r bool
 	if len(recast) == 1 {
@@ -97,20 +97,20 @@ func DocToJson(doc string,recast ...bool) (string,error) {
 	}
 	m,merr := DocToMap(doc,r)
 	if m == nil || merr != nil {
-		return &#34;&#34;,merr
+		return "",merr
 	}
 
 	b, berr := json.Marshal(m)
 	if berr != nil {
-		return &#34;&#34;,berr
+		return "",berr
 	}
 
-	// NOTE: don&#39;t have to worry about safe JSON marshaling with json.Marshal, since &#39;&lt;&#39; and &#39;&gt;&#34; are reservedin XML.
+	// NOTE: don't have to worry about safe JSON marshaling with json.Marshal, since '<' and '>" are reservedin XML.
 	return string(b),nil
 }
 
 // DocToJsonIndent - return an XML doc as a prettified JSON string.
-//	If the optional argument &#39;recast&#39; is &#39;true&#39;, then values will be converted to boolean or float64 if possible.
+//	If the optional argument 'recast' is 'true', then values will be converted to boolean or float64 if possible.
 //	Note: recasting is only applied to element values, not attribute values.
 func DocToJsonIndent(doc string,recast ...bool) (string,error) {
 	var r bool
@@ -119,21 +119,21 @@ func DocToJsonIndent(doc string,recast ...bool) (string,error) {
 	}
 	m,merr := DocToMap(doc,r)
 	if m == nil || merr != nil {
-		return &#34;&#34;,merr
+		return "",merr
 	}
 
-	b, berr := json.MarshalIndent(m,&#34;&#34;,&#34;  &#34;)
+	b, berr := json.MarshalIndent(m,"","  ")
 	if berr != nil {
-		return &#34;&#34;,berr
+		return "",berr
 	}
 
-	// NOTE: don&#39;t have to worry about safe JSON marshaling with json.Marshal, since &#39;&lt;&#39; and &#39;&gt;&#34; are reservedin XML.
+	// NOTE: don't have to worry about safe JSON marshaling with json.Marshal, since '<' and '>" are reservedin XML.
 	return string(b),nil
 }
 
 // DocToMap - convert an XML doc into a map[string]interface{}.
 // (This is analogous to unmarshalling a JSON string to map[string]interface{} using json.Unmarshal().)
-//	If the optional argument &#39;recast&#39; is &#39;true&#39;, then values will be converted to boolean or float64 if possible.
+//	If the optional argument 'recast' is 'true', then values will be converted to boolean or float64 if possible.
 //	Note: recasting is only applied to element values, not attribute values.
 func DocToMap(doc string,recast ...bool) (map[string]interface{},error) {
 	var r bool
@@ -153,14 +153,14 @@ func DocToMap(doc string,recast ...bool) (map[string]interface{},error) {
 
 // DocToTree - convert an XML doc into a tree of nodes.
 func DocToTree(doc string) (*Node, error) {
-	// xml.Decoder doesn&#39;t properly handle whitespace in some doc
+	// xml.Decoder doesn't properly handle whitespace in some doc
 	// see songTextString.xml test case ... 
-	reg,_ := regexp.Compile(&#34;[ \t\n\r]*&lt;&#34;)
-	doc = reg.ReplaceAllString(doc,&#34;&lt;&#34;)
+	reg,_ := regexp.Compile("[ \t\n\r]*<")
+	doc = reg.ReplaceAllString(doc,"<")
 
 	b := bytes.NewBufferString(doc)
 	p := xml.NewDecoder(b)
-	n, berr := xmlToTree(&#34;&#34;,nil,p)
+	n, berr := xmlToTree("",nil,p)
 	if berr != nil {
 		return nil, berr
 	}
@@ -169,7 +169,7 @@ func DocToTree(doc string) (*Node, error) {
 }
 
 // (*Node)WriteTree - convert a tree of nodes into a printable string.
-//	&#39;padding&#39; is the starting indentation; typically: n.WriteTree().
+//	'padding' is the starting indentation; typically: n.WriteTree().
 func (n *Node)WriteTree(padding ...int) string {
 	var indent int
 	if len(padding) == 1 {
@@ -177,35 +177,35 @@ func (n *Node)WriteTree(padding ...int) string {
 	}
 
 	var s string
-	if n.val != &#34;&#34; {
-		for i := 0 ; i &lt; indent ; i&#43;&#43; {
-			s &#43;= &#34;  &#34;
+	if n.val != "" {
+		for i := 0 ; i < indent ; i++ {
+			s += "  "
 		}
-		s &#43;= n.key&#43;&#34; : &#34;&#43;n.val&#43;&#34;\n&#34;
+		s += n.key+" : "+n.val+"\n"
 	} else {
-		for i := 0 ; i &lt; indent ; i&#43;&#43; {
-			s &#43;= &#34;  &#34;
+		for i := 0 ; i < indent ; i++ {
+			s += "  "
 		}
-		s &#43;= n.key&#43;&#34; :&#34;&#43;&#34;\n&#34;
+		s += n.key+" :"+"\n"
 		for _,nn := range n.nodes {
-			s &#43;= nn.WriteTree(indent&#43;1)
+			s += nn.WriteTree(indent+1)
 		}
 	}
 	return s
 }
 
-// xmlToTree - load a &#39;clean&#39; XML doc into a tree of *Node.
+// xmlToTree - load a 'clean' XML doc into a tree of *Node.
 func xmlToTree(skey string,a []xml.Attr,p *xml.Decoder) (*Node, error) {
 	n := new(Node)
 	n.nodes = make([]*Node,0)
 
-	if skey != &#34;&#34; {
+	if skey != "" {
 		n.key = skey
-		if len(a) &gt; 0 {
+		if len(a) > 0 {
 			for _,v := range a {
 				na := new(Node)
 				na.attr = true
-				na.key = `-`&#43;v.Name.Local
+				na.key = `-`+v.Name.Local
 				na.val = v.Value
 				n.nodes = append(n.nodes,na)
 			}
@@ -220,13 +220,13 @@ func xmlToTree(skey string,a []xml.Attr,p *xml.Decoder) (*Node, error) {
 			case xml.StartElement:
 				tt := t.(xml.StartElement)
 				// handle root
-				if n.key == &#34;&#34; {
+				if n.key == "" {
 					n.key = tt.Name.Local
-					if len(tt.Attr) &gt; 0 {
+					if len(tt.Attr) > 0 {
 						for _,v := range tt.Attr {
 							na := new(Node)
 							na.attr = true
-							na.key = `-`&#43;v.Name.Local
+							na.key = `-`+v.Name.Local
 							na.val = v.Value
 							n.nodes = append(n.nodes,na)
 						}
@@ -244,9 +244,9 @@ func xmlToTree(skey string,a []xml.Attr,p *xml.Decoder) (*Node, error) {
 				return n, nil
 			case xml.CharData:
 				tt := string(t.(xml.CharData))
-				if len(n.nodes) &gt; 0 {
+				if len(n.nodes) > 0 {
 					nn := new(Node)
-					nn.key = &#34;#text&#34;
+					nn.key = "#text"
 					nn.val = tt
 					n.nodes = append(n.nodes,nn)
 				} else {
@@ -256,18 +256,18 @@ func xmlToTree(skey string,a []xml.Attr,p *xml.Decoder) (*Node, error) {
 				// noop
 		}
 	}
-	// Logically we can&#39;t get here, but provide an error message anyway.
-	return nil, errors.New(&#34;Unknown parse error in xmlToTree() for: &#34;&#43;n.key)
+	// Logically we can't get here, but provide an error message anyway.
+	return nil, errors.New("Unknown parse error in xmlToTree() for: "+n.key)
 }
 
 // (*Node)markDuplicateKeys - set node.dup flag for loading map[string]interface{}.
 func (n *Node)markDuplicateKeys() {
 	l := len(n.nodes)
-	for i := 0 ; i &lt; l ; i&#43;&#43; {
+	for i := 0 ; i < l ; i++ {
 		if n.nodes[i].dup {
 			continue
 		}
-		for j := i&#43;1 ; j &lt; l ; j&#43;&#43; {
+		for j := i+1 ; j < l ; j++ {
 			if n.nodes[i].key == n.nodes[j].key {
 				n.nodes[i].dup = true
 				n.nodes[j].dup = true
@@ -278,7 +278,7 @@ func (n *Node)markDuplicateKeys() {
 
 // (*Node)treeToMap - convert a tree of nodes into a map[string]interface{}.
 //	(Parses to map that is structurally the same as from json.Unmarshal().)
-// Note: root is not instantiated; call with: &#34;m[n.key] = n.treeToMap(recast)&#34;.
+// Note: root is not instantiated; call with: "m[n.key] = n.treeToMap(recast)".
 func (n *Node)treeToMap(r bool) interface{} {
 	if len(n.nodes) == 0 {
 		return recast(n.val,r)
@@ -287,7 +287,7 @@ func (n *Node)treeToMap(r bool) interface{} {
 	m := make(map[string]interface{},0)
 	for _,v := range n.nodes {
 		// just a value
-		if !v.dup &amp;&amp; len(v.nodes) == 0 {
+		if !v.dup && len(v.nodes) == 0 {
 			m[v.key] = recast(v.val,r)
 			continue
 		}
@@ -305,7 +305,7 @@ func (n *Node)treeToMap(r bool) interface{} {
 			continue
 		}
 
-		// it&#39;s a unique key
+		// it's a unique key
 		m[v.key] = v.treeToMap(r)
 	}
 
@@ -319,7 +319,7 @@ func recast(s string,r bool) interface{} {
 		if f, err := strconv.ParseFloat(s,64); err == nil {
 			return interface{}(f)
 		}
-		// ParseBool treats &#34;1&#34;==true &amp; &#34;0&#34;==false
+		// ParseBool treats "1"==true & "0"==false
 		if b, err := strconv.ParseBool(s); err == nil {
 			return interface{}(b)
 		}
@@ -328,10 +328,10 @@ func recast(s string,r bool) interface{} {
 }
 
 // WriteMap - dumps the map[string]interface{} for examination.
-//	&#39;offset&#39; is initial indentation count; typically: WriteMap(m).
-//	NOTE: with XML all element types are &#39;string&#39;.
+//	'offset' is initial indentation count; typically: WriteMap(m).
+//	NOTE: with XML all element types are 'string'.
 //	But code written as generic for use with maps[string]interface{} values from json.Unmarshal().
-//	Or it can handle a DocToMap(doc,true) result where values have be recast&#39;d.
+//	Or it can handle a DocToMap(doc,true) result where values have be recast'd.
 func WriteMap(m interface{}, offset ...int) string {
 	var indent int
 	if len(offset) == 1 {
@@ -341,44 +341,44 @@ func WriteMap(m interface{}, offset ...int) string {
 	var s string
 	switch m.(type) {
 		case nil:
-			return &#34;[nil] nil&#34;
+			return "[nil] nil"
 		case string:
-			return &#34;[string] &#34;&#43;m.(string)
+			return "[string] "+m.(string)
 		case float64:
-			return &#34;[float64] &#34;&#43;strconv.FormatFloat(m.(float64),&#39;e&#39;,2,64)
+			return "[float64] "+strconv.FormatFloat(m.(float64),'e',2,64)
 		case bool:
-			return &#34;[bool] &#34;&#43;strconv.FormatBool(m.(bool))
+			return "[bool] "+strconv.FormatBool(m.(bool))
 		case []interface{}:
-			s &#43;= &#34;[[]interface{}]&#34;
+			s += "[[]interface{}]"
 			for i,v := range m.([]interface{}) {
-				s &#43;= &#34;\n&#34;
-				for i := 0 ; i &lt; indent ; i&#43;&#43; {
-					s &#43;= &#34;  &#34;
+				s += "\n"
+				for i := 0 ; i < indent ; i++ {
+					s += "  "
 				}
-				s &#43;= &#34;[item: &#34;&#43;strconv.FormatInt(int64(i),10)&#43;&#34;]&#34;
+				s += "[item: "+strconv.FormatInt(int64(i),10)+"]"
 				switch v.(type) {
 					case string,float64,bool:
-						s &#43;= &#34;\n&#34;
+						s += "\n"
 					default:
 						// noop
 				}
-				for i := 0 ; i &lt; indent ; i&#43;&#43; {
-					s &#43;= &#34;  &#34;
+				for i := 0 ; i < indent ; i++ {
+					s += "  "
 				}
-				s &#43;= WriteMap(v,indent&#43;1)
+				s += WriteMap(v,indent+1)
 			}
 		case map[string]interface{}:
 			for k,v := range m.(map[string]interface{}) {
-				s &#43;= &#34;\n&#34;
-				for i := 0 ; i &lt; indent ; i&#43;&#43; {
-					s &#43;= &#34;  &#34;
+				s += "\n"
+				for i := 0 ; i < indent ; i++ {
+					s += "  "
 				}
-				// s &#43;= &#34;[map[string]interface{}] &#34;&#43;k&#43;&#34; :&#34;&#43;WriteMap(v,indent&#43;1)
-				s &#43;= k&#43;&#34; :&#34;&#43;WriteMap(v,indent&#43;1)
+				// s += "[map[string]interface{}] "+k+" :"+WriteMap(v,indent+1)
+				s += k+" :"+WriteMap(v,indent+1)
 		}
 		default:
-			// shouldn&#39;t ever be here ...
-			s &#43;= fmt.Sprintf(&#34;unknown type for: %v&#34;,m)
+			// shouldn't ever be here ...
+			s += fmt.Sprintf("unknown type for: %v",m)
 	}
 	return s
 }
@@ -386,10 +386,10 @@ func WriteMap(m interface{}, offset ...int) string {
 // ------------------------  value extraction from XML doc --------------------------
 
 // DocValue - return a value for a specific tag
-//	&#39;doc&#39; is a valid XML message.
-//	&#39;path&#39; is a hierarchy of XML tags, e.g., &#34;doc.name&#34;.
-//	&#39;attrs&#39; is an optional list of &#34;name:value&#34; pairs for attributes.
-//	Note: &#39;recast&#39; is not enabled here. Use DocToMap(), NewAttributeMap(), and MapValue() calls for that.
+//	'doc' is a valid XML message.
+//	'path' is a hierarchy of XML tags, e.g., "doc.name".
+//	'attrs' is an optional list of "name:value" pairs for attributes.
+//	Note: 'recast' is not enabled here. Use DocToMap(), NewAttributeMap(), and MapValue() calls for that.
 func DocValue(doc, path string, attrs ...string) (interface{},error) {
 	n,err := DocToTree(doc)
 	if err != nil {
@@ -410,37 +410,37 @@ func DocValue(doc, path string, attrs ...string) (interface{},error) {
 	return v, nil
 }
 
-// MapValue - retrieves value based on walking the map, &#39;m&#39;.
-//	&#39;m&#39; is the map value of interest.
-//	&#39;path&#39; is a period-separated hierarchy of keys in the map.
-//	&#39;attr&#39; is a map of attribute &#34;name:value&#34; pairs from NewAttributeMap().
-//	If the path can&#39;t be traversed, an error is returned.
-//	Note: the optional argument &#39;r&#39; can be used to coerce attribute values, &#39;attr&#39;, if done so for &#39;m&#39;.
+// MapValue - retrieves value based on walking the map, 'm'.
+//	'm' is the map value of interest.
+//	'path' is a period-separated hierarchy of keys in the map.
+//	'attr' is a map of attribute "name:value" pairs from NewAttributeMap().
+//	If the path can't be traversed, an error is returned.
+//	Note: the optional argument 'r' can be used to coerce attribute values, 'attr', if done so for 'm'.
 func MapValue(m map[string]interface{},path string, attr map[string]interface{}, r ...bool) (interface{}, error) {
-	// attribute values may have been recasted during map construction; default is &#39;false&#39;.
-	if len(r) == 1 &amp;&amp; r[0] == true {
+	// attribute values may have been recasted during map construction; default is 'false'.
+	if len(r) == 1 && r[0] == true {
 		for k,v := range attr {
 			attr[k] = recast(v.(string),true)
 		}
 	}
 
 	// parse the path
-	keys := strings.Split(path,&#34;.&#34;)
+	keys := strings.Split(path,".")
 
-	// initialize return value to &#39;m&#39; so a path of &#34;&#34; will work correctly
+	// initialize return value to 'm' so a path of "" will work correctly
 	var v interface{} = m
 	var ok bool
 	var okey string
 	var isMap bool = true
-	if keys[0] == &#34;&#34; {
+	if keys[0] == "" {
 		goto checkAttr
 	}
 	for _,key := range keys {
 		if !isMap {
-			return nil, errors.New(&#34;no keys beyond: &#34;&#43;okey)
+			return nil, errors.New("no keys beyond: "+okey)
 		}
 		if v,ok = m[key]; !ok {
-			return nil, errors.New(&#34;no key in map: &#34;&#43;key)
+			return nil, errors.New("no key in map: "+key)
 		} else {
 			switch v.(type) {
 				case map[string]interface{}:
@@ -450,7 +450,7 @@ func MapValue(m map[string]interface{},path string, attr map[string]interface{},
 					isMap = false
 			}
 		}
-		// save &#39;key&#39; for error reporting
+		// save 'key' for error reporting
 		okey = key
 	}
 
@@ -460,7 +460,7 @@ checkAttr:
 		return v, nil
 	}
 
-	// match attributes; value is &#34;#text&#34; or nil
+	// match attributes; value is "#text" or nil
 	return hasAttributes(v,attr)
 }
 
@@ -474,49 +474,49 @@ func hasAttributes(v interface{},a map[string]interface{}) (interface{}, error) 
 					return vvv, nil
 				}
 			}
-			return nil, errors.New(&#34;no list member with matching attributes&#34;)
+			return nil, errors.New("no list member with matching attributes")
 		case map[string]interface{}:
 			// do all attribute name:value pairs match?
 			nv := v.(map[string]interface{})
 			for key,val := range a {
 				if vv,ok := nv[key]; !ok {
-					return nil, errors.New(&#34;no attribute with name: &#34;&#43;key[1:])
+					return nil, errors.New("no attribute with name: "+key[1:])
 				} else if val != vv {
-					return nil, errors.New(&#34;no attribute key:value pair: &#34;&#43;fmt.Sprintf(&#34;%s:%v&#34;,key[1:],val))
+					return nil, errors.New("no attribute key:value pair: "+fmt.Sprintf("%s:%v",key[1:],val))
 				}
 			}
-			// they all match; so return value associated with &#34;#text&#34; key.
-			if vv,ok := nv[&#34;#text&#34;]; ok {
+			// they all match; so return value associated with "#text" key.
+			if vv,ok := nv["#text"]; ok {
 				return vv, nil
 			} else {
 				// this happens when another element is value of tag rather than just a string value
 				return nv, nil
 			}
 	}
-	return nil, errors.New(&#34;no match for attributes&#34;)
+	return nil, errors.New("no match for attributes")
 }
 
-// NewAttributeMap() - generate map of attributes=value entries as map[&#34;-&#34;&#43;string]string.
-//	&#39;kv&#39; arguments are &#34;name:value&#34; pairs that appear as attributes, name=&#34;value&#34;.
+// NewAttributeMap() - generate map of attributes=value entries as map["-"+string]string.
+//	'kv' arguments are "name:value" pairs that appear as attributes, name="value".
 func NewAttributeMap(kv ...string) (map[string]interface{}, error) {
 	m := make(map[string]interface{},0)
 	for _,v := range kv {
-		vv := strings.Split(v,&#34;:&#34;)
+		vv := strings.Split(v,":")
 		if len(vv) != 2 {
-			return nil, errors.New(&#34;attribute not \&#34;name:value\&#34; pair: &#34;&#43;v)
+			return nil, errors.New("attribute not \"name:value\" pair: "+v)
 		}
 		// attributes are stored as keys prepended with hyphen
-		m[&#34;-&#34;&#43;vv[0]] = interface{}(vv[1])
+		m["-"+vv[0]] = interface{}(vv[1])
 	}
 	return m, nil
 }
 
 //------------------------- get values for key ----------------------------
 
-// ValuesForTag - return all values in doc associated with &#39;tag&#39;.
-//	Returns nil if the &#39;tag&#39; does not occur in the doc.
+// ValuesForTag - return all values in doc associated with 'tag'.
+//	Returns nil if the 'tag' does not occur in the doc.
 //	If there is an error encounted while parsing doc, that is returned.
-//	If you want values &#39;recast&#39; use DocToMap() and ValuesForKey().
+//	If you want values 'recast' use DocToMap() and ValuesForKey().
 func ValuesForTag(doc, tag string) ([]interface{}, error) {
 	n,err := DocToTree(doc)
 	if err != nil {
@@ -530,20 +530,20 @@ func ValuesForTag(doc, tag string) ([]interface{}, error) {
 }
 
 
-// ValuesForKey - return all values in map associated with &#39;key&#39; 
-//	Returns nil if the &#39;key&#39; does not occur in the map
+// ValuesForKey - return all values in map associated with 'key' 
+//	Returns nil if the 'key' does not occur in the map
 func ValuesForKey(m map[string]interface{}, key string) []interface{} {
 	ret := make([]interface{},0)
 
-	hasKey(m,key,&amp;ret)
-	if len(ret) &gt; 0 {
+	hasKey(m,key,&ret)
+	if len(ret) > 0 {
 		return ret
 	}
 	return nil
 }
 
-// hasKey - if the map &#39;key&#39; exists append it to array
-//          if it doesn&#39;t do nothing except scan array and map values
+// hasKey - if the map 'key' exists append it to array
+//          if it doesn't do nothing except scan array and map values
 func hasKey(iv interface{},key string,ret *[]interface{}) {
 	switch iv.(type) {
 		case map[string]interface{}:
@@ -565,15 +565,15 @@ func hasKey(iv interface{},key string,ret *[]interface{}) {
 
 
 // ValuesFromTagPath - deliver all values for a path node from a XML doc
-// If there are no values for the path &#39;nil&#39; is returned.
+// If there are no values for the path 'nil' is returned.
 // A return value of (nil, nil) means that there were no values and no errors parsing the doc.
-//   &#39;doc&#39; is the XML document
-//   &#39;path&#39; is a dot-separated path of tag nodes
-//          If a node is &#39;*&#39;, then everything beyond is scanned for values.
-//          E.g., &#34;doc.books&#39; might return a single value &#39;book&#39; of type []interface{}, but
-//                &#34;doc.books.*&#34; could return all the &#39;book&#39; entries as []map[string]interface{}.
-//                &#34;doc.books.*.author&#34; might return all the &#39;author&#39; tag values as []string - or
-//            		&#34;doc.books.*.author.lastname&#34; might be required, depending on he schema.
+//   'doc' is the XML document
+//   'path' is a dot-separated path of tag nodes
+//          If a node is '*', then everything beyond is scanned for values.
+//          E.g., "doc.books' might return a single value 'book' of type []interface{}, but
+//                "doc.books.*" could return all the 'book' entries as []map[string]interface{}.
+//                "doc.books.*.author" might return all the 'author' tag values as []string - or
+//            		"doc.books.*.author.lastname" might be required, depending on he schema.
 func ValuesFromTagPath(doc, path string, getAttrs ...bool) ([]interface{}, error) {
 	var a bool
 	if len(getAttrs) == 1 {
@@ -589,19 +589,19 @@ func ValuesFromTagPath(doc, path string, getAttrs ...bool) ([]interface{}, error
 }
 
 // ValuesFromKeyPath - deliver all values for a path node from a map[string]interface{}
-// If there are no values for the path &#39;nil&#39; is returned.
-//   &#39;m&#39; is the map to be walked
-//   &#39;path&#39; is a dot-separated path of key values
-//          If a node is &#39;*&#39;, then everything beyond is walked.
+// If there are no values for the path 'nil' is returned.
+//   'm' is the map to be walked
+//   'path' is a dot-separated path of key values
+//          If a node is '*', then everything beyond is walked.
 //          E.g., see ValuesForTagPath documentation.
 func ValuesFromKeyPath(m map[string]interface{}, path string, getAttrs ...bool) []interface{} {
 	var a bool
 	if len(getAttrs) == 1 {
 		a = getAttrs[0]
 	}
-	keys := strings.Split(path, &#34;.&#34;)
+	keys := strings.Split(path, ".")
 	ret := make([]interface{}, 0)
-	valuesFromKeyPath(&amp;ret, m, keys, a)
+	valuesFromKeyPath(&ret, m, keys, a)
 	if len(ret) == 0 {
 		return nil
 	}
@@ -611,7 +611,7 @@ func ValuesFromKeyPath(m map[string]interface{}, path string, getAttrs ...bool) 
 func valuesFromKeyPath(ret *[]interface{}, m interface{}, keys []string, getAttrs bool) {
 	lenKeys := len(keys)
 
-	// load &#39;m&#39; values into &#39;ret&#39;
+	// load 'm' values into 'ret'
 	// expand any lists
 	if lenKeys == 0 {
 		switch m.(type) {
@@ -630,11 +630,11 @@ func valuesFromKeyPath(ret *[]interface{}, m interface{}, keys []string, getAttr
 	// key of interest
 	key := keys[0]
 	switch key {
-	case &#34;*&#34;: // wildcard - scan all values
+	case "*": // wildcard - scan all values
 		switch m.(type) {
 		case map[string]interface{}:
 			for k, v := range m.(map[string]interface{}) {
-				if string(k[:1]) == &#34;-&#34; &amp;&amp; !getAttrs { // skip attributes?
+				if string(k[:1]) == "-" && !getAttrs { // skip attributes?
 					continue
 				}
 				valuesFromKeyPath(ret, v, keys[1:], getAttrs)
@@ -645,7 +645,7 @@ func valuesFromKeyPath(ret *[]interface{}, m interface{}, keys []string, getAttr
 				// flatten out a list of maps - keys are processed
 				case map[string]interface{}:
 					for kk, vv := range v.(map[string]interface{}) {
-						if string(kk[:1]) == &#34;-&#34; &amp;&amp; !getAttrs { // skip attributes?
+						if string(kk[:1]) == "-" && !getAttrs { // skip attributes?
 							continue
 						}
 						valuesFromKeyPath(ret, vv, keys[1:], getAttrs)

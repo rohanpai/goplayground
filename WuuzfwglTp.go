@@ -1,9 +1,9 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;github.com/daswasser/validate&#34;
-	&#34;github.com/daswasser/validate/web&#34;
+	"fmt"
+	"github.com/daswasser/validate"
+	"github.com/daswasser/validate/web"
 )
 
 func main() {
@@ -12,18 +12,18 @@ func main() {
 
 	// Create a new Domain object and return the message on failure
 	goodDomain :=
-		web.NewDomain(&#34;www.golang.org&#34;).
+		web.NewDomain("www.golang.org").
 			MaxSubdomains(2).
-			SetMessage(&#34;Invalid domain specified!&#34;)
+			SetMessage("Invalid domain specified!")
 
 	// Validate the good domain
 	err := v.Validate(goodDomain)
 	if err != nil {
-		fmt.Printf(&#34;%s error:\n&#34;, goodDomain)
+		fmt.Printf("%s error:\n", goodDomain)
 		fmt.Println(err)
 		fmt.Println(goodDomain.Message())
 	} else {
-		fmt.Printf(&#34;%s is a valid domain\n&#34;, goodDomain)
+		fmt.Printf("%s is a valid domain\n", goodDomain)
 	}
 
 }

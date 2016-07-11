@@ -1,31 +1,31 @@
 package main
 
 import (
-	&#34;bson&#34;
-	&#34;labix.org/v2/mgo&#34;
+	"bson"
+	"labix.org/v2/mgo"
 )
 
 type User struct {
-	Email   string `bson:&#34;email&#34;`
-	Name    string `bson:&#34;name&#34;`
-	Enabled bool   `bson:&#34;enabled&#34;`
-	GroupId int    `bson:group_id&#34;`
+	Email   string `bson:"email"`
+	Name    string `bson:"name"`
+	Enabled bool   `bson:"enabled"`
+	GroupId int    `bson:group_id"`
 }
 
 func update_user(w http.RequestWriter, r *http.Request) {
-	user_id := &#34;123&#34;
+	user_id := "123"
 
 	//get the updates to the user object
-	json_data := `{ &#34;email&#34;:&#34;user@example.com&#34;, &#34;name&#34;:&#34;My New Name&#34;}`
-	new_user := &amp;User{}
+	json_data := `{ "email":"user@example.com", "name":"My New Name"}`
+	new_user := &User{}
 	_ = json.Unmarshal(json_data, new_user)
 
 	//connect to MongoDB
-	session, _ := mgo.Dial(&#34;mongodb://localhost/test&#34;)
-	col := session.DB(&#34;test&#34;).C(&#34;users&#34;)
+	session, _ := mgo.Dial("mongodb://localhost/test")
+	col := session.DB("test").C("users")
 
 	//search for an existing User by e-mail
-	existing_user := &amp;User{}
+	existing_user := &User{}
 	_ = col.FindId(user_id).One(existing_user)
 
 	//...

@@ -1,25 +1,25 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;io&#34;
-	&#34;net&#34;
-	&#34;net/http&#34;
-	&#34;time&#34;
+	"fmt"
+	"io"
+	"net"
+	"net/http"
+	"time"
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	url := &#34;http://upload.wikimedia.org/wikipedia/en/b/bc/Wiki.png&#34;
+	url := "http://upload.wikimedia.org/wikipedia/en/b/bc/Wiki.png"
 
 	timeout := time.Duration(5) * time.Second
-	transport := &amp;http.Transport{
+	transport := &http.Transport{
 		ResponseHeaderTimeout: timeout,
 		Dial: func(network, addr string) (net.Conn, error) {
 			return net.DialTimeout(network, addr, timeout)
 		},
 		DisableKeepAlives: true,
 	}
-	client := &amp;http.Client{
+	client := &http.Client{
 		Transport: transport,
 	}
 	resp, err := client.Get(url)
@@ -28,18 +28,18 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	}
 	defer resp.Body.Close()
 
-	//copy the relevant headers. If you want to preserve the downloaded file name, extract it with go&#39;s url parser.
-	w.Header().Set(&#34;Content-Disposition&#34;, &#34;attachment; filename=Wiki.png&#34;)
-	w.Header().Set(&#34;Content-Type&#34;, r.Header.Get(&#34;Content-Type&#34;))
-	w.Header().Set(&#34;Content-Length&#34;, r.Header.Get(&#34;Content-Length&#34;))
+	//copy the relevant headers. If you want to preserve the downloaded file name, extract it with go's url parser.
+	w.Header().Set("Content-Disposition", "attachment; filename=Wiki.png")
+	w.Header().Set("Content-Type", r.Header.Get("Content-Type"))
+	w.Header().Set("Content-Length", r.Header.Get("Content-Length"))
 
 	//stream the body to the client without fully loading it into memory
 	io.Copy(w, resp.Body)
 }
 
 func main() {
-	http.HandleFunc(&#34;/&#34;, Index)
-	err := http.ListenAndServe(&#34;:8000&#34;, nil)
+	http.HandleFunc("/", Index)
+	err := http.ListenAndServe(":8000", nil)
 
 	if err != nil {
 		fmt.Println(err)

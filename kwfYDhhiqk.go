@@ -1,16 +1,16 @@
 package main
 
 import (
-  &#34;github.com/AllenDang/w32&#34;
-  &#34;syscall&#34;
-  &#34;time&#34;
-  &#34;unsafe&#34;
+  "github.com/AllenDang/w32"
+  "syscall"
+  "time"
+  "unsafe"
 )
 
 var (
-  moduser32               = syscall.NewLazyDLL(&#34;user32.dll&#34;)
-  procSetForegroundWindow = moduser32.NewProc(&#34;SetForegroundWindow&#34;)
-  procFindWindowW         = moduser32.NewProc(&#34;FindWindowW&#34;)
+  moduser32               = syscall.NewLazyDLL("user32.dll")
+  procSetForegroundWindow = moduser32.NewProc("SetForegroundWindow")
+  procFindWindowW         = moduser32.NewProc("FindWindowW")
 )
 
 const (
@@ -24,7 +24,7 @@ const (
 type HWND uintptr
 
 func auto() {
-  // hwnd, err := FindWindow(&#34;Notepad&#34;, &#34;Untitled - Notepad&#34;)
+  // hwnd, err := FindWindow("Notepad", "Untitled - Notepad")
   // if err != nil {
     // log.Fatal(err)
   // }
@@ -33,7 +33,7 @@ func auto() {
 
   time.Sleep(time.Second * 3)
 
-  sendkeys(&#34;Hello there!&#34;)
+  sendkeys("Hello there!")
   sendkey(w32.VK_RETURN)
 
   time.Sleep(time.Second * 1)

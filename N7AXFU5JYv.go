@@ -4,8 +4,8 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;reflect&#34;
+	"fmt"
+	"reflect"
 )
 
 // An UnmarshalTypeError describes a JSON value that was
@@ -17,7 +17,7 @@ type UnmarshalTypeError struct {
 
 // Error implements the error interface.
 func (e *UnmarshalTypeError) Error() string {
-	return &#34;json: cannot unmarshal &#34; &#43; e.Value &#43; &#34; into Go value of type &#34; &#43; e.Type.String()
+	return "json: cannot unmarshal " + e.Value + " into Go value of type " + e.Type.String()
 }
 
 // An InvalidUnmarshalError describes an invalid argument passed to Unmarshal.
@@ -29,13 +29,13 @@ type InvalidUnmarshalError struct {
 // Error implements the error interface.
 func (e *InvalidUnmarshalError) Error() string {
 	if e.Type == nil {
-		return &#34;json: Unmarshal(nil)&#34;
+		return "json: Unmarshal(nil)"
 	}
 
 	if e.Type.Kind() != reflect.Ptr {
-		return &#34;json: Unmarshal(non-pointer &#34; &#43; e.Type.String() &#43; &#34;)&#34;
+		return "json: Unmarshal(non-pointer " + e.Type.String() + ")"
 	}
-	return &#34;json: Unmarshal(nil &#34; &#43; e.Type.String() &#43; &#34;)&#34;
+	return "json: Unmarshal(nil " + e.Type.String() + ")"
 }
 
 // user is a type for use in the Unmarshal call.
@@ -46,28 +46,28 @@ type user struct {
 // main is the entry point for the application.
 func main() {
 	var u user
-	err := Unmarshal([]byte(`{&#34;name&#34;:&#34;bill&#34;}`), u) // Run with a value and pointer.
+	err := Unmarshal([]byte(`{"name":"bill"}`), u) // Run with a value and pointer.
 	if err != nil {
 		switch e := err.(type) {
 		case *UnmarshalTypeError:
-			fmt.Printf(&#34;UnmarshalTypeError: Value[%s] Type[%v]\n&#34;, e.Value, e.Type)
+			fmt.Printf("UnmarshalTypeError: Value[%s] Type[%v]\n", e.Value, e.Type)
 		case *InvalidUnmarshalError:
-			fmt.Printf(&#34;InvalidUnmarshalError: Type[%v]\n&#34;, e.Type)
+			fmt.Printf("InvalidUnmarshalError: Type[%v]\n", e.Type)
 		default:
 			fmt.Println(err)
 		}
 		return
 	}
 
-	fmt.Println(&#34;Name:&#34;, u.Name)
+	fmt.Println("Name:", u.Name)
 }
 
 // Unmarshal simulates an unmarshal call that always fails.
 func Unmarshal(data []byte, v interface{}) error {
 	rv := reflect.ValueOf(v)
 	if rv.Kind() != reflect.Ptr || rv.IsNil() {
-		return &amp;InvalidUnmarshalError{reflect.TypeOf(v)}
+		return &InvalidUnmarshalError{reflect.TypeOf(v)}
 	}
 
-	return &amp;UnmarshalTypeError{&#34;string&#34;, reflect.TypeOf(v)}
+	return &UnmarshalTypeError{"string", reflect.TypeOf(v)}
 }

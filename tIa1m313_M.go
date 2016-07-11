@@ -1,10 +1,10 @@
 package main
 
 import (
-	&#34;crypto/x509&#34;
-	&#34;encoding/pem&#34;
-	&#34;log&#34;
-	&#34;strings&#34;
+	"crypto/x509"
+	"encoding/pem"
+	"log"
+	"strings"
 )
 
 const gitlabTestCAPEM = `Certificate:
@@ -60,25 +60,25 @@ const gitlabTestCAPEM = `Certificate:
 MIICTTCCAbagAwIBAgIBATANBgkqhkiG9w0BAQUFADAZMRcwFQYDVQQDEw5HaXRM
 YWIgVGVzdCBDQTAeFw0xNjAzMTUyMTE3MDBaFw0yNjAzMTUyMTE3MDBaMBkxFzAV
 BgNVBAMTDkdpdExhYiBUZXN0IENBMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKB
-gQCuvM31hyTLTFXMMd&#43;lKO/PtXAi3NYoO5NPmNtCnj2wUhHAUVchMBCW2NAwBJ0S
-fFdNmcHzXuOQ&#43;9SZv6V50zmHE0eowAsAJOP6qMNPd1ahlH8vsZff/26GcGevvPYz
-5GYSotwuJ4nas0tbi3AsHZcjrhbS0kG2EEgFozJtOco8&#43;wIDAQABo4GkMIGhMA8G
-A1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFL4uKctRoaWDmsHih3m5Ejd&#43;w/BPMAsG
+gQCuvM31hyTLTFXMMd+lKO/PtXAi3NYoO5NPmNtCnj2wUhHAUVchMBCW2NAwBJ0S
+fFdNmcHzXuOQ+9SZv6V50zmHE0eowAsAJOP6qMNPd1ahlH8vsZff/26GcGevvPYz
+5GYSotwuJ4nas0tbi3AsHZcjrhbS0kG2EEgFozJtOco8+wIDAQABo4GkMIGhMA8G
+A1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFL4uKctRoaWDmsHih3m5Ejd+w/BPMAsG
 A1UdDwQEAwIBBjAvBgNVHR4EKDAmoCQwD4INLndpdGguZG90LmNvbTARgg93aXRo
-b3V0LmRvdC5jb20wEQYJYIZIAYb4QgEBBAQDAgAHMB4GCWCGSAGG&#43;EIBDQQRFg94
+b3V0LmRvdC5jb20wEQYJYIZIAYb4QgEBBAQDAgAHMB4GCWCGSAGG+EIBDQQRFg94
 Y2EgY2VydGlmaWNhdGUwDQYJKoZIhvcNAQEFBQADgYEAaFdDG7PazR33mo1MjmFg
 ZZnMh8QTUeiG2eLjX8T8KTje0bU/S0UeOhKcWYioVmLYZtlGe/RKyzx2S1YdqAqg
-fcX&#43;1vzqNR3eVKSbT7WVz44gTpsp/5p3k0cUKW69f&#43;5fHSnp3KFdEbdBkJHR7n7S
-p&#43;as8RSna&#43;Uupc3btwI7OYA=
+fcX+1vzqNR3eVKSbT7WVz44gTpsp/5p3k0cUKW69f+5fHSnp3KFdEbdBkJHR7n7S
+p+as8RSna+Uupc3btwI7OYA=
 -----END CERTIFICATE-----`
 
 func decodePEM(data string) []byte {
 	block, _ := pem.Decode([]byte(data))
 	if block == nil {
-		log.Fatalln(&#34;PEM failed to decode&#34;)
+		log.Fatalln("PEM failed to decode")
 	}
-	if block.Type != &#34;CERTIFICATE&#34; {
-		log.Fatalln(&#34;PEM invalid block type:&#34;, block.Type)
+	if block.Type != "CERTIFICATE" {
+		log.Fatalln("PEM invalid block type:", block.Type)
 	}
 	return block.Bytes
 }
@@ -86,12 +86,12 @@ func decodePEM(data string) []byte {
 func roots() *x509.CertPool {
 	caCert, err := x509.ParseCertificate(decodePEM(gitlabTestCAPEM))
 	if err != nil {
-		log.Fatalln(&#34;Parse CA PEM:&#34;, err)
+		log.Fatalln("Parse CA PEM:", err)
 	}
 
 	roots := x509.NewCertPool()
 	roots.AddCert(caCert)
-	println(strings.Join(caCert.PermittedDNSDomains, &#34; &#34;))
+	println(strings.Join(caCert.PermittedDNSDomains, " "))
 	return roots
 }
 
@@ -101,28 +101,28 @@ func verifyName(name string, cert *x509.Certificate, expected string) {
 	_, isHostErr := err.(*x509.HostnameError)
 
 	// we ignore hostname errors
-	if err != nil &amp;&amp; !isHostErr {
-		actual = &#34;FAIL&#34;
+	if err != nil && !isHostErr {
+		actual = "FAIL"
 	} else {
-		actual = &#34;OK&#34;
+		actual = "OK"
 	}
 
 	if expected != actual {
-		log.Println(name, &#34;Expected:&#34;, expected, &#34;Actual:&#34;, actual, &#34;Error:&#34;, err)
+		log.Println(name, "Expected:", expected, "Actual:", actual, "Error:", err)
 	} else {
-		log.Println(name, &#34;IS OK&#34;)
+		log.Println(name, "IS OK")
 	}
 }
 
 func main() {
 	caCert, err := x509.ParseCertificate(decodePEM(gitlabTestCAPEM))
 	if err != nil {
-		log.Fatalln(&#34;Parse CA PEM:&#34;, err)
+		log.Fatalln("Parse CA PEM:", err)
 	}
 
-	verifyName(&#34;example.with.dot.com&#34;, caCert, &#34;OK&#34;)
-	verifyName(&#34;my.example.with.dot.com&#34;, caCert, &#34;OK&#34;)
-	verifyName(&#34;with.dot.com&#34;, caCert, &#34;FAIL&#34;)
-	verifyName(&#34;example.without.dot.com&#34;, caCert, &#34;FAIL&#34;)
-	verifyName(&#34;without.dot.com&#34;, caCert, &#34;FAIL&#34;)
+	verifyName("example.with.dot.com", caCert, "OK")
+	verifyName("my.example.with.dot.com", caCert, "OK")
+	verifyName("with.dot.com", caCert, "FAIL")
+	verifyName("example.without.dot.com", caCert, "FAIL")
+	verifyName("without.dot.com", caCert, "FAIL")
 }

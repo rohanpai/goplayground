@@ -1,13 +1,13 @@
 package ttype
 
 import (
-	&#34;testing&#34;
-	&#34;math&#34;
-	&#34;github.com/siddontang/mixer/hack&#34;
+	"testing"
+	"math"
+	"github.com/siddontang/mixer/hack"
 )
 
 const (
-	TpInt64 int = iota &#43; 1
+	TpInt64 int = iota + 1
 	TpUint64
 	TpFloat64
 	TpString
@@ -73,9 +73,9 @@ func (d *Datum) SetBytes(b []byte) {
 
 func BenchmarkString(b *testing.B) {
 	var v Datum
-	for i := 0; i &lt; b.N; i&#43;&#43; {
-		v.SetString(&#34;abc&#34;)
-		if v.GetString() != &#34;abc&#34; {
+	for i := 0; i < b.N; i++ {
+		v.SetString("abc")
+		if v.GetString() != "abc" {
 			b.Fatal(v.GetInt64())
 		}
 	}
@@ -83,7 +83,7 @@ func BenchmarkString(b *testing.B) {
 
 func BenchmarkInt64(b *testing.B) {
 	var v Datum
-	for i := 0; i &lt; b.N; i&#43;&#43; {
+	for i := 0; i < b.N; i++ {
 		v.SetInt64(int64(i))
 		if v.GetInt64() != int64(i) {
 			b.Fatal(v.GetInt64())
@@ -94,8 +94,8 @@ func BenchmarkInt64(b *testing.B) {
 func BenchmarkAppendDatum(b *testing.B) {
 	array := make([]Datum, 0, 100)
 	var value Datum
-	for i := 0; i &lt; b.N/100; i&#43;&#43; {
-		for j := 0; j &lt; 100; j&#43;&#43; {
+	for i := 0; i < b.N/100; i++ {
+		for j := 0; j < 100; j++ {
 			array = append(array, value)
 		}
 		array = array[0:0]

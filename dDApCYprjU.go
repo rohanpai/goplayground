@@ -1,19 +1,19 @@
 package main
 
 import (
-	&#34;bytes&#34;
-	&#34;database/sql&#34;
-	&#34;encoding/json&#34;
-	&#34;fmt&#34;
-	&#34;log&#34;
-	&#34;strconv&#34;
-	&#34;strings&#34;
-	&#34;time&#34;
+	"bytes"
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	"log"
+	"strconv"
+	"strings"
+	"time"
 
-	_ &#34;github.com/go-sql-driver/mysql&#34;
+	_ "github.com/go-sql-driver/mysql"
 )
 
-const dbformat = &#34;2006-01-02 15:04:05&#34;
+const dbformat = "2006-01-02 15:04:05"
 
 type MysqlReceipt struct {
 	Id               int
@@ -50,24 +50,24 @@ type BigReceipt struct {
 	Id                       int
 	Amount                   float64
 	Cc_last4                 string
-	Employee_id              string `json:&#34;,omitempty&#34;`
-	Employee_name            string `json:&#34;,omitempty&#34;`
+	Employee_id              string `json:",omitempty"`
+	Employee_name            string `json:",omitempty"`
 	Is_test                  byte
 	Menu_items               []Menu_item
 	Payable                  float64
-	Pos_type                 string `json:&#34;,omitempty&#34;`
-	Pos_version              string `json:&#34;,omitempty&#34;`
+	Pos_type                 string `json:",omitempty"`
+	Pos_version              string `json:",omitempty"`
 	Punchh_key               string
 	Receipt_datetime         string
 	Subtotal_amount          float64
-	Transaction_no           string `json:&#34;,omitempty&#34;`
+	Transaction_no           string `json:",omitempty"`
 	Business_id, Location_id int
 	Created_at               time.Time
-	Updated_at               time.Time `json:&#34;,omitempty&#34;`
-	Revenue_code             string    `json:&#34;,omitempty&#34;`
-	Revenue_id               string    `json:&#34;,omitempty&#34;`
-	Status                   string    `json:&#34;,omitempty&#34;`
-	Ipv4_addr                string    `json:&#34;,omitempty&#34;`
+	Updated_at               time.Time `json:",omitempty"`
+	Revenue_code             string    `json:",omitempty"`
+	Revenue_id               string    `json:",omitempty"`
+	Status                   string    `json:",omitempty"`
+	Ipv4_addr                string    `json:",omitempty"`
 	Stored_at                int64
 }
 
@@ -79,7 +79,7 @@ func (r BigReceipt) AddMenuItems(items []Menu_item) BigReceipt {
 }
 
 func (m Menu_item) ValidItem() bool {
-	if m.Item_type == &#34;M&#34; || m.Item_type == &#34;D&#34; {
+	if m.Item_type == "M" || m.Item_type == "D" {
 		return true
 	} else {
 		return false
@@ -87,7 +87,7 @@ func (m Menu_item) ValidItem() bool {
 }
 
 func main() {
-	db, err := sql.Open(&#34;mysql&#34;, &#34;user:password@tcp(host)/dbname&#34;)
+	db, err := sql.Open("mysql", "user:password@tcp(host)/dbname")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -105,9 +105,9 @@ func main() {
 	defer rows.Close()
 	for rows.Next() {
 		var mr MysqlReceipt
-		err = rows.Scan(&amp;mr.Id, &amp;mr.Amount, &amp;mr.Cc_last4, &amp;mr.Employee_id, &amp;mr.Employee_name, &amp;mr.Is_test, &amp;mr.Menu_items,
-			&amp;mr.Payable, &amp;mr.Pos_type, &amp;mr.Pos_version, &amp;mr.Punchh_key, &amp;mr.Receipt_datetime, &amp;mr.Subtotal_amount, &amp;mr.Transaction_no,
-			&amp;mr.Business_id, &amp;mr.Location_id, &amp;mr.Created_at, &amp;mr.Updated_at, &amp;mr.Revenue_code, &amp;mr.Revenue_id, &amp;mr.Status, &amp;mr.Ipv4_addr)
+		err = rows.Scan(&mr.Id, &mr.Amount, &mr.Cc_last4, &mr.Employee_id, &mr.Employee_name, &mr.Is_test, &mr.Menu_items,
+			&mr.Payable, &mr.Pos_type, &mr.Pos_version, &mr.Punchh_key, &mr.Receipt_datetime, &mr.Subtotal_amount, &mr.Transaction_no,
+			&mr.Business_id, &mr.Location_id, &mr.Created_at, &mr.Updated_at, &mr.Revenue_code, &mr.Revenue_id, &mr.Status, &mr.Ipv4_addr)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -140,7 +140,7 @@ func main() {
 		if mr.Updated_at.Valid {
 			r.Updated_at = datetimeParse(mr.Updated_at.String)
 		}
-		menuItems := strings.Split(mr.Menu_items.String, &#34;^&#34;)
+		menuItems := strings.Split(mr.Menu_items.String, "^")
 		items := parseMenuItems(menuItems)
 		r = r.AddMenuItems(items)
 		b, err := json.Marshal(r)
@@ -148,7 +148,7 @@ func main() {
 			log.Fatal(err)
 		}
 		var out bytes.Buffer
-		json.Compact(&amp;out, b)
+		json.Compact(&out, b)
 		fmt.Println(string(b))
 	}
 	err = rows.Err()
@@ -169,9 +169,9 @@ func parseMenuItems(menuItems []string) []Menu_item {
 	var items []Menu_item
 	var item Menu_item
 	for _, v := range menuItems {
-		itemParts := strings.Split(v, &#34;|&#34;)
+		itemParts := strings.Split(v, "|")
 		partsLen := len(itemParts)
-		if partsLen &lt; 5 {
+		if partsLen < 5 {
 			continue
 		}
 		item.Name = itemParts[0]
@@ -179,10 +179,10 @@ func parseMenuItems(menuItems []string) []Menu_item {
 		item.Amount, _ = strconv.ParseFloat(itemParts[2], 64)
 		item.Item_type = strings.ToUpper(itemParts[3])
 		item.Id = itemParts[4]
-		if partsLen &gt; 5 {
+		if partsLen > 5 {
 			item.Family = itemParts[5]
 		}
-		if partsLen &gt; 6 {
+		if partsLen > 6 {
 			item.Major_group = itemParts[6]
 		}
 		if item.ValidItem() {

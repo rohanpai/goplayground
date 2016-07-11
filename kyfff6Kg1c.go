@@ -5,18 +5,18 @@
 package main
 
 import (
-	&#34;encoding/xml&#34;
-	&#34;fmt&#34;
-	&#34;strconv&#34;
+	"encoding/xml"
+	"fmt"
+	"strconv"
 )
 
 type Path struct {
-	Id string `xml:&#34;id,attr&#34;`
-	D  string `xml:&#34;d, attr&#34;`
+	Id string `xml:"id,attr"`
+	D  string `xml:"d, attr"`
 }
 
 type Rect struct {
-	Id string `xml:&#34;id,attr&#34;`
+	Id string `xml:"id,attr"`
 }
 
 type Group struct {
@@ -29,27 +29,27 @@ type Group struct {
 }
 
 type Svg struct {
-	Title  string  `xml:&#34;title&#34;`
-	Groups []Group `xml:&#34;g&#34;`
+	Title  string  `xml:"title"`
+	Groups []Group `xml:"g"`
 }
 
 // Implements encoding.xml.Unmarshaler interface
 func (g *Group) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) error {
 	for _, attr := range start.Attr {
 		switch attr.Name.Local {
-		case &#34;id&#34;:
+		case "id":
 			g.Id = attr.Value
-		case &#34;stroke&#34;:
+		case "stroke":
 			g.Stroke = attr.Value
-		case &#34;stroke-width&#34;:
+		case "stroke-width":
 			if intValue, err := strconv.ParseInt(attr.Value, 10, 32); err != nil {
 				return err
 			} else {
 				g.StrokeWidth = int32(intValue)
 			}
-		case &#34;fill&#34;:
+		case "fill":
 			g.Fill = attr.Value
-		case &#34;fill-rule&#34;:
+		case "fill-rule":
 			g.FillRule = attr.Value
 		}
 	}
@@ -65,13 +65,13 @@ func (g *Group) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) error
 			var elementStruct interface{}
 
 			switch tok.Name.Local {
-			case &#34;rect&#34;:
-				elementStruct = &amp;Rect{}
-			case &#34;path&#34;:
-				elementStruct = &amp;Path{}
+			case "rect":
+				elementStruct = &Rect{}
+			case "path":
+				elementStruct = &Path{}
 			}
 
-			if err = decoder.DecodeElement(elementStruct, &amp;tok); err != nil {
+			if err = decoder.DecodeElement(elementStruct, &tok); err != nil {
 				return err
 			} else {
 				g.Elements = append(g.Elements, elementStruct)
@@ -86,35 +86,35 @@ func (g *Group) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) error
 }
 
 func ParseSvg(str string) *Svg {
-	svg := &amp;Svg{}
+	svg := &Svg{}
 
-	err := xml.Unmarshal([]byte(str), &amp;svg)
+	err := xml.Unmarshal([]byte(str), &svg)
 	if err != nil {
-		fmt.Printf(&#34;ParseSvg Error: %v\n&#34;, err)
+		fmt.Printf("ParseSvg Error: %v\n", err)
 		return nil
 	}
 	return svg
 }
 
 func main() {
-	fmt.Println(&#34;SVG Parsing Test&#34;)
+	fmt.Println("SVG Parsing Test")
 	
 	svgStr := `
-&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34; standalone=&#34;no&#34;?&gt;
-&lt;svg width=&#34;79px&#34; height=&#34;114px&#34; viewBox=&#34;0 0 79 114&#34; version=&#34;1.1&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34; xmlns:xlink=&#34;http://www.w3.org/1999/xlink&#34; xmlns:sketch=&#34;http://www.bohemiancoding.com/sketch/ns&#34;&gt;
-    &lt;!-- Generator: Sketch 3.0.4 (8053) - http://www.bohemiancoding.com/sketch --&gt;
-    &lt;title&gt;ship&lt;/title&gt;
-    &lt;desc&gt;Created with Sketch.&lt;/desc&gt;
-    &lt;defs&gt;&lt;/defs&gt;
-    &lt;g id=&#34;Page-1&#34; stroke=&#34;none&#34; stroke-width=&#34;1&#34; fill=&#34;none&#34; fill-rule=&#34;evenodd&#34; sketch:type=&#34;MSPage&#34;&gt;
-        &lt;path d=&#34;M70.7470703,54.9351921 C59.4438539,23.2101932 39.4404297,-0.0302734375 39.4404297,-0.0302734375 C39.4404297,-0.0302734375 19.8288957,22.9468825 8.09220641,54.9351916 C3.08063764,68.5942062 -0.495117188,83.8962169 -0.495117188,99.7539062 L19.5214844,108.566406 L59.1821013,108.566406 L79.4462891,100.046875 C79.4462891,100.046875 75.1865234,67.3955078 70.7470703,54.9351921 Z&#34; id=&#34;Path-1&#34; fill=&#34;#D8D8D8&#34; sketch:type=&#34;MSShapeGroup&#34;&gt;&lt;/path&gt;
-        &lt;rect id=&#34;Rectangle-1&#34; fill=&#34;#F6A623&#34; sketch:type=&#34;MSShapeGroup&#34; x=&#34;22&#34; y=&#34;107&#34; width=&#34;34&#34; height=&#34;7&#34;&gt;&lt;/rect&gt;
-    &lt;/g&gt;
-&lt;/svg&gt;
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="79px" height="114px" viewBox="0 0 79 114" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.0.4 (8053) - http://www.bohemiancoding.com/sketch -->
+    <title>ship</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <path d="M70.7470703,54.9351921 C59.4438539,23.2101932 39.4404297,-0.0302734375 39.4404297,-0.0302734375 C39.4404297,-0.0302734375 19.8288957,22.9468825 8.09220641,54.9351916 C3.08063764,68.5942062 -0.495117188,83.8962169 -0.495117188,99.7539062 L19.5214844,108.566406 L59.1821013,108.566406 L79.4462891,100.046875 C79.4462891,100.046875 75.1865234,67.3955078 70.7470703,54.9351921 Z" id="Path-1" fill="#D8D8D8" sketch:type="MSShapeGroup"></path>
+        <rect id="Rectangle-1" fill="#F6A623" sketch:type="MSShapeGroup" x="22" y="107" width="34" height="7"></rect>
+    </g>
+</svg>
 `
 
 	svg := ParseSvg(svgStr)
 	for _, elem := range svg.Groups[0].Elements {
-		fmt.Println(&#34;Group element: &#34;, elem)
+		fmt.Println("Group element: ", elem)
 	}
 }

@@ -1,20 +1,20 @@
 package main
 
 import (
-	&#34;crypto/rand&#34;
-	&#34;crypto/rsa&#34;
-	&#34;crypto/sha1&#34;
-	&#34;crypto/tls&#34;
-	&#34;crypto/x509&#34;
-	&#34;crypto/x509/pkix&#34;
-	&#34;encoding/pem&#34;
-	&#34;errors&#34;
-	&#34;fmt&#34;
-	&#34;log&#34;
-	&#34;math/big&#34;
-	&#34;net&#34;
-	&#34;net/http&#34;
-	&#34;time&#34;
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/sha1"
+	"crypto/tls"
+	"crypto/x509"
+	"crypto/x509/pkix"
+	"encoding/pem"
+	"errors"
+	"fmt"
+	"log"
+	"math/big"
+	"net"
+	"net/http"
+	"time"
 )
 
 var (
@@ -24,7 +24,7 @@ var (
 	KeyBits               = 512
 )
 
-const addr = &#34;127.0.0.1:32643&#34;
+const addr = "127.0.0.1:32643"
 
 func main() {
 	err := NewServer(addr, ServerCert, ServerKey)
@@ -34,44 +34,44 @@ func main() {
 
 	client, err := oneCAClient(CACert)
 	if err != nil {
-		log.Fatalf(&#34;cannot get http client: %v&#34;, err)
+		log.Fatalf("cannot get http client: %v", err)
 	}
-	req, err := http.NewRequest(&#34;GET&#34;, &#34;https://&#34;&#43;addr&#43;&#34;/&#34;, nil)
+	req, err := http.NewRequest("GET", "https://"+addr+"/", nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatalf(&#34;get: %v&#34;, err)
+		log.Fatalf("get: %v", err)
 	}
-	log.Printf(&#34;got resp %#v&#34;, resp)
+	log.Printf("got resp %#v", resp)
 }
 
 // Serve serves the given state by accepting requests on the given
 // listener, using the given certificate and key (in PEM format) for
 // authentication.
 func NewServer(addr string, cert, key []byte) error {
-	lis, err := net.Listen(&#34;tcp&#34;, addr)
+	lis, err := net.Listen("tcp", addr)
 	if err != nil {
 		return err
 	}
-	log.Printf(&#34;listening on %q&#34;, lis.Addr())
+	log.Printf("listening on %q", lis.Addr())
 	tlsCert, err := tls.X509KeyPair(cert, key)
 	if err != nil {
 		return err
 	}
 	// TODO(rog) check that *srvRoot is a valid type for using
 	// as an RPC server.
-	lis = tls.NewListener(lis, &amp;tls.Config{
+	lis = tls.NewListener(lis, &tls.Config{
 		Certificates: []tls.Certificate{tlsCert},
 	})
 	mux := http.NewServeMux()
-	mux.HandleFunc(&#34;/&#34;, func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, &#34;ok\n&#34;)
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "ok\n")
 	})
 	go func() {
 		err := http.Serve(lis, mux)
-		log.Fatalf(&#34;server error: %v&#34;, err)
+		log.Fatalf("server error: %v", err)
 	}()
 	return nil
 }
@@ -86,12 +86,12 @@ func oneCAClient(caCert []byte) (*http.Client, error) {
 		return nil, err
 	}
 	pool.AddCert(xcert)
-	secureConfig := &amp;tls.Config{
+	secureConfig := &tls.Config{
 		RootCAs:    pool,
-		ServerName: &#34;anything&#34;,
+		ServerName: "anything",
 	}
-	return &amp;http.Client{
-		Transport: &amp;http.Transport{
+	return &http.Client{
+		Transport: &http.Transport{
 			TLSClientConfig:   secureConfig,
 			DisableKeepAlives: true,
 		},
@@ -100,18 +100,18 @@ func oneCAClient(caCert []byte) (*http.Client, error) {
 
 // ParseCert parses the given PEM-formatted X509 certificate.
 func ParseCert(certPEM []byte) (*x509.Certificate, error) {
-	for len(certPEM) &gt; 0 {
+	for len(certPEM) > 0 {
 		var certBlock *pem.Block
 		certBlock, certPEM = pem.Decode(certPEM)
 		if certBlock == nil {
 			break
 		}
-		if certBlock.Type == &#34;CERTIFICATE&#34; {
+		if certBlock.Type == "CERTIFICATE" {
 			cert, err := x509.ParseCertificate(certBlock.Bytes)
 			return cert, err
 		}
 	}
-	return nil, errors.New(&#34;no certificates found&#34;)
+	return nil, errors.New("no certificates found")
 }
 
 // NewCA generates a CA certificate/key pair suitable for signing server
@@ -122,11 +122,11 @@ func NewCA(envName string, expiry time.Time) (certPEM, keyPEM []byte, err error)
 		return nil, nil, err
 	}
 	now := time.Now()
-	template := &amp;x509.Certificate{
+	template := &x509.Certificate{
 		SerialNumber: new(big.Int),
 		Subject: pkix.Name{
-			CommonName:   fmt.Sprintf(&#34;juju-generated CA for environment %q&#34;, envName),
-			Organization: []string{&#34;juju&#34;},
+			CommonName:   fmt.Sprintf("juju-generated CA for environment %q", envName),
+			Organization: []string{"juju"},
 		},
 		NotBefore:             now.UTC().Add(-5 * time.Minute),
 		NotAfter:              expiry.UTC(),
@@ -136,16 +136,16 @@ func NewCA(envName string, expiry time.Time) (certPEM, keyPEM []byte, err error)
 		MaxPathLen:            0, // Disallow delegation for now.
 		BasicConstraintsValid: true,
 	}
-	certDER, err := x509.CreateCertificate(rand.Reader, template, template, &amp;key.PublicKey, key)
+	certDER, err := x509.CreateCertificate(rand.Reader, template, template, &key.PublicKey, key)
 	if err != nil {
-		return nil, nil, fmt.Errorf(&#34;canot create certificate: %v&#34;, err)
+		return nil, nil, fmt.Errorf("canot create certificate: %v", err)
 	}
-	certPEM = pem.EncodeToMemory(&amp;pem.Block{
-		Type:  &#34;CERTIFICATE&#34;,
+	certPEM = pem.EncodeToMemory(&pem.Block{
+		Type:  "CERTIFICATE",
 		Bytes: certDER,
 	})
-	keyPEM = pem.EncodeToMemory(&amp;pem.Block{
-		Type:  &#34;RSA PRIVATE KEY&#34;,
+	keyPEM = pem.EncodeToMemory(&pem.Block{
+		Type:  "RSA PRIVATE KEY",
 		Bytes: x509.MarshalPKCS1PrivateKey(key),
 	})
 	return certPEM, keyPEM, nil
@@ -163,31 +163,31 @@ func newLeaf(caCertPEM, caKeyPEM []byte, expiry time.Time, hostnames []string, e
 		return nil, nil, err
 	}
 	if len(tlsCert.Certificate) != 1 {
-		return nil, nil, fmt.Errorf(&#34;more than one certificate for CA&#34;)
+		return nil, nil, fmt.Errorf("more than one certificate for CA")
 	}
 	caCert, err := x509.ParseCertificate(tlsCert.Certificate[0])
 	if err != nil {
 		return nil, nil, err
 	}
 	if !caCert.BasicConstraintsValid || !caCert.IsCA {
-		return nil, nil, fmt.Errorf(&#34;CA certificate is not a valid CA&#34;)
+		return nil, nil, fmt.Errorf("CA certificate is not a valid CA")
 	}
 	caKey, ok := tlsCert.PrivateKey.(*rsa.PrivateKey)
 	if !ok {
-		return nil, nil, fmt.Errorf(&#34;CA private key has unexpected type %T&#34;, tlsCert.PrivateKey)
+		return nil, nil, fmt.Errorf("CA private key has unexpected type %T", tlsCert.PrivateKey)
 	}
 	key, err := rsa.GenerateKey(rand.Reader, KeyBits)
 	if err != nil {
-		return nil, nil, fmt.Errorf(&#34;cannot generate key: %v&#34;, err)
+		return nil, nil, fmt.Errorf("cannot generate key: %v", err)
 	}
 	now := time.Now()
-	template := &amp;x509.Certificate{
+	template := &x509.Certificate{
 		SerialNumber: new(big.Int),
 		Subject: pkix.Name{
-			// This won&#39;t match host names with dots. The hostname
+			// This won't match host names with dots. The hostname
 			// is hardcoded when connecting to avoid the issue.
-			CommonName:   &#34;*&#34;,
-			Organization: []string{&#34;juju&#34;},
+			CommonName:   "*",
+			Organization: []string{"juju"},
 		},
 		NotBefore: now.UTC().Add(-5 * time.Minute),
 		NotAfter:  expiry.UTC(),
@@ -203,16 +203,16 @@ func newLeaf(caCertPEM, caKeyPEM []byte, expiry time.Time, hostnames []string, e
 			template.DNSNames = append(template.DNSNames, hostname)
 		}
 	}
-	certDER, err := x509.CreateCertificate(rand.Reader, template, caCert, &amp;key.PublicKey, caKey)
+	certDER, err := x509.CreateCertificate(rand.Reader, template, caCert, &key.PublicKey, caKey)
 	if err != nil {
 		return nil, nil, err
 	}
-	certPEM = pem.EncodeToMemory(&amp;pem.Block{
-		Type:  &#34;CERTIFICATE&#34;,
+	certPEM = pem.EncodeToMemory(&pem.Block{
+		Type:  "CERTIFICATE",
 		Bytes: certDER,
 	})
-	keyPEM = pem.EncodeToMemory(&amp;pem.Block{
-		Type:  &#34;RSA PRIVATE KEY&#34;,
+	keyPEM = pem.EncodeToMemory(&pem.Block{
+		Type:  "RSA PRIVATE KEY",
 		Bytes: x509.MarshalPKCS1PrivateKey(key),
 	})
 	return certPEM, keyPEM, nil
@@ -233,7 +233,7 @@ func mustParseCertAndKey(certPEM, keyPEM []byte) (*x509.Certificate, *rsa.Privat
 }
 
 func mustNewCA() ([]byte, []byte) {
-	caCert, caKey, err := NewCA(&#34;juju testing&#34;, time.Now().AddDate(10, 0, 0))
+	caCert, caKey, err := NewCA("juju testing", time.Now().AddDate(10, 0, 0))
 	if err != nil {
 		panic(err)
 	}
@@ -264,7 +264,7 @@ func ParseCertAndKey(certPEM, keyPEM []byte) (*x509.Certificate, *rsa.PrivateKey
 
 	key, ok := tlsCert.PrivateKey.(*rsa.PrivateKey)
 	if !ok {
-		return nil, nil, fmt.Errorf(&#34;private key with unexpected type %T&#34;, key)
+		return nil, nil, fmt.Errorf("private key with unexpected type %T", key)
 	}
 	return cert, key, nil
 }

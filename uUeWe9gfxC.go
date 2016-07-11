@@ -1,28 +1,28 @@
 package main
 
 import (
-	&#34;os&#34;
+	"os"
 )
 
 var hint = map[int]string{
-	1: &#34;semicolons http://golang.org/doc/go_spec.html#Semicolons&#34;,
-	2: &#34;multi line string use backquote&#34; &#43;
-		&#34;\n  `line 1&#34; &#43;
-		&#34;\n  line 2`&#34; &#43;
-		&#34;\n  for string include backquote use strings.Replace(`.X..`,\&#34;X\&#34;,\&#34;&#39;\&#34;,-1)&#34; &#43;
-		&#34;\n  or use \&#34;line 1\&#34;&#43;&#34; &#43;
-		&#34;\n         \&#34;line 2\&#34;&#34;,
+	1: "semicolons http://golang.org/doc/go_spec.html#Semicolons",
+	2: "multi line string use backquote" +
+		"\n  `line 1" +
+		"\n  line 2`" +
+		"\n  for string include backquote use strings.Replace(`.X..`,\"X\",\"'\",-1)" +
+		"\n  or use \"line 1\"+" +
+		"\n         \"line 2\"",
 }
 var dic = map[string]string{
-	&#34;auto&#34;:   &#34;X&#34;,
-	&#34;const&#34;:  &#34;only for define constant variable in global/function&#34;,
-	&#34;double&#34;: &#34;float64&#34;,
+	"auto":   "X",
+	"const":  "only for define constant variable in global/function",
+	"double": "float64",
 }
 
 func main() {
 	if len(os.Args) == 1 {
-		println(`Usage: c2go [options] &lt;keyword_in_c/c&#43;&#43;&gt;
-This utility is to let you quick map concept of C/C&#43;&#43; to Go.
+		println(`Usage: c2go [options] <keyword_in_c/c++>
+This utility is to let you quick map concept of C/C++ to Go.
 eg.
   c2go sprintf explicit
   c2go -t # vaildate all usage
@@ -38,6 +38,6 @@ Reference:
 		os.Exit(1)
 	}
 	for _, s := range os.Args[1:] {
-		println(s, &#34;-&gt;&#34;, dic[s])
+		println(s, "->", dic[s])
 	}
 }

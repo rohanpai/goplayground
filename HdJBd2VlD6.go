@@ -1,7 +1,7 @@
 package main
 
 // === package di ===
-import &#34;reflect&#34;
+import "reflect"
 
 var (
 	// define how what name binds to which value
@@ -31,7 +31,7 @@ func Bind(name string, service interface{}) {
 	v := reflect.ValueOf(service)
 	bindings[name] = v
 	for _, target := range targets[name] {
-		// this will panic if it&#39;s wrong type, should print runtime.Caller(1)
+		// this will panic if it's wrong type, should print runtime.Caller(1)
 		target.Elem().Set(v)
 	}
 }
@@ -49,11 +49,11 @@ type Animal interface {
 type Dog struct{ name string }
 
 func (d *Dog) Speak() {
-	println(d.name, &#34;: woof&#34;)
+	println(d.name, ": woof")
 }
 
 func NewDog(name string) Animal {
-	return &amp;Dog{name}
+	return &Dog{name}
 }
 
 // example factory
@@ -80,23 +80,23 @@ var System struct {
 
 func main() {
 	// in the module init()
-	Resolve(&#34;Animal&#34;, &amp;NewAnimal)
-	Resolve(&#34;Animal&#34;, &amp;System.NewAnimal)
-	Resolve(&#34;Factory&#34;, &amp;Factory)
+	Resolve("Animal", &NewAnimal)
+	Resolve("Animal", &System.NewAnimal)
+	Resolve("Factory", &Factory)
 
 	// in the binding part
-	Bind(&#34;Animal&#34;, NewDog)
+	Bind("Animal", NewDog)
 
-	factory := &amp;DogFactory{}
-	Bind(&#34;Factory&#34;, factory)
+	factory := &DogFactory{}
+	Bind("Factory", factory)
 
 	// somewhere in the module
-	a := NewAnimal(&#34;a&#34;)
+	a := NewAnimal("a")
 	a.Speak()
 
-	b := Factory.NewAnimal(&#34;b&#34;)
+	b := Factory.NewAnimal("b")
 	b.Speak()
 
-	c := System.NewAnimal(&#34;c&#34;)
+	c := System.NewAnimal("c")
 	c.Speak()
 }

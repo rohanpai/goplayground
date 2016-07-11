@@ -5,21 +5,21 @@
 package smpptest
 
 import (
-	&#34;net&#34;
-	&#34;strconv&#34;
-	&#34;sync/atomic&#34;
-	&#34;testing&#34;
+	"net"
+	"strconv"
+	"sync/atomic"
+	"testing"
 
-	&#34;github.com/fiorix/go-smpp/smpp/pdu&#34;
-	&#34;github.com/fiorix/go-smpp/smpp/pdu/pdufield&#34;
-	&#34;github.com/fiorix/go-smpp/smpp/pdu/pdutext&#34;
+	"github.com/fiorix/go-smpp/smpp/pdu"
+	"github.com/fiorix/go-smpp/smpp/pdu/pdufield"
+	"github.com/fiorix/go-smpp/smpp/pdu/pdutext"
 )
 
 var msgIDcounter int64 = 0
 
 func submitSM(m pdu.Body) (string, error) {
 	// submit message using fields from m, return message ID...
-	return strconv.FormatInt(atomic.AddInt64(&amp;msgIDcounter, 1), 10), nil
+	return strconv.FormatInt(atomic.AddInt64(&msgIDcounter, 1), 10), nil
 }
 
 // SubmitSMHandler handles SubmitSM and returns SubmitSMResp.
@@ -35,7 +35,7 @@ func TestFakeServer(t *testing.T) {
 	s := NewServer()
 	s.Handler = SubmitSMHandler
 	defer s.Close()
-	c, err := net.Dial(&#34;tcp&#34;, s.Addr())
+	c, err := net.Dial("tcp", s.Addr())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -44,8 +44,8 @@ func TestFakeServer(t *testing.T) {
 	// bind
 	p := pdu.NewBindTransmitter()
 	f := p.Fields()
-	f.Set(pdufield.SystemID, &#34;client&#34;)
-	f.Set(pdufield.Password, &#34;secret&#34;)
+	f.Set(pdufield.SystemID, "client")
+	f.Set(pdufield.Password, "secret")
 	f.Set(pdufield.InterfaceVersion, 0x34)
 	if err = rw.Write(p); err != nil {
 		t.Fatal(err)
@@ -57,17 +57,17 @@ func TestFakeServer(t *testing.T) {
 	}
 	id, ok := resp.Fields()[pdufield.SystemID]
 	if !ok {
-		t.Fatalf(&#34;missing system_id field: %#v&#34;, resp)
+		t.Fatalf("missing system_id field: %#v", resp)
 	}
-	if id.String() != &#34;smpptest&#34; {
-		t.Fatalf(&#34;unexpected system_id: want smpptest, have %q&#34;, id)
+	if id.String() != "smpptest" {
+		t.Fatalf("unexpected system_id: want smpptest, have %q", id)
 	}
 	// submit_sm
 	p = pdu.NewSubmitSM()
 	f = p.Fields()
-	f.Set(pdufield.SourceAddr, &#34;foobar&#34;)
-	f.Set(pdufield.DestinationAddr, &#34;bozo&#34;)
-	f.Set(pdufield.ShortMessage, pdutext.Latin1(&#34;Lorem ipsum&#34;))
+	f.Set(pdufield.SourceAddr, "foobar")
+	f.Set(pdufield.DestinationAddr, "bozo")
+	f.Set(pdufield.ShortMessage, pdutext.Latin1("Lorem ipsum"))
 	if err = rw.Write(p); err != nil {
 		t.Fatal(err)
 	}
@@ -77,7 +77,7 @@ func TestFakeServer(t *testing.T) {
 		t.Fatal(err)
 	}
 	f = resp.Fields()
-	if id := f[pdufield.MessageID]; id.String() != &#34;1&#34; {
-		t.Fatalf(&#34;unexpected messageID field data: want 1, have %q&#34;, id)
+	if id := f[pdufield.MessageID]; id.String() != "1" {
+		t.Fatalf("unexpected messageID field data: want 1, have %q", id)
 	}
 }

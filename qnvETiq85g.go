@@ -1,12 +1,12 @@
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;log&#34;
-	&#34;regexp&#34;
-	&#34;strings&#34;
+	"fmt"
+	"log"
+	"regexp"
+	"strings"
 
-	//	&#34;golang.org/x/crypto/ssh/terminal&#34;
+	//	"golang.org/x/crypto/ssh/terminal"
 )
 
 // Blacklist type is a map of Nodes with string keys
@@ -36,34 +36,34 @@ func (b Blacklist) String() (result string) {
 	//	cols, _, _ := terminal.GetSize(int(os.Stdout.Fd()))
 	cols := 20
 	for pkey := range b {
-		result &#43;= fmt.Sprintf(&#34;Node: %v\n\tDisabled: %v\n&#34;, pkey, b[pkey].Disable)
-		result &#43;= fmt.Sprintf(&#34;\tRedirect IP: %v\n\tExclude(s):\n&#34;, b[pkey].IP)
+		result += fmt.Sprintf("Node: %v\n\tDisabled: %v\n", pkey, b[pkey].Disable)
+		result += fmt.Sprintf("\tRedirect IP: %v\n\tExclude(s):\n", b[pkey].IP)
 		for _, exclude := range b[pkey].Exclude {
-			result &#43;= fmt.Sprintf(&#34;\t\t%v\n&#34;, exclude)
+			result += fmt.Sprintf("\t\t%v\n", exclude)
 		}
-		result &#43;= fmt.Sprintf(&#34;\tInclude(s):\n&#34;)
+		result += fmt.Sprintf("\tInclude(s):\n")
 		for _, include := range b[pkey].Include {
-			result &#43;= fmt.Sprintf(&#34;\t\t%v\n&#34;, include)
+			result += fmt.Sprintf("\t\t%v\n", include)
 		}
 		for skey, src := range b[pkey].Source {
-			result &#43;= fmt.Sprintf(&#34;\tSource: %v\n\t\tDisabled: %v\n&#34;, skey, src.Disable)
-			result &#43;= fmt.Sprintf(&#34;\t\tDescription: %v\n&#34;, b[pkey].Source[skey].Desc)
-			result &#43;= fmt.Sprintf(&#34;\t\tPrefix: %v\n\t\tURL: %v\n&#34;, b[pkey].Source[skey].Prfx, b[pkey].Source[skey].URL)
+			result += fmt.Sprintf("\tSource: %v\n\t\tDisabled: %v\n", skey, src.Disable)
+			result += fmt.Sprintf("\t\tDescription: %v\n", b[pkey].Source[skey].Desc)
+			result += fmt.Sprintf("\t\tPrefix: %v\n\t\tURL: %v\n", b[pkey].Source[skey].Prfx, b[pkey].Source[skey].URL)
 		}
-		result &#43;= fmt.Sprintln(strings.Repeat(&#34;-&#34;, cols/2))
+		result += fmt.Sprintln(strings.Repeat("-", cols/2))
 	}
 	return result
 }
 
-// ToBool converts a string (&#34;true&#34; or &#34;false&#34;) to it&#39;s boolean equivalent
+// ToBool converts a string ("true" or "false") to it's boolean equivalent
 func ToBool(s string) (b bool) {
 	if len(s) == 0 {
-		log.Fatal(&#34;ERROR: variable empty, cannot convert to boolean&#34;)
+		log.Fatal("ERROR: variable empty, cannot convert to boolean")
 	}
 	switch s {
-	case &#34;false&#34;:
+	case "false":
 		b = false
-	case &#34;true&#34;:
+	case "true":
 		b = true
 	}
 	return b
@@ -75,33 +75,33 @@ func Get(cfg string) {
 		brkt, cmnt, desc, dsbl, leaf, misc, mlti, mpty, name, node *regexp.Regexp
 	}
 
-	rx := &amp;re{}
+	rx := &re{}
 	rx.brkt = regexp.MustCompile(`[}]`)
-	rx.cmnt = regexp.MustCompile(`^([\/*]&#43;).*([*\/]&#43;)$`)
-	rx.desc = regexp.MustCompile(`^(?:description)&#43;\s&#34;?([^&#34;]&#43;)?&#34;?$`)
-	rx.dsbl = regexp.MustCompile(`^(disabled)&#43;\s([\S]&#43;)$`)
-	rx.leaf = regexp.MustCompile(`^(source)&#43;\s([\S]&#43;)\s[{]{1}$`)
-	rx.misc = regexp.MustCompile(`^([\w-]&#43;)$`)
-	rx.mlti = regexp.MustCompile(`^((?:include|exclude)&#43;)\s([\S]&#43;)$`)
+	rx.cmnt = regexp.MustCompile(`^([\/*]+).*([*\/]+)$`)
+	rx.desc = regexp.MustCompile(`^(?:description)+\s"?([^"]+)?"?$`)
+	rx.dsbl = regexp.MustCompile(`^(disabled)+\s([\S]+)$`)
+	rx.leaf = regexp.MustCompile(`^(source)+\s([\S]+)\s[{]{1}$`)
+	rx.misc = regexp.MustCompile(`^([\w-]+)$`)
+	rx.mlti = regexp.MustCompile(`^((?:include|exclude)+)\s([\S]+)$`)
 	rx.mpty = regexp.MustCompile(`^$`)
-	rx.name = regexp.MustCompile(`^([\w-]&#43;)\s([\S]&#43;)$`)
-	rx.node = regexp.MustCompile(`^([\w-]&#43;)\s[{]{1}$`)
+	rx.name = regexp.MustCompile(`^([\w-]+)\s([\S]+)$`)
+	rx.node = regexp.MustCompile(`^([\w-]+)\s[{]{1}$`)
 
 	cfgtree := make(map[string]*Node)
 
 	var tnode string
 	var leaf string
 
-	for _, line := range strings.Split(cfg, &#34;\n&#34;) {
+	for _, line := range strings.Split(cfg, "\n") {
 		line = strings.TrimSpace(line)
 		switch {
 		case rx.mlti.MatchString(line):
 			{
 				IncExc := rx.mlti.FindStringSubmatch(line)
 				switch IncExc[1] {
-				case &#34;exclude&#34;:
+				case "exclude":
 					cfgtree[tnode].Exclude = append(cfgtree[tnode].Exclude, IncExc[2])
-				case &#34;include&#34;:
+				case "include":
 					cfgtree[tnode].Include = append(cfgtree[tnode].Include, IncExc[2])
 				}
 			}
@@ -109,15 +109,15 @@ func Get(cfg string) {
 			{
 				node := rx.node.FindStringSubmatch(line)
 				tnode = node[1]
-				cfgtree[tnode] = &amp;Node{}
+				cfgtree[tnode] = &Node{}
 				cfgtree[tnode].Source = make(map[string]*Src)
 			}
 		case rx.leaf.MatchString(line):
 			src := rx.leaf.FindStringSubmatch(line)
 			leaf = src[2]
 
-			if src[1] == &#34;source&#34; {
-				cfgtree[tnode].Source[leaf] = &amp;Src{}
+			if src[1] == "source" {
+				cfgtree[tnode].Source[leaf] = &Src{}
 			}
 		case rx.dsbl.MatchString(line):
 			{
@@ -128,36 +128,36 @@ func Get(cfg string) {
 			{
 				name := rx.name.FindStringSubmatch(line)
 				switch name[1] {
-				case &#34;prefix&#34;:
+				case "prefix":
 					cfgtree[tnode].Source[leaf].Prfx = name[2]
-				case &#34;url&#34;:
+				case "url":
 					cfgtree[tnode].Source[leaf].URL = name[2]
-				case &#34;description&#34;:
+				case "description":
 					cfgtree[tnode].Source[leaf].Desc = name[2]
-				case &#34;dns-redirect-ip&#34;:
+				case "dns-redirect-ip":
 					cfgtree[tnode].IP = name[2]
 				}
 			}
 		case rx.desc.MatchString(line) || rx.cmnt.MatchString(line) || rx.misc.MatchString(line):
 			break
 		}
-		// fmt.Printf(&#34;%s\n&#34;, line)
+		// fmt.Printf("%s\n", line)
 	}
 	fmt.Println(cfgtree)
 }
 
 func main() {
 	cfgtree := make(Blacklist)
-	for _, k := range []string{&#34;root&#34;, &#34;hosts&#34;, &#34;domains&#34;} {
-		cfgtree[k] = &amp;Node{}
+	for _, k := range []string{"root", "hosts", "domains"} {
+		cfgtree[k] = &Node{}
 		cfgtree[k].Source = make(Source)
 	}
-	cfgtree[&#34;hosts&#34;].Exclude = append(cfgtree[&#34;hosts&#34;].Exclude, &#34;rackcdn.com&#34;, &#34;schema.org&#34;)
-	cfgtree[&#34;hosts&#34;].Include = append(cfgtree[&#34;hosts&#34;].Include, &#34;msdn.com&#34;, &#34;badgits.org&#34;)
-	cfgtree[&#34;hosts&#34;].IP = &#34;192.168.168.1&#34;
-	cfgtree[&#34;hosts&#34;].Source[&#34;hpHosts&#34;] = &amp;Src{URL: &#34;http://www.bonzon.com&#34;, Prfx: &#34;127.0.0.0&#34;}
+	cfgtree["hosts"].Exclude = append(cfgtree["hosts"].Exclude, "rackcdn.com", "schema.org")
+	cfgtree["hosts"].Include = append(cfgtree["hosts"].Include, "msdn.com", "badgits.org")
+	cfgtree["hosts"].IP = "192.168.168.1"
+	cfgtree["hosts"].Source["hpHosts"] = &Src{URL: "http://www.bonzon.com", Prfx: "127.0.0.0"}
 	fmt.Println(cfgtree)
-	fmt.Println(cfgtree[&#34;hosts&#34;])
+	fmt.Println(cfgtree["hosts"])
 	Get(testdata)
 }
 
@@ -174,8 +174,8 @@ var testdata = `blacklist {
 					include intellitxt.com
 					include kiosked.com
 					source malc0de {
-							description &#34;List of zones serving malicious executables observed by malc0de.com/database/&#34;
-							prefix &#34;zone &#34;
+							description "List of zones serving malicious executables observed by malc0de.com/database/"
+							prefix "zone "
 							url http://malc0de.com/bl/ZONES
 					}
 			}
@@ -224,39 +224,39 @@ var testdata = `blacklist {
 			hosts {
 					include beap.gemini.yahoo.com
 					source adaway {
-							description &#34;Blocking mobile ad providers and some analytics providers&#34;
-							prefix &#34;127.0.0.1 &#34;
+							description "Blocking mobile ad providers and some analytics providers"
+							prefix "127.0.0.1 "
 							url http://adaway.org/hosts.txt
 					}
 					source malwaredomainlist {
-							description &#34;127.0.0.1 based host and domain list&#34;
-							prefix &#34;127.0.0.1 &#34;
+							description "127.0.0.1 based host and domain list"
+							prefix "127.0.0.1 "
 							url http://www.malwaredomainlist.com/hostslist/hosts.txt
 					}
 					source openphish {
-							description &#34;OpenPhish automatic phishing detection&#34;
+							description "OpenPhish automatic phishing detection"
 							prefix http
 							url https://openphish.com/feed.txt
 					}
 					source someonewhocares {
-							description &#34;Zero based host and domain list&#34;
+							description "Zero based host and domain list"
 							prefix 0.0.0.0
 							url http://someonewhocares.org/hosts/zero/
 					}
 					source volkerschatz {
-							description &#34;Ad server blacklists&#34;
+							description "Ad server blacklists"
 							prefix http
 							url http://www.volkerschatz.com/net/adpaths
 					}
 					source winhelp2002 {
-							description &#34;Zero based host and domain list&#34;
-							prefix &#34;0.0.0.0 &#34;
+							description "Zero based host and domain list"
+							prefix "0.0.0.0 "
 							url http://winhelp2002.mvps.org/hosts.txt
 					}
 					source yoyo {
-							description &#34;Fully Qualified Domain Names only - no prefix to strip&#34;
-							prefix &#34;&#34;
-							url http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&amp;showintro=1&amp;mimetype=plaintext
+							description "Fully Qualified Domain Names only - no prefix to strip"
+							prefix ""
+							url http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext
 					}
 			}
 	}`

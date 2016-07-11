@@ -1,23 +1,23 @@
 package main
 
 import (
-	&#34;crypto/tls&#34;
-	&#34;net&#34;
-	&#34;net/http&#34;
-	&#34;time&#34;
+	"crypto/tls"
+	"net"
+	"net/http"
+	"time"
 )
 
 func ListenAndServeTLS(srv *http.Server, certPEMBlock, keyPEMBlock []byte) error {
 	addr := srv.Addr
-	if addr == &#34;&#34; {
-		addr = &#34;:https&#34;
+	if addr == "" {
+		addr = ":https"
 	}
-	config := &amp;tls.Config{}
+	config := &tls.Config{}
 	if srv.TLSConfig != nil {
 		*config = *srv.TLSConfig
 	}
 	if config.NextProtos == nil {
-		config.NextProtos = []string{&#34;http/1.1&#34;}
+		config.NextProtos = []string{"http/1.1"}
 	}
 
 	var err error
@@ -27,7 +27,7 @@ func ListenAndServeTLS(srv *http.Server, certPEMBlock, keyPEMBlock []byte) error
 		return err
 	}
 
-	ln, err := net.Listen(&#34;tcp&#34;, addr)
+	ln, err := net.Listen("tcp", addr)
 	if err != nil {
 		return err
 	}
@@ -37,7 +37,7 @@ func ListenAndServeTLS(srv *http.Server, certPEMBlock, keyPEMBlock []byte) error
 }
 
 // tcpKeepAliveListener sets TCP keep-alive timeouts on accepted
-// connections. It&#39;s used by ListenAndServe and ListenAndServeTLS so
+// connections. It's used by ListenAndServe and ListenAndServeTLS so
 // dead TCP connections (e.g. closing laptop mid-download) eventually
 // go away.
 type tcpKeepAliveListener struct {

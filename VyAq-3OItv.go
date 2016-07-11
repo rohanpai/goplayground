@@ -1,6 +1,6 @@
 package main
 
-import &#34;fmt&#34;
+import "fmt"
 
 type T struct {
 	Name  string
@@ -11,7 +11,7 @@ type T struct {
 type State int
 
 const (
-	Running State = iota &#43; 1
+	Running State = iota + 1
 	Stopped
 	Rebooting
 	Terminated
@@ -20,21 +20,21 @@ const (
 func (s State) String() string {
 	switch s {
 	case Running:
-		return &#34;Running&#34;
+		return "Running"
 	case Stopped:
-		return &#34;Stopped&#34;
+		return "Stopped"
 	case Rebooting:
-		return &#34;Rebooting&#34;
+		return "Rebooting"
 	case Terminated:
-		return &#34;Terminated&#34;
+		return "Terminated"
 	default:
-		return &#34;Unknown&#34;
+		return "Unknown"
 	}
 }
 
 func main() {
-	t := T{Name: &#34;example&#34;, Port: 6666}
+	t := T{Name: "example", Port: 6666}
 
-	// prints: &#34;t {Name:example Port:6666 State:Running}&#34;
-	fmt.Printf(&#34;t %&#43;v\n&#34;, t)
+	// prints: "t {Name:example Port:6666 State:Running}"
+	fmt.Printf("t %+v\n", t)
 }

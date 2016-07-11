@@ -11,8 +11,8 @@ A heap is a common way to implement a priority queue. To build a priority queue,
 package main
 
 import (
-	&#34;fmt&#34;
-	&#34;sort&#34;
+	"fmt"
+	"sort"
 )
 
 // From here, it is Go source code.
@@ -22,9 +22,9 @@ import (
 // min-heap with the following invariants (established after
 // Init has been called or if the data is empty or sorted):
 //
-//	!h.Less(j, i) for 0 &lt;= i &lt; h.Len() and j = 2*i&#43;1 or 2*i&#43;2 and j &lt; h.Len()
+//	!h.Less(j, i) for 0 <= i < h.Len() and j = 2*i+1 or 2*i+2 and j < h.Len()
 //
-// Note that Push and Pop in this interface are for package heap&#39;s
+// Note that Push and Pop in this interface are for package heap's
 // implementation to call.  To add and remove things from the heap,
 // use heap.Push and heap.Pop.
 type Interface interface {
@@ -40,7 +40,7 @@ type Interface interface {
 func Init(h Interface) {
 	// heapify
 	n := h.Len()
-	for i := n/2 - 1; i &gt;= 0; i-- {
+	for i := n/2 - 1; i >= 0; i-- {
 		down(h, i, n)
 	}
 }
@@ -70,13 +70,13 @@ func up(h Interface, j int) {
 // Min-Heapify from index
 func down(h Interface, i, n int) {
 	for {
-		j1 := 2*i &#43; 1
-		if j1 &gt;= n || j1 &lt; 0 { // j1 &lt; 0 after int overflow
+		j1 := 2*i + 1
+		if j1 >= n || j1 < 0 { // j1 < 0 after int overflow
 			break
 		}
 		j := j1 // left child
-		if j2 := j1 &#43; 1; j2 &lt; n &amp;&amp; !h.Less(j1, j2) {
-			j = j2 // = 2*i &#43; 2  // right child
+		if j2 := j1 + 1; j2 < n && !h.Less(j1, j2) {
+			j = j2 // = 2*i + 2  // right child
 		}
 		if !h.Less(j, i) {
 			break
@@ -108,20 +108,20 @@ func Remove(h Interface, i int) interface{} {
 	return h.Pop()
 }
 
-// Note that Go source code heap implements &#34;MIN&#34; heap
+// Note that Go source code heap implements "MIN" heap
 // Go heap embeds sort.Interface
 // Therefore, we need to define our custom Interface
 
 // An IntHeap is a min-heap of ints
-// Go&#39;s Init uses Build-Min-Heap, not Max Heap
+// Go's Init uses Build-Min-Heap, not Max Heap
 type IntHeap []int
 
 func (s IntHeap) Len() int           { return len(s) }
-func (s IntHeap) Less(i, j int) bool { return s[i] &lt; s[j] }
+func (s IntHeap) Less(i, j int) bool { return s[i] < s[j] }
 func (s IntHeap) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
 // Push and Pop use pointer receivers
-// because they modify the slice&#39;s length,
+// because they modify the slice's length,
 func (s *IntHeap) Push(val interface{}) {
 	*s = append(*s, val.(int))
 }
@@ -139,22 +139,22 @@ func (s *IntHeap) Pop() interface{} {
 }
 
 func main() {
-	slice := &amp;IntHeap{12, 100, -15, 200, -5, 3, -12, 7}
-	fmt.Println(&#34;Before Push:&#34;, slice)
-	// Before Push: &amp;[12 100 -15 200 -5 3 -12 7]
+	slice := &IntHeap{12, 100, -15, 200, -5, 3, -12, 7}
+	fmt.Println("Before Push:", slice)
+	// Before Push: &[12 100 -15 200 -5 3 -12 7]
 
-	// Heap Push implements &#34;up&#34; that does Min-Heapify.
+	// Heap Push implements "up" that does Min-Heapify.
 	// So as we Push, the Heap(tree) is automatically
-	// Half-Heapified(Sorted) since only &#39;up&#39; is implemented
+	// Half-Heapified(Sorted) since only 'up' is implemented
 	Push(slice, -10)
-	fmt.Println(&#34;Before Init:&#34;, slice)
-	// Before Init: &amp;[-10 12 -15 100 -5 3 -12 7 200]
+	fmt.Println("Before Init:", slice)
+	// Before Init: &[-10 12 -15 100 -5 3 -12 7 200]
 
 	Init(slice)
-	fmt.Println(&#34;After Init:&#34;, slice)
-	// After Init: &amp;[-15 -5 -12 7 12 3 -10 100 200]
+	fmt.Println("After Init:", slice)
+	// After Init: &[-15 -5 -12 7 12 3 -10 100 200]
 
-	// Don&#39;t use slice.Pop()
+	// Don't use slice.Pop()
 	// slice.Pop() is only sort.Interface
 	// not doing Heapifying
 	fmt.Println(Pop(slice))
@@ -162,28 +162,28 @@ func main() {
 	// returns a minimum elements
 
 	Push(slice, -100)
-	fmt.Println(&#34;After Push(slice, -100):&#34;, slice)
-	// After Push(slice, -100): &amp;[-100 -12 -10 -5 12 3 200 100 7]
+	fmt.Println("After Push(slice, -100):", slice)
+	// After Push(slice, -100): &[-100 -12 -10 -5 12 3 200 100 7]
 
 	Push(slice, 5)
-	fmt.Println(&#34;After Push(slice, 5):&#34;, slice)
-	// After Push(slice, 5): &amp;[-100 -12 -10 -5 5 3 200 100 7 12]
+	fmt.Println("After Push(slice, 5):", slice)
+	// After Push(slice, 5): &[-100 -12 -10 -5 5 3 200 100 7 12]
 
 	Push(slice, -300)
-	fmt.Println(&#34;After Push(slice, -300):&#34;, slice)
-	// After Push(slice, -300): &amp;[-300 -100 -10 -5 -12 3 200 100 7 12 5]
+	fmt.Println("After Push(slice, -300):", slice)
+	// After Push(slice, -300): &[-300 -100 -10 -5 -12 3 200 100 7 12 5]
 
 	Init(slice)
-	fmt.Println(&#34;After Init:&#34;, slice)
-	// After Init: &amp;[-300 -100 -10 -5 -12 3 200 100 7 12 5]
+	fmt.Println("After Init:", slice)
+	// After Init: &[-300 -100 -10 -5 -12 3 200 100 7 12 5]
 
 	// Heap-Sort is simple
 	// We just keep popping off
 	// and it will keep returning the minimum elements
 	// doing Min-Heapifying at the same time
-	print(&#34;Heap Sort: &#34;)
+	print("Heap Sort: ")
 	for slice.Len() != 0 {
-		fmt.Print(Pop(slice), &#34;,&#34;)
+		fmt.Print(Pop(slice), ",")
 	}
 	// Heap Sort: -300,-100,-12,-10,-5,3,5,7,12,100,200,
 }

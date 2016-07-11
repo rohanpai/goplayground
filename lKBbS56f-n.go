@@ -1,31 +1,31 @@
 package main
 
-import &#34;fmt&#34;
+import "fmt"
 
 func main() {
-	g0, g1 := generate(&#34;counting the number of some arbitrary values&#34;)
-	even, odd := count(g0, &#39;e&#39;), count(g1, &#39;o&#39;)
-	for i := 0; i &lt; 2; i&#43;&#43; {
+	g0, g1 := generate("counting the number of some arbitrary values")
+	even, odd := count(g0, 'e'), count(g1, 'o')
+	for i := 0; i < 2; i++ {
 		select {
-		case x := &lt;-even:
-			fmt.Printf(&#34;%d even &#39;e&#39;s\n&#34;, x)
-		case x := &lt;-odd:
-			fmt.Printf(&#34;%d odd &#39;o&#39;s\n&#34;, x)
+		case x := <-even:
+			fmt.Printf("%d even 'e's\n", x)
+		case x := <-odd:
+			fmt.Printf("%d odd 'o's\n", x)
 		}
 	}
 }
 
-// count returns number of x&#39;s in found in c.
-func count(c &lt;-chan int, x int) (&lt;-chan int) {
+// count returns number of x's in found in c.
+func count(c <-chan int, x int) (<-chan int) {
 	r := make(chan int)
 	go func() {
 		sum := 0
 		for i := range c {
 			if i == x {
-				sum&#43;&#43;
+				sum++
 			}
 		}
-		r &lt;- sum
+		r <- sum
 	}()
 	return r
 }
@@ -33,18 +33,18 @@ func count(c &lt;-chan int, x int) (&lt;-chan int) {
 // generate sends all even-indexed runes in s to the first
 // returned channel, and all odd-indexed runes to the other
 // returned channel.
-func generate(s string) (&lt;-chan int, &lt;-chan int) {
+func generate(s string) (<-chan int, <-chan int) {
 	even := make(chan int)
 	odd := make(chan int)
 	go func() {
 		i := 0
 		for _, r := range s {
 			if i % 2 == 0 {
-				even &lt;- r
+				even <- r
 			}else{
-				odd &lt;- r
+				odd <- r
 			}
-			i&#43;&#43;
+			i++
 		}
 		close(even)
 		close(odd)

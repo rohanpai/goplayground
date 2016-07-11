@@ -1,15 +1,15 @@
 package main                                                                                                                                                                                              
 import (                                                                                                                                                                                                    
-    &#34;encoding/base64&#34;                                                                                                                                                                                       
-    &#34;crypto/aes&#34;                                                                                                                                                                                            
-    &#34;crypto/cipher&#34;                                                                                                                                                                                         
-    &#34;fmt&#34;                                                                                                                                                                                                   
+    "encoding/base64"                                                                                                                                                                                       
+    "crypto/aes"                                                                                                                                                                                            
+    "crypto/cipher"                                                                                                                                                                                         
+    "fmt"                                                                                                                                                                                                   
 )
 
 func main() {
-     key := &#34;123456789012345678901234&#34;
-     plaintext1 := &#34;255.255.00.00:4444&#34;
-     plaintext2 := &#34;hello&#34;
+     key := "123456789012345678901234"
+     plaintext1 := "255.255.00.00:4444"
+     plaintext2 := "hello"
      foo := Encrypt(key, plaintext1)
      fmt.Println(foo)
      fmt.Println(Decrypt(key, foo))

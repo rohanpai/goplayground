@@ -1,27 +1,27 @@
 package main
 
 import (
-	&#34;bytes&#34;
-	&#34;encoding/xml&#34;
-	&#34;fmt&#34;
-	&#34;io&#34;
-	&#34;os&#34;
+	"bytes"
+	"encoding/xml"
+	"fmt"
+	"io"
+	"os"
 )
 
-const s = `&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;
-&lt;manifest xmlns:android=&#34;http://schemas.android.com/apk/res/android&#34; package=&#34;org.golang.todo.{{.NAME}}&#34; android:versionCode=&#34;1&#34; android:versionName=&#34;1.0&#34;&gt;
-  &lt;!-- comment --&gt;
-  &lt;uses-sdk android:minSdkVersion=&#34;9&#34; /&gt;
-  &lt;application android:label=&#34;{{.LABEL}}&#34; android:debuggable=&#34;true&#34; android:icon=&#34;@drawable/ic_launcher&#34;&gt;
-    &lt;activity android:name=&#34;org.golang.app.GoNativeActivity&#34; android:label=&#34;{{.LABEL}}&#34; android:configChanges=&#34;orientation|keyboardHidden&#34;&gt;
-      &lt;meta-data android:name=&#34;android.app.lib_name&#34; android:value=&#34;{{.NAME}}&#34; /&gt;
-      &lt;intent-filter&gt;
-        &lt;action android:name=&#34;android.intent.action.MAIN&#34; /&gt;
-        &lt;category android:name=&#34;android.intent.category.LAUNCHER&#34; /&gt;
-      &lt;/intent-filter&gt;
-    &lt;/activity&gt;
-  &lt;/application&gt;
-&lt;/manifest&gt;
+const s = `<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.golang.todo.{{.NAME}}" android:versionCode="1" android:versionName="1.0">
+  <!-- comment -->
+  <uses-sdk android:minSdkVersion="9" />
+  <application android:label="{{.LABEL}}" android:debuggable="true" android:icon="@drawable/ic_launcher">
+    <activity android:name="org.golang.app.GoNativeActivity" android:label="{{.LABEL}}" android:configChanges="orientation|keyboardHidden">
+      <meta-data android:name="android.app.lib_name" android:value="{{.NAME}}" />
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+  </application>
+</manifest>
 `
 
 type Tag struct {
@@ -66,7 +66,7 @@ func (t *Tag) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		case xml.StartElement:
 			tok := token.(xml.StartElement)
 			var data *Tag
-			if err := d.DecodeElement(&amp;data, &amp;tok); err != nil {
+			if err := d.DecodeElement(&data, &tok); err != nil {
 				return err
 			}
 			t.Children = append(t.Children, data)
@@ -80,8 +80,8 @@ func (t *Tag) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 }
 
 func main() {
-	v := &amp;Tag{}
-	xml.NewDecoder(bytes.NewBuffer([]byte(s))).Decode(&amp;v)
+	v := &Tag{}
+	xml.NewDecoder(bytes.NewBuffer([]byte(s))).Decode(&v)
 	fmt.Println(v.Name)
 	fmt.Println(v.Attr)
 	fmt.Println(v.Children)

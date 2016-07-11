@@ -1,8 +1,8 @@
 package main
 
 import (
-	&#34;github.com/rjeczalik/notify&#34;
-	&#34;log&#34;
+	"github.com/rjeczalik/notify"
+	"log"
 )
 
 func main() {
@@ -11,7 +11,7 @@ func main() {
 			log.Fatal(err)
 		}
 	}
-	var stop = func(c ...chan&lt;- notify.EventInfo) {
+	var stop = func(c ...chan<- notify.EventInfo) {
 		for _, c := range c {
 			notify.Stop(c)
 		}
@@ -26,34 +26,34 @@ func main() {
 
 	// Set up a single watchpoint listening for FSEvents-specific events on
 	// multiple user-provided channels.
-	must(notify.Watch(&#34;.&#34;, dir, notify.FSEventsIsDir))
-	must(notify.Watch(&#34;.&#34;, file, notify.FSEventsIsFile))
-	must(notify.Watch(&#34;.&#34;, symlink, notify.FSEventsIsSymlink))
-	must(notify.Watch(&#34;.&#34;, all, notify.All))
+	must(notify.Watch(".", dir, notify.FSEventsIsDir))
+	must(notify.Watch(".", file, notify.FSEventsIsFile))
+	must(notify.Watch(".", symlink, notify.FSEventsIsSymlink))
+	must(notify.Watch(".", all, notify.All))
 	defer stop(dir, file, symlink, all)
 
 	// Block until an event is received.
 	select {
-	case ei := &lt;-dir:
-		log.Println(&#34;The directory&#34;, ei.Path(), &#34;has changed&#34;)
-	case ei := &lt;-file:
-		log.Println(&#34;The file&#34;, ei.Path(), &#34;has changed&#34;)
-	case ei := &lt;-symlink:
-		log.Println(&#34;The symlink&#34;, ei.Path(), &#34;has changed&#34;)
-	case ei := &lt;-all:
+	case ei := <-dir:
+		log.Println("The directory", ei.Path(), "has changed")
+	case ei := <-file:
+		log.Println("The file", ei.Path(), "has changed")
+	case ei := <-symlink:
+		log.Println("The symlink", ei.Path(), "has changed")
+	case ei := <-all:
 		var kind string
 
 		// Investigate underlying *notify.FSEvent struct to access more
 		// information about the event.
 		switch flags := ei.Sys().(*notify.FSEvent).Flags; {
-		case flags&amp;notify.FSEventsIsFile != 0:
-			kind = &#34;file&#34;
-		case flags&amp;notify.FSEventsIsDir != 0:
-			kind = &#34;dir&#34;
-		case flags&amp;notify.FSEventsIsSymlink != 0:
-			kind = &#34;symlink&#34;
+		case flags&notify.FSEventsIsFile != 0:
+			kind = "file"
+		case flags&notify.FSEventsIsDir != 0:
+			kind = "dir"
+		case flags&notify.FSEventsIsSymlink != 0:
+			kind = "symlink"
 		}
 
-		log.Printf(&#34;The %s under path %s has been %sd\n&#34;, kind, ei.Path(), ei.Event())
+		log.Printf("The %s under path %s has been %sd\n", kind, ei.Path(), ei.Event())
 	}
 }

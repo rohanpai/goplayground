@@ -1,7 +1,7 @@
 package main
 
 import (
-	&#34;fmt&#34;
+	"fmt"
 )
 
 type Node struct {
@@ -16,13 +16,13 @@ type Stack struct {
 
 // Push adds a node to the stack.
 func (s *Stack) Push(n *Node) {
-	if s.count &gt;= len(s.nodes) {
+	if s.count >= len(s.nodes) {
 		nodes := make([]*Node, len(s.nodes)*2)
 		copy(nodes, s.nodes)
 		s.nodes = nodes
 	}
 	s.nodes[s.count] = n
-	s.count&#43;&#43;
+	s.count++
 }
 
 // Pop removes and returns a node from the stack in last to first order.
@@ -45,7 +45,7 @@ type Queue struct {
 
 // Push adds a node to the queue.
 func (q *Queue) Push(n *Node) {
-	if q.head == q.tail &amp;&amp; q.count &gt; 0 {
+	if q.head == q.tail && q.count > 0 {
 		nodes := make([]*Node, len(q.nodes)*2)
 		copy(nodes, q.nodes[q.head:])
 		copy(nodes[len(q.nodes)-q.head:], q.nodes[:q.head])
@@ -54,8 +54,8 @@ func (q *Queue) Push(n *Node) {
 		q.nodes = nodes
 	}
 	q.nodes[q.tail] = n
-	q.tail = (q.tail &#43; 1) % len(q.nodes)
-	q.count&#43;&#43;
+	q.tail = (q.tail + 1) % len(q.nodes)
+	q.count++
 }
 
 // Pop removes and returns a node from the queue in first to last order.
@@ -64,21 +64,21 @@ func (q *Queue) Pop() *Node {
 		return nil
 	}
 	node := q.nodes[q.head]
-	q.head = (q.head &#43; 1) % len(q.nodes)
+	q.head = (q.head + 1) % len(q.nodes)
 	q.count--
 	return node
 }
 
 func main() {
-	s := &amp;Stack{nodes: make([]*Node, 3)}
-	s.Push(&amp;Node{1})
-	s.Push(&amp;Node{2})
-	s.Push(&amp;Node{3})
-	fmt.Printf(&#34;%v, %v, %v\n&#34;, s.Pop().Value, s.Pop().Value, s.Pop().Value)
+	s := &Stack{nodes: make([]*Node, 3)}
+	s.Push(&Node{1})
+	s.Push(&Node{2})
+	s.Push(&Node{3})
+	fmt.Printf("%v, %v, %v\n", s.Pop().Value, s.Pop().Value, s.Pop().Value)
 
-	q := &amp;Queue{nodes: make([]*Node, 3)}
-	q.Push(&amp;Node{1})
-	q.Push(&amp;Node{2})
-	q.Push(&amp;Node{3})
-	fmt.Printf(&#34;%v, %v, %v\n&#34;, q.Pop().Value, q.Pop().Value, q.Pop().Value)
+	q := &Queue{nodes: make([]*Node, 3)}
+	q.Push(&Node{1})
+	q.Push(&Node{2})
+	q.Push(&Node{3})
+	fmt.Printf("%v, %v, %v\n", q.Pop().Value, q.Pop().Value, q.Pop().Value)
 }

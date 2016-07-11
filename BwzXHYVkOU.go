@@ -1,16 +1,16 @@
 package db
 
 import (
-	&#34;bytes&#34;
-	&#34;encoding/json&#34;
-	&#34;errors&#34;
-	&#34;flag&#34;
-	&#34;io/ioutil&#34;
-	&#34;log&#34;
-	&#34;net/http&#34;
-	&#34;net/url&#34;
-	&#34;reflect&#34;
-	&#34;time&#34;
+	"bytes"
+	"encoding/json"
+	"errors"
+	"flag"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"net/url"
+	"reflect"
+	"time"
 )
 
 const (
@@ -23,14 +23,14 @@ const (
 	TypeFloat	= 6
 	TypeDate	= 7
 	TypeTime	= 8
-	TypeGeo		= 9	//uses string format &#34;lat,lon&#34;
+	TypeGeo		= 9	//uses string format "lat,lon"
 
 	DefQueryLimit		= 10
 	EsHLFragment		= 1
 	EsHLFragmentSize	= 100
 
-	DateFormat	= &#34;2006-01-02&#34;
-	EsDateFormat	= &#34;YYYY-MM-dd&#34;
+	DateFormat	= "2006-01-02"
+	EsDateFormat	= "YYYY-MM-dd"
 )
 
 type M map[string]interface{}
@@ -39,7 +39,7 @@ type nopCloser struct{ io.Reader }
 func (nopCloser) Close() error	{ return nil }
 
 var (
-	Remap	bool	//re-map Riak buckets to reflect definition, (ES not supported, must create &#43; reindex)
+	Remap	bool	//re-map Riak buckets to reflect definition, (ES not supported, must create + reindex)
 
 	Name				string
 	Host, Port, ConnStr		string
@@ -67,14 +67,14 @@ type tableCol_ struct {
 }
 
 func init() {
-	flag.BoolVar(&amp;Remap, &#34;dbremap&#34;, false, &#34;Remap DB to reflect changes in definition&#34;)
+	flag.BoolVar(&Remap, "dbremap", false, "Remap DB to reflect changes in definition")
 
-	Host = &#34;127.0.0.1&#34;
-	Port = &#34;8098&#34;
-	EsHost = &#34;127.0.0.1&#34;
-	EsPort = &#34;9200&#34;
+	Host = "127.0.0.1"
+	Port = "8098"
+	EsHost = "127.0.0.1"
+	EsPort = "9200"
 
-	EsHLTagPre, EsHLTagPost = []string{&#34;&lt;strong&gt;&#34;}, []string{&#34;&lt;/strong&gt;&#34;}
+	EsHLTagPre, EsHLTagPost = []string{"<strong>"}, []string{"</strong>"}
 }
 
 func Init(cfgFile string) error {
@@ -84,69 +84,69 @@ func Init(cfgFile string) error {
 		return err
 	}
 	m := M{}
-	err = json.Unmarshal(b, &amp;m)
+	err = json.Unmarshal(b, &m)
 	if err != nil {
 		return err
 	}
 
-	if v, ok := m[&#34;name&#34;]; ok {
+	if v, ok := m["name"]; ok {
 		Name = v.(string)
 	}
-	if v, ok := m[&#34;host&#34;]; ok {
+	if v, ok := m["host"]; ok {
 		Host = v.(string)
 	}
-	if v, ok := m[&#34;port&#34;]; ok {
+	if v, ok := m["port"]; ok {
 		Port = v.(string)
 	}
-	if v, ok := m[&#34;es_host&#34;]; ok {
+	if v, ok := m["es_host"]; ok {
 		EsHost = v.(string)
 	}
-	if v, ok := m[&#34;es_port&#34;]; ok {
+	if v, ok := m["es_port"]; ok {
 		EsPort = v.(string)
 	}
 
 	tables = make(map[string]*table_)
-	if v, ok := m[&#34;tables&#34;]; ok {
+	if v, ok := m["tables"]; ok {
 		tablesM := v.([]interface{})
 		for _, v := range tablesM {
 			t := v.(map[string]interface{})
-			table := &amp;table_{Name: t[&#34;name&#34;].(string), Cols: make(map[string]*tableCol_)}
-			if v, ok := t[&#34;key&#34;]; ok {
+			table := &table_{Name: t["name"].(string), Cols: make(map[string]*tableCol_)}
+			if v, ok := t["key"]; ok {
 				table.Key = v.(string)
 			}
-			if v, ok := t[&#34;es&#34;]; ok {
+			if v, ok := t["es"]; ok {
 				table.Es = v.(bool)
 			}
-			if v, ok := t[&#34;cols&#34;]; ok {	//columns
+			if v, ok := t["cols"]; ok {	//columns
 				tc := v.([]interface{})
 				for _, v := range tc {
 					t := v.(map[string]interface{})
-					col := &amp;tableCol_{Name: t[&#34;name&#34;].(string)}
-					switch t[&#34;type&#34;].(string) {
-					case &#34;string&#34;:
+					col := &tableCol_{Name: t["name"].(string)}
+					switch t["type"].(string) {
+					case "string":
 						col.Type = TypeString
-					case &#34;bool&#34;:
+					case "bool":
 						col.Type = TypeBool
-					case &#34;int&#34;:
+					case "int":
 						col.Type = TypeInt
-					case &#34;int32&#34;:
+					case "int32":
 						col.Type = TypeInt32
-					case &#34;int16&#34;:
+					case "int16":
 						col.Type = TypeInt16
-					case &#34;float&#34;:
+					case "float":
 						col.Type = TypeFloat
-					case &#34;date&#34;:
+					case "date":
 						col.Type = TypeDate
-					case &#34;time&#34;:
+					case "time":
 						col.Type = TypeTime
-					case &#34;geo&#34;:
+					case "geo":
 						col.Type = TypeGeo
 					}
 
-					if v, ok := t[&#34;index&#34;]; ok {
+					if v, ok := t["index"]; ok {
 						col.Index = v.(string)
 					}
-					if v, ok := t[&#34;boost&#34;]; ok {
+					if v, ok := t["boost"]; ok {
 						col.Boost = v.(float64)
 					}
 					table.Cols[col.Name] = col
@@ -157,8 +157,8 @@ func Init(cfgFile string) error {
 	}
 
 	//connections
-	ConnStr = &#34;http://&#34; &#43; Host &#43; &#34;:&#34; &#43; Port &#43; &#34;/&#34;
-	EsConnStr = &#34;http://&#34; &#43; EsHost &#43; &#34;:&#34; &#43; EsPort &#43; &#34;/&#34;
+	ConnStr = "http://" + Host + ":" + Port + "/"
+	EsConnStr = "http://" + EsHost + ":" + EsPort + "/"
 
 	//server ready?
 	err = Ping()
@@ -182,8 +182,8 @@ func Close() error {
 }
 
 func Ping() error {	//to check if server online or not
-	//riak -&gt; GET /ping
-	req, err := http.NewRequest(&#34;GET&#34;, ConnStr&#43;&#34;ping&#34;, nil)
+	//riak -> GET /ping
+	req, err := http.NewRequest("GET", ConnStr+"ping", nil)
 	if err != nil {
 		return err
 	}
@@ -192,11 +192,11 @@ func Ping() error {	//to check if server online or not
 		return err
 	}
 	if resp.StatusCode != 200 {
-		return errors.New(&#34;Riak not ready&#34;)
+		return errors.New("Riak not ready")
 	}
 
-	//ES -&gt; GET /_cluster/health
-	req, err = http.NewRequest(&#34;GET&#34;, EsConnStr, nil)
+	//ES -> GET /_cluster/health
+	req, err = http.NewRequest("GET", EsConnStr, nil)
 	if err != nil {
 		return err
 	}
@@ -205,14 +205,14 @@ func Ping() error {	//to check if server online or not
 		return err
 	}
 	if resp.StatusCode != 200 {
-		return errors.New(&#34;ES request failed&#34;)
+		return errors.New("ES request failed")
 	}
 	m, err := GetBodyJson(resp)
 	if err != nil {
 		return err
 	}
-	if !m[&#34;ok&#34;].(bool) {
-		return errors.New(&#34;ES not ready&#34;)
+	if !m["ok"].(bool) {
+		return errors.New("ES not ready")
 	}
 	return nil
 }
@@ -221,12 +221,12 @@ func Ping() error {	//to check if server online or not
 func OpenTable(table string) error {
 	tbl, ok := tables[table]
 	if !ok {
-		return errors.New(&#34;Table not defined&#34;)
+		return errors.New("Table not defined")
 	}
-	log.Println(&#34;Checking table &#34; &#43; table)
+	log.Println("Checking table " + table)
 
-	//riak -&gt; GET /buckets/bucket/props
-	req, err := http.NewRequest(&#34;GET&#34;, ConnStr&#43;&#34;buckets/&#34;&#43;table&#43;&#34;/props&#34;, nil)
+	//riak -> GET /buckets/bucket/props
+	req, err := http.NewRequest("GET", ConnStr+"buckets/"+table+"/props", nil)
 	if err != nil {
 		return err
 	}
@@ -235,26 +235,26 @@ func OpenTable(table string) error {
 		return err
 	}
 	if Remap || resp.StatusCode != 200 {	//create it
-		//riak -&gt; PUT /buckets/bucket/props
-		req, err = http.NewRequest(&#34;PUT&#34;, ConnStr&#43;&#34;buckets/&#34;&#43;table&#43;&#34;/props&#34;, nil)
+		//riak -> PUT /buckets/bucket/props
+		req, err = http.NewRequest("PUT", ConnStr+"buckets/"+table+"/props", nil)
 		if err != nil {
 			return err
 		}
-		req.Header.Set(&#34;Content-Type&#34;, &#34;application/json&#34;)
-		SetBodyString(req, `{&#34;props&#34;:{&#34;allow_mult&#34;:false, &#34;last_write_wins&#34;:true}}`)
+		req.Header.Set("Content-Type", "application/json")
+		SetBodyString(req, `{"props":{"allow_mult":false, "last_write_wins":true}}`)
 		resp, err = http.DefaultClient.Do(req)
 		if err != nil {
 			return err
 		}
 		if resp.StatusCode != 204 {
-			return errors.New(&#34;Riak fail to setup bucket&#34;)
+			return errors.New("Riak fail to setup bucket")
 		}
-		log.Println(&#34;Riak bucket props for &#34; &#43; table &#43; &#34; created&#34;)
+		log.Println("Riak bucket props for " + table + " created")
 	}
 
 	if tbl.Es {
-		//ES -&gt; GET /index/_mapping
-		req, err = http.NewRequest(&#34;GET&#34;, EsConnStr&#43;table&#43;&#34;/_mapping&#34;, nil)
+		//ES -> GET /index/_mapping
+		req, err = http.NewRequest("GET", EsConnStr+table+"/_mapping", nil)
 		if err != nil {
 			return err
 		}
@@ -267,60 +267,60 @@ func OpenTable(table string) error {
 			if err != nil {
 				return err
 			}
-			log.Println(&#34;ES mapping for &#34; &#43; table &#43; &#34; created&#34;)
+			log.Println("ES mapping for " + table + " created")
 		}
 	}
 
-	log.Println(&#34;Table &#34; &#43; table &#43; &#34; OK&#34;)
+	log.Println("Table " + table + " OK")
 	return nil
 }
 
 func esMapTable(table *table_) error {
 	mc := M{}
 	for _, v := range table.Cols {
-		c := M{&#34;store&#34;: &#34;yes&#34;}	//store everything since we&#39;re using this as main DB
+		c := M{"store": "yes"}	//store everything since we're using this as main DB
 		switch v.Type {
 		case TypeString:
-			c[&#34;type&#34;] = &#34;string&#34;
+			c["type"] = "string"
 		case TypeBool:
-			c[&#34;type&#34;] = &#34;boolean&#34;
+			c["type"] = "boolean"
 		case TypeFloat:
-			c[&#34;type&#34;] = &#34;double&#34;
+			c["type"] = "double"
 		case TypeInt:
-			c[&#34;type&#34;] = &#34;long&#34;
+			c["type"] = "long"
 		case TypeInt32:
-			c[&#34;type&#34;] = &#34;integer&#34;
+			c["type"] = "integer"
 		case TypeInt16:
-			c[&#34;type&#34;] = &#34;short&#34;
+			c["type"] = "short"
 		case TypeDate:
-			c[&#34;type&#34;] = &#34;date&#34;
-			c[&#34;format&#34;] = EsDateFormat
+			c["type"] = "date"
+			c["format"] = EsDateFormat
 		case TypeTime:
-			c[&#34;type&#34;] = &#34;date&#34;	//use ES default dateoptionaltime RFC3339
+			c["type"] = "date"	//use ES default dateoptionaltime RFC3339
 		case TypeGeo:
-			c[&#34;type&#34;] = &#34;geo_point&#34;
-			c[&#34;lat_lon&#34;] = true
+			c["type"] = "geo_point"
+			c["lat_lon"] = true
 		}
-		if v.Index == &#34;&#34; || v.Index == &#34;no&#34; {
-			c[&#34;index&#34;] = &#34;no&#34;
-		} else if v.Index == &#34;yes&#34; {
+		if v.Index == "" || v.Index == "no" {
+			c["index"] = "no"
+		} else if v.Index == "yes" {
 			//ES default to indexed
-		} else if v.Index == &#34;exact&#34; {
-			c[&#34;index&#34;] = &#34;not_analyzed&#34;
+		} else if v.Index == "exact" {
+			c["index"] = "not_analyzed"
 		} else {	//fulltext, etc.
-			c[&#34;index&#34;] = &#34;analyzed&#34;
-			c[&#34;analyzer&#34;] = &#34;ih_&#34; &#43; v.Index
+			c["index"] = "analyzed"
+			c["analyzer"] = "ih_" + v.Index
 		}
 
-		if v.Boost &gt; 0 {
-			c[&#34;boost&#34;] = v.Boost
+		if v.Boost > 0 {
+			c["boost"] = v.Boost
 		}
 		mc[v.Name] = c
 	}
-	m := M{&#34;doc&#34;: M{&#34;ignore_conflicts&#34;: false, &#34;properties&#34;: mc}}
-	m = M{&#34;mappings&#34;: m}
+	m := M{"doc": M{"ignore_conflicts": false, "properties": mc}}
+	m = M{"mappings": m}
 
-	req, err := http.NewRequest(&#34;PUT&#34;, EsConnStr&#43;table.Name, nil)
+	req, err := http.NewRequest("PUT", EsConnStr+table.Name, nil)
 	if err != nil {
 		return err
 	}
@@ -333,7 +333,7 @@ func esMapTable(table *table_) error {
 		return err
 	}
 	if resp.StatusCode != 200 {
-		return errors.New(&#34;ES mapping fail&#34;)
+		return errors.New("ES mapping fail")
 	}
 	return nil
 }
@@ -346,7 +346,7 @@ type Data_ struct {
 }
 
 func NewData(table string) *Data_ {
-	return &amp;Data_{table: tables[table], m: make(M)}
+	return &Data_{table: tables[table], m: make(M)}
 }
 func (o *Data_) Clear() *Data_			{ o.m, o.mh, o.Found = make(M), nil, false; return o }
 func (o *Data_) ColExists(col string) bool	{ _, ok := o.m[col]; return ok }
@@ -364,20 +364,20 @@ func (o *Data_) GetJson() string {
 	if err == nil {
 		return string(b)
 	}
-	return &#34;&#34;
+	return ""
 }
 
 func (o *Data_) Set(col string, v interface{}) *Data_ {
 	r := reflect.ValueOf(v)
 	if r.Kind() == reflect.String {	//add only if not empty
-		if r.Len() &gt; 0 {
+		if r.Len() > 0 {
 			o.m[col] = v
 		}
 	}
 	return o
 }
 func (o *Data_) SetStr(col string, v string) *Data_ {
-	if len(v) &gt; 0 {
+	if len(v) > 0 {
 		o.m[col] = v
 	}
 	return o
@@ -394,7 +394,7 @@ func (o *Data_) SetTime(col string, v time.Time) *Data_ {
 	return o
 }
 func (o *Data_) SetTimeStr(col string, v string, layout string) *Data_ {
-	if len(v) &gt; 0 {
+	if len(v) > 0 {
 		t, err := time.Parse(layout, v)
 		if err == nil {
 			if !t.IsZero() {
@@ -411,7 +411,7 @@ func (o *Data_) Str(col string) string {
 	if ok {
 		return v.(string)
 	}
-	return &#34;&#34;
+	return ""
 }
 func (o *Data_) Bool(col string) bool {
 	v, ok := o.m[col]
@@ -460,7 +460,7 @@ func (o *Data_) Date(col string) string {
 	if ok {
 		return v.(time.Time).Format(DateFormat)
 	}
-	return &#34;&#34;
+	return ""
 }
 func (o *Data_) Highlight(col string) string {
 	if o.mh != nil {
@@ -470,7 +470,7 @@ func (o *Data_) Highlight(col string) string {
 			return v[0].(string)
 		}
 	}
-	return &#34;&#34;
+	return ""
 }
 
 //Operations
@@ -480,7 +480,7 @@ func (o *Data_) CondPut() error	{ return o.put(true) }	//save only if not exists
 func (o *Data_) put(cond bool) error {
 	v, ok := o.m[o.table.Key]
 	if !ok {
-		return errors.New(&#34;Key is not defined&#34;)
+		return errors.New("Key is not defined")
 	}
 
 	if cond {	//only put if none
@@ -489,7 +489,7 @@ func (o *Data_) put(cond bool) error {
 			return err
 		}
 		if o.Found {
-			return errors.New(&#34;Key already existed&#34;)
+			return errors.New("Key already existed")
 		}
 	}
 
@@ -499,24 +499,24 @@ func (o *Data_) put(cond bool) error {
 		return err
 	}
 
-	//riak -&gt; PUT /buckets/bucket/keys/key
-	req, err := http.NewRequest(&#34;PUT&#34;, ConnStr&#43;&#34;buckets/&#34;&#43;o.table.Name&#43;&#34;/keys/&#34;&#43;id, nil)
+	//riak -> PUT /buckets/bucket/keys/key
+	req, err := http.NewRequest("PUT", ConnStr+"buckets/"+o.table.Name+"/keys/"+id, nil)
 	if err != nil {
 		return err
 	}
-	req.Header.Set(&#34;Content-Type&#34;, &#34;application/json&#34;)
+	req.Header.Set("Content-Type", "application/json")
 	req.Body = nopCloser{bytes.NewBuffer(j)}
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return err
 	}
-	if resp.StatusCode != 200 &amp;&amp; resp.StatusCode != 204 {
-		return errors.New(&#34;Riak store fail&#34;)
+	if resp.StatusCode != 200 && resp.StatusCode != 204 {
+		return errors.New("Riak store fail")
 	}
 
 	if o.table.Es {
-		//ES -&gt; PUT /tablename/doc/id
-		req, err = http.NewRequest(&#34;PUT&#34;, EsConnStr&#43;o.table.Name&#43;&#34;/doc/&#34;&#43;id, nil)
+		//ES -> PUT /tablename/doc/id
+		req, err = http.NewRequest("PUT", EsConnStr+o.table.Name+"/doc/"+id, nil)
 		if err != nil {
 			return err
 		}
@@ -525,8 +525,8 @@ func (o *Data_) put(cond bool) error {
 		if err != nil {
 			return err
 		}
-		if resp.StatusCode != 200 &amp;&amp; resp.StatusCode != 201 {
-			return errors.New(&#34;ES index failed&#34;)
+		if resp.StatusCode != 200 && resp.StatusCode != 201 {
+			return errors.New("ES index failed")
 		}
 	}
 
@@ -535,7 +535,7 @@ func (o *Data_) put(cond bool) error {
 
 func (o *Data_) Exists(key string) error {	//Riak only
 	//GET /buckets/bucket/keys/key
-	req, err := http.NewRequest(&#34;GET&#34;, ConnStr&#43;&#34;buckets/&#34;&#43;o.table.Name&#43;&#34;/keys/&#34;&#43;url.QueryEscape(key), nil)
+	req, err := http.NewRequest("GET", ConnStr+"buckets/"+o.table.Name+"/keys/"+url.QueryEscape(key), nil)
 	if err != nil {
 		return err
 	}
@@ -546,14 +546,14 @@ func (o *Data_) Exists(key string) error {	//Riak only
 	if resp.StatusCode == 200 {
 		o.Found = true
 	} else if resp.StatusCode != 404 {
-		return errors.New(&#34;Riak fetch fail&#34;)
+		return errors.New("Riak fetch fail")
 	}
 	return nil
 }
 
 func (o *Data_) Get(key string, cols []string) error {	//Riak only, cols=nil means fetch all cols
 	//GET /buckets/bucket/keys/key
-	req, err := http.NewRequest(&#34;GET&#34;, ConnStr&#43;&#34;buckets/&#34;&#43;o.table.Name&#43;&#34;/keys/&#34;&#43;url.QueryEscape(key), nil)
+	req, err := http.NewRequest("GET", ConnStr+"buckets/"+o.table.Name+"/keys/"+url.QueryEscape(key), nil)
 	if err != nil {
 		return err
 	}
@@ -568,7 +568,7 @@ func (o *Data_) Get(key string, cols []string) error {	//Riak only, cols=nil mea
 		}
 		o.m, o.Found = m, true
 	} else if resp.StatusCode != 404 {
-		return errors.New(&#34;Riak fetch fail&#34;)
+		return errors.New("Riak fetch fail")
 	}
 	return nil
 }
@@ -576,8 +576,8 @@ func (o *Data_) Get(key string, cols []string) error {	//Riak only, cols=nil mea
 func (o *Data_) Delete(key string) error {
 	id := url.QueryEscape(key)
 
-	//riak -&gt; DELETE /buckets/bucket/keys/key
-	req, err := http.NewRequest(&#34;DELETE&#34;, ConnStr&#43;&#34;buckets/&#34;&#43;o.table.Name&#43;&#34;/keys/&#34;&#43;id, nil)
+	//riak -> DELETE /buckets/bucket/keys/key
+	req, err := http.NewRequest("DELETE", ConnStr+"buckets/"+o.table.Name+"/keys/"+id, nil)
 	if err != nil {
 		return err
 	}
@@ -585,13 +585,13 @@ func (o *Data_) Delete(key string) error {
 	if err != nil {
 		return err
 	}
-	if resp.StatusCode != 204 &amp;&amp; resp.StatusCode != 404 {
-		return errors.New(&#34;Riak delete fail&#34;)
+	if resp.StatusCode != 204 && resp.StatusCode != 404 {
+		return errors.New("Riak delete fail")
 	}
 
 	if o.table.Es {
-		//ES -&gt; DELETE /tablename/doc/id
-		req, err = http.NewRequest(&#34;DELETE&#34;, EsConnStr&#43;o.table.Name&#43;&#34;/doc/&#34;&#43;id, nil)
+		//ES -> DELETE /tablename/doc/id
+		req, err = http.NewRequest("DELETE", EsConnStr+o.table.Name+"/doc/"+id, nil)
 		if err != nil {
 			return err
 		}
@@ -599,8 +599,8 @@ func (o *Data_) Delete(key string) error {
 		if err != nil {
 			return err
 		}
-		if resp.StatusCode != 200 &amp;&amp; resp.StatusCode != 404 {
-			return errors.New(&#34;ES delete fail&#34;)
+		if resp.StatusCode != 200 && resp.StatusCode != 404 {
+			return errors.New("ES delete fail")
 		}
 	}
 
@@ -616,7 +616,7 @@ type Query_ struct {
 }
 
 func NewQuery(table string) *Query_ {
-	return &amp;Query_{table: tables[table], m: M{}, mf: M{}, limit: DefQueryLimit}
+	return &Query_{table: tables[table], m: M{}, mf: M{}, limit: DefQueryLimit}
 }
 func (o *Query_) Clear() {
 	o.m, o.mf, o.ms, o.mh, o.offset, o.limit = M{}, M{}, nil, nil, 0, DefQueryLimit
@@ -631,7 +631,7 @@ func (o *Query_) Sort(col string, dir string) *Query_ {
 	o.ms[col] = dir
 	return o
 }
-func (o *Query_) SortScore() *Query_	{ return o.Sort(&#34;_score&#34;, &#34;desc&#34;) }
+func (o *Query_) SortScore() *Query_	{ return o.Sort("_score", "desc") }
 
 func (o *Query_) Highlight(col string, size int) *Query_ {
 	if o.mh == nil {
@@ -640,7 +640,7 @@ func (o *Query_) Highlight(col string, size int) *Query_ {
 	if size == 0 {
 		o.mh[col] = M{}
 	} else {
-		o.mh[col] = M{&#34;fragment_size&#34;: size}
+		o.mh[col] = M{"fragment_size": size}
 	}
 	return o
 }
@@ -648,24 +648,24 @@ func (o *Query_) Highlight(col string, size int) *Query_ {
 func (o *Query_) Find() (*Result_, error) {	//ES only
 	//construct query
 	var m M
-	if len(o.mf) &gt; 0 {
-		m = M{&#34;filtered&#34;: M{&#34;query&#34;: o.m, &#34;filter&#34;: o.mf}}
+	if len(o.mf) > 0 {
+		m = M{"filtered": M{"query": o.m, "filter": o.mf}}
 	} else {
 		m = o.m
 	}
-	m = M{&#34;query&#34;: m, &#34;from&#34;: o.offset, &#34;size&#34;: o.limit}
-	if len(o.cols) &gt; 0 {
-		m[&#34;fields&#34;] = o.cols
+	m = M{"query": m, "from": o.offset, "size": o.limit}
+	if len(o.cols) > 0 {
+		m["fields"] = o.cols
 	}
 	if o.ms != nil {
-		m[&#34;sort&#34;] = o.ms
+		m["sort"] = o.ms
 	}
 	if o.mh != nil {
-		m[&#34;highlight&#34;] = M{&#34;pre_tags&#34;:	EsHLTagPre, &#34;post_tags&#34;:	EsHLTagPost,
-			&#34;number_of_fragments&#34;:	EsHLFragment, &#34;fragment_size&#34;:	EsHLFragmentSize, &#34;fields&#34;:	o.mh}
+		m["highlight"] = M{"pre_tags":	EsHLTagPre, "post_tags":	EsHLTagPost,
+			"number_of_fragments":	EsHLFragment, "fragment_size":	EsHLFragmentSize, "fields":	o.mh}
 	}
 
-	req, err := http.NewRequest(&#34;GET&#34;, EsConnStr&#43;o.table.Name&#43;&#34;/doc/_search&#34;, nil)
+	req, err := http.NewRequest("GET", EsConnStr+o.table.Name+"/doc/_search", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -678,7 +678,7 @@ func (o *Query_) Find() (*Result_, error) {	//ES only
 		return nil, err
 	}
 	if resp.StatusCode != 200 {
-		return nil, errors.New(&#34;ES find fail&#34;)
+		return nil, errors.New("ES find fail")
 	}
 	m, err = GetBodyJson(resp)
 	if err != nil {
@@ -686,16 +686,16 @@ func (o *Query_) Find() (*Result_, error) {	//ES only
 	}
 
 	//compile results
-	res := &amp;Result_{}
-	m = m[&#34;hits&#34;].(map[string]interface{})
-	res.Found = int(m[&#34;total&#34;].(float64))
-	hits := m[&#34;hits&#34;].([]interface{})
+	res := &Result_{}
+	m = m["hits"].(map[string]interface{})
+	res.Found = int(m["total"].(float64))
+	hits := m["hits"].([]interface{})
 	res.Count = len(hits)
 	res.Data = make([]*Data_, res.Count)
-	for i := 0; i &lt; len(hits); i&#43;&#43; {
+	for i := 0; i < len(hits); i++ {
 		m = hits[i].(map[string]interface{})
-		d := &amp;Data_{table: o.table, m: m[&#34;_source&#34;].(map[string]interface{}), Found: true}
-		if v, ok := m[&#34;highlight&#34;]; ok {
+		d := &Data_{table: o.table, m: m["_source"].(map[string]interface{}), Found: true}
+		if v, ok := m["highlight"]; ok {
 			d.mh = v.(map[string]interface{})
 		}
 		res.Data[i] = d
@@ -705,15 +705,15 @@ func (o *Query_) Find() (*Result_, error) {	//ES only
 }
 
 //Collector
-func (o *Query_) All() *Query_	{ o.m[&#34;match_all&#34;] = M{}; return o }
+func (o *Query_) All() *Query_	{ o.m["match_all"] = M{}; return o }
 
 func (o *Query_) Equal(col string, val interface{}) *Query_ {
 	var m M
-	if v, ok := o.m[&#34;term&#34;]; ok {
+	if v, ok := o.m["term"]; ok {
 		m = v.(M)
 	} else {
 		m = M{}
-		o.m[&#34;term&#34;] = m
+		o.m["term"] = m
 	}
 	m[col] = val
 	return o
@@ -721,14 +721,14 @@ func (o *Query_) Equal(col string, val interface{}) *Query_ {
 
 func (o *Query_) Fulltext(col string, val interface{}, isAnd bool) *Query_ {
 	var m M
-	if v, ok := o.m[&#34;match&#34;]; ok {
+	if v, ok := o.m["match"]; ok {
 		m = v.(M)
 	} else {
 		m = M{}
-		o.m[&#34;match&#34;] = m
+		o.m["match"] = m
 	}
 	if isAnd {
-		m[col] = M{&#34;query&#34;: val, &#34;operator&#34;: &#34;and&#34;}
+		m[col] = M{"query": val, "operator": "and"}
 	} else {
 		m[col] = val
 	}
@@ -737,11 +737,11 @@ func (o *Query_) Fulltext(col string, val interface{}, isAnd bool) *Query_ {
 
 func (o *Query_) Prefix(col string, val interface{}) *Query_ {
 	var m M
-	if v, ok := o.m[&#34;prefix&#34;]; ok {
+	if v, ok := o.m["prefix"]; ok {
 		m = v.(M)
 	} else {
 		m = M{}
-		o.m[&#34;prefix&#34;] = m
+		o.m["prefix"] = m
 	}
 	m[col] = val
 	return o
@@ -749,36 +749,36 @@ func (o *Query_) Prefix(col string, val interface{}) *Query_ {
 
 func (o *Query_) Wildcard(col string, val interface{}) *Query_ {
 	var m M
-	if v, ok := o.m[&#34;wildcard&#34;]; ok {
+	if v, ok := o.m["wildcard"]; ok {
 		m = v.(M)
 	} else {
 		m = M{}
-		o.m[&#34;wildcard&#34;] = m
+		o.m["wildcard"] = m
 	}
-	m[col] = &#34;*&#34; &#43; val.(string) &#43; &#34;*&#34;
+	m[col] = "*" + val.(string) + "*"
 	return o
 }
 
 func (o *Query_) Range(col string, from interface{}, to interface{}) *Query_ {
 	var m M
-	if v, ok := o.m[&#34;range&#34;]; ok {
+	if v, ok := o.m["range"]; ok {
 		m = v.(M)
 	} else {
 		m = M{}
-		o.m[&#34;range&#34;] = m
+		o.m["range"] = m
 	}
-	m[col] = M{&#34;from&#34;: from, &#34;to&#34;: to}
+	m[col] = M{"from": from, "to": to}
 	return o
 }
 
 //Filter, func always ending with _
 func (o *Query_) Equal_(col string, val interface{}) *Query_ {
 	var m M
-	if v, ok := o.mf[&#34;term&#34;]; ok {
+	if v, ok := o.mf["term"]; ok {
 		m = v.(M)
 	} else {
 		m = M{}
-		o.mf[&#34;term&#34;] = m
+		o.mf["term"] = m
 	}
 	m[col] = val
 	return o
@@ -786,11 +786,11 @@ func (o *Query_) Equal_(col string, val interface{}) *Query_ {
 
 func (o *Query_) Prefix_(col string, val interface{}) *Query_ {
 	var m M
-	if v, ok := o.mf[&#34;prefix&#34;]; ok {
+	if v, ok := o.mf["prefix"]; ok {
 		m = v.(M)
 	} else {
 		m = M{}
-		o.mf[&#34;prefix&#34;] = m
+		o.mf["prefix"] = m
 	}
 	m[col] = val
 	return o
@@ -798,13 +798,13 @@ func (o *Query_) Prefix_(col string, val interface{}) *Query_ {
 
 func (o *Query_) Range_(col string, from interface{}, to interface{}) *Query_ {
 	var m M
-	if v, ok := o.mf[&#34;range&#34;]; ok {
+	if v, ok := o.mf["range"]; ok {
 		m = v.(M)
 	} else {
 		m = M{}
-		o.mf[&#34;range&#34;] = m
+		o.mf["range"] = m
 	}
-	m[col] = M{&#34;from&#34;: from, &#34;to&#34;: to}
+	m[col] = M{"from": from, "to": to}
 	return o
 }
 
@@ -827,21 +827,21 @@ func NewIter(q *Query_) (*Iter_, error) {
 	if err != nil {
 		return nil, err
 	}
-	it := &amp;Iter_{query: q, res: res, Found: res.Found}
+	it := &Iter_{query: q, res: res, Found: res.Found}
 	return it, nil
 }
 
 func (o *Iter_) Next() *Data_ {
-	if (o.cur &#43; o.query.offset) &gt;= o.Found {
+	if (o.cur + o.query.offset) >= o.Found {
 		return nil
 	}
-	if o.cur &gt;= o.res.Count {
-		res, err := o.query.Offset(o.query.offset &#43; o.cur).Find()
+	if o.cur >= o.res.Count {
+		res, err := o.query.Offset(o.query.offset + o.cur).Find()
 		if err != nil {
 			return nil
 		}
-		if res.Found &lt; o.Found {	//some data has been deleted
-			if (o.cur &#43; o.query.offset) &gt;= res.Found {
+		if res.Found < o.Found {	//some data has been deleted
+			if (o.cur + o.query.offset) >= res.Found {
 				return nil
 			}
 			o.Found = res.Found
@@ -849,7 +849,7 @@ func (o *Iter_) Next() *Data_ {
 		o.res, o.cur = res, 0
 	}
 	d := o.res.Data[o.cur]
-	o.cur&#43;&#43;
+	o.cur++
 	return d
 }
 
@@ -861,7 +861,7 @@ func GetBodyJson(resp *http.Response) (M, error) {
 		return nil, err
 	}
 	m := M{}
-	err = json.Unmarshal(body, &amp;m)
+	err = json.Unmarshal(body, &m)
 	if err != nil {
 		return nil, err
 	}

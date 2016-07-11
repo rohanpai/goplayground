@@ -1,4 +1,4 @@
-// Port of some Python&#39;s itertools
+// Port of some Python's itertools
 // ================================
 // A.K.A. my first piece of Go code
 //
@@ -10,13 +10,13 @@
 
 package main
 
-import &#34;fmt&#34;
+import "fmt"
 
 func combinations(iterable []int, r int) {
 	pool := iterable
 	n := len(pool)
 
-	if r &gt; n {
+	if r > n {
 		return
 	}
 
@@ -34,19 +34,19 @@ func combinations(iterable []int, r int) {
 
 	for {
 		i := r - 1
-		for ; i &gt;= 0 &amp;&amp; indices[i] == i&#43;n-r; i -= 1 {
+		for ; i >= 0 && indices[i] == i+n-r; i -= 1 {
 		}
 
-		if i &lt; 0 {
+		if i < 0 {
 			return
 		}
 
-		indices[i] &#43;= 1
-		for j := i &#43; 1; j &lt; r; j &#43;= 1 {
-			indices[j] = indices[j-1] &#43; 1
+		indices[i] += 1
+		for j := i + 1; j < r; j += 1 {
+			indices[j] = indices[j-1] + 1
 		}
 
-		for ; i &lt; len(indices); i &#43;= 1 {
+		for ; i < len(indices); i += 1 {
 			result[i] = pool[indices[i]]
 		}
 		fmt.Println(result)
@@ -59,7 +59,7 @@ func permutations(iterable []int, r int) {
 	pool := iterable
 	n := len(pool)
 
-	if r &gt; n {
+	if r > n {
 		return
 	}
 
@@ -80,14 +80,14 @@ func permutations(iterable []int, r int) {
 
 	fmt.Println(result)
 
-	for n &gt; 0 {
+	for n > 0 {
 		i := r - 1
-		for ; i &gt;= 0; i -= 1 {
+		for ; i >= 0; i -= 1 {
 			cycles[i] -= 1
 			if cycles[i] == 0 {
 				index := indices[i]
-				for j := i; j &lt; n-1; j &#43;= 1 {
-					indices[j] = indices[j&#43;1]
+				for j := i; j < n-1; j += 1 {
+					indices[j] = indices[j+1]
 				}
 				indices[n-1] = index
 				cycles[i] = n - i
@@ -95,7 +95,7 @@ func permutations(iterable []int, r int) {
 				j := cycles[i]
 				indices[i], indices[n-j] = indices[n-j], indices[i]
 
-				for k := i; k &lt; r; k &#43;= 1 {
+				for k := i; k < r; k += 1 {
 					result[k] = pool[indices[k]]
 				}
 
@@ -105,7 +105,7 @@ func permutations(iterable []int, r int) {
 			}
 		}
 
-		if i &lt; 0 {
+		if i < 0 {
 			return
 		}
 
@@ -128,9 +128,9 @@ func product(argsA, argsB []int) {
 
 	for {
 		i := npools - 1
-		for ; i &gt;= 0; i -= 1 {
+		for ; i >= 0; i -= 1 {
 			pool := pools[i]
-			indices[i] &#43;= 1
+			indices[i] += 1
 
 			if indices[i] == len(pool) {
 				indices[i] = 0
@@ -142,7 +142,7 @@ func product(argsA, argsB []int) {
 
 		}
 
-		if i &lt; 0 {
+		if i < 0 {
 			return
 		}
 
@@ -151,24 +151,24 @@ func product(argsA, argsB []int) {
 }
 
 func main() {
-	fmt.Println(&#34;Itertools combinations in Go:&#34;)
-	// combinations(&#39;ABCD&#39;, 2) --&gt; AB AC AD BC BD CD
-	// combinations(range(4), 3) --&gt; 012 013 023 123
-	fmt.Printf(&#34;iterable = %s, r = %d&#34;, &#34;[]int{1, 2, 3, 4, 5, 6}&#34;, 3)
+	fmt.Println("Itertools combinations in Go:")
+	// combinations('ABCD', 2) --> AB AC AD BC BD CD
+	// combinations(range(4), 3) --> 012 013 023 123
+	fmt.Printf("iterable = %s, r = %d", "[]int{1, 2, 3, 4, 5, 6}", 3)
 	fmt.Println()
 	combinations([]int{1, 2, 3, 4, 5, 6}, 3)
 
-	fmt.Println(&#34;Itertools permutations in Go:&#34;)
-	// permutations(&#39;ABCD&#39;, 2) --&gt; AB AC AD BA BC BD CA CB CD DA DB DC
-	// permutations(range(3)) --&gt; 012 021 102 120 201 210
-	fmt.Printf(&#34;iterable = %s, r = %d&#34;, &#34;[]int{1, 2, 3, 4}&#34;, 3)
+	fmt.Println("Itertools permutations in Go:")
+	// permutations('ABCD', 2) --> AB AC AD BA BC BD CA CB CD DA DB DC
+	// permutations(range(3)) --> 012 021 102 120 201 210
+	fmt.Printf("iterable = %s, r = %d", "[]int{1, 2, 3, 4}", 3)
 	fmt.Println()
 	permutations([]int{1, 2, 3, 4}, 3)
 
-	fmt.Println(&#34;Itertools product in Go:&#34;)
-	// product(&#39;ABCD&#39;, &#39;xy&#39;) --&gt; Ax Ay Bx By Cx Cy Dx Dy
-	// product(range(2), repeat=3) --&gt; 000 001 010 011 100 101 110 111
-	fmt.Printf(&#34;iterables = %s, %s&#34;, &#34;[]int{1, 2, 3}&#34;, &#34;[]int{10, 20, 30}&#34;)
+	fmt.Println("Itertools product in Go:")
+	// product('ABCD', 'xy') --> Ax Ay Bx By Cx Cy Dx Dy
+	// product(range(2), repeat=3) --> 000 001 010 011 100 101 110 111
+	fmt.Printf("iterables = %s, %s", "[]int{1, 2, 3}", "[]int{10, 20, 30}")
 	fmt.Println()
 	product([]int{1, 2, 3}, []int{10, 20, 30})
 
